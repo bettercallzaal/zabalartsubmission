@@ -12,11 +12,13 @@
         }
 
         :root {
-            --neon-accent: #49f3c3;
+            --primary-blue: #141e27;
+            --accent-yellow: #e0ddaa;
             --bg-black: #000000;
             --text-white: #ffffff;
             --text-gray: #a0a0a0;
-            --border-color: #333333;
+            --border-color: #2a3a47;
+            --hover-glow: rgba(224, 221, 170, 0.2);
         }
 
         body {
@@ -53,7 +55,7 @@
             transform: translate(-50%, -50%);
             width: 300px;
             height: 300px;
-            background: radial-gradient(circle, rgba(73, 243, 195, 0.1) 0%, transparent 70%);
+            background: radial-gradient(circle, rgba(224, 221, 170, 0.15) 0%, transparent 70%);
             animation: pulse 4s ease-in-out infinite;
             pointer-events: none;
         }
@@ -79,7 +81,7 @@
             font-weight: 900;
             letter-spacing: -0.02em;
             margin-bottom: 0.5rem;
-            background: linear-gradient(135deg, var(--text-white) 0%, var(--neon-accent) 100%);
+            background: linear-gradient(135deg, var(--text-white) 0%, var(--accent-yellow) 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
@@ -89,7 +91,7 @@
         .hero h2 {
             font-size: clamp(1.2rem, 3vw, 2rem);
             font-weight: 300;
-            color: var(--neon-accent);
+            color: var(--accent-yellow);
             margin-bottom: 2rem;
             animation: fadeInUp 1s ease-out 0.2s backwards;
         }
@@ -136,7 +138,7 @@
             transform: translateX(-50%);
             width: 60px;
             height: 3px;
-            background: var(--neon-accent);
+            background: var(--accent-yellow);
         }
 
         /* Explanation Section */
@@ -185,15 +187,15 @@
             left: 0;
             right: 0;
             height: 3px;
-            background: var(--neon-accent);
+            background: var(--accent-yellow);
             transform: scaleX(0);
             transition: transform 0.3s ease;
         }
 
         .type-card:hover {
-            border-color: var(--neon-accent);
+            border-color: var(--accent-yellow);
             transform: translateY(-5px);
-            box-shadow: 0 10px 30px rgba(73, 243, 195, 0.2);
+            box-shadow: 0 10px 30px var(--hover-glow);
         }
 
         .type-card:hover::before {
@@ -271,10 +273,10 @@
             max-width: 800px;
             margin: 2rem auto 0;
             padding: 2rem;
-            background: #0a0a0a;
-            border: 1px solid var(--border-color);
+            background: var(--primary-blue);
+            border: 2px solid var(--border-color);
             border-radius: 12px;
-            box-shadow: 0 0 20px rgba(73, 243, 195, 0.1);
+            box-shadow: 0 0 30px rgba(224, 221, 170, 0.15);
         }
 
         .tally-container iframe {
@@ -319,7 +321,7 @@
             content: '→';
             position: absolute;
             left: 0;
-            color: var(--neon-accent);
+            color: var(--accent-yellow);
             font-weight: 700;
         }
 
@@ -337,18 +339,19 @@
         .next-list li {
             padding: 1.5rem;
             margin-bottom: 1rem;
-            background: #0a0a0a;
+            background: var(--primary-blue);
             border: 1px solid var(--border-color);
             border-radius: 8px;
-            border-left: 4px solid var(--neon-accent);
+            border-left: 4px solid var(--accent-yellow);
             font-size: 1.05rem;
             color: var(--text-gray);
             transition: all 0.3s ease;
         }
 
         .next-list li:hover {
-            border-color: var(--neon-accent);
+            border-color: var(--accent-yellow);
             transform: translateX(5px);
+            box-shadow: 0 5px 15px var(--hover-glow);
         }
 
         /* Footer */
@@ -383,13 +386,13 @@
             left: 0;
             right: 0;
             height: 2px;
-            background: var(--neon-accent);
+            background: var(--accent-yellow);
             transform: scaleX(0);
             transition: transform 0.3s ease;
         }
 
         .footer-links a:hover {
-            color: var(--neon-accent);
+            color: var(--accent-yellow);
         }
 
         .footer-links a:hover::after {
@@ -412,7 +415,7 @@
         }
 
         .footer-secondary a:hover {
-            color: var(--neon-accent);
+            color: var(--accent-yellow);
         }
 
         .footer-tagline {
@@ -540,6 +543,39 @@
         </div>
     </section>
 
+    <!-- FAQ Section -->
+    <section class="faq" style="background: var(--bg-black); padding: 80px 20px;">
+        <div class="container">
+            <h2>Frequently Asked Questions</h2>
+            <div style="max-width: 800px; margin: 2rem auto 0;">
+                <div class="faq-item" style="margin-bottom: 1.5rem; padding: 1.5rem; background: var(--primary-blue); border: 1px solid var(--border-color); border-radius: 8px;">
+                    <h3 style="color: var(--accent-yellow); margin-bottom: 0.75rem; font-size: 1.2rem;">What types of submissions are accepted?</h3>
+                    <p style="color: var(--text-gray); line-height: 1.8;">We accept all forms of creative work including artwork, music, remixes, videos, photography, memes, essays, creative code, Farcaster casts, and more. If it's inspired by the ZABAL ecosystem, we want to see it!</p>
+                </div>
+                <div class="faq-item" style="margin-bottom: 1.5rem; padding: 1.5rem; background: var(--primary-blue); border: 1px solid var(--border-color); border-radius: 8px;">
+                    <h3 style="color: var(--accent-yellow); margin-bottom: 0.75rem; font-size: 1.2rem;">Do I retain rights to my work?</h3>
+                    <p style="color: var(--text-gray); line-height: 1.8;">Yes! You retain all rights to your work. Credit always stays with the creator. We may showcase selected works on ZABAL.art and in community content, but ownership remains with you.</p>
+                </div>
+                <div class="faq-item" style="margin-bottom: 1.5rem; padding: 1.5rem; background: var(--primary-blue); border: 1px solid var(--border-color); border-radius: 8px;">
+                    <h3 style="color: var(--accent-yellow); margin-bottom: 0.75rem; font-size: 1.2rem;">How long does the review process take?</h3>
+                    <p style="color: var(--text-gray); line-height: 1.8;">Submissions are posted to our Discord immediately for community review. The ZABAL team reviews submissions on a rolling basis. Selected works will be featured on ZABAL.art and you'll be notified.</p>
+                </div>
+                <div class="faq-item" style="margin-bottom: 1.5rem; padding: 1.5rem; background: var(--primary-blue); border: 1px solid var(--border-color); border-radius: 8px;">
+                    <h3 style="color: var(--accent-yellow); margin-bottom: 0.75rem; font-size: 1.2rem;">Can I submit multiple works?</h3>
+                    <p style="color: var(--text-gray); line-height: 1.8;">Absolutely! We encourage multiple submissions. Share all your ZABAL-inspired creations with the community.</p>
+                </div>
+                <div class="faq-item" style="margin-bottom: 1.5rem; padding: 1.5rem; background: var(--primary-blue); border: 1px solid var(--border-color); border-radius: 8px;">
+                    <h3 style="color: var(--accent-yellow); margin-bottom: 0.75rem; font-size: 1.2rem;">What file formats are supported?</h3>
+                    <p style="color: var(--text-gray); line-height: 1.8;">We accept images (JPG, PNG, GIF), audio files (MP3, WAV), videos (MP4, MOV), PDFs, and zip files. If you have a different format, reach out to us on Discord.</p>
+                </div>
+                <div class="faq-item" style="margin-bottom: 1.5rem; padding: 1.5rem; background: var(--primary-blue); border: 1px solid var(--border-color); border-radius: 8px;">
+                    <h3 style="color: var(--accent-yellow); margin-bottom: 0.75rem; font-size: 1.2rem;">Is there any compensation for submissions?</h3>
+                    <p style="color: var(--text-gray); line-height: 1.8;">While we can't guarantee compensation, contributors may be highlighted in future ZABAL content and community posts. Selected creators may receive recognition and potential opportunities within the ZABAL ecosystem.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <!-- What Happens Next Section -->
     <section class="what-next">
         <div class="container">
@@ -550,9 +586,9 @@
                 <li>Contributors may be highlighted in future content or ZABAL community posts</li>
                 <li>Credit always stays with the creator</li>
             </ul>
-            <div style="text-align: center; margin-top: 2rem; padding: 1.5rem; background: rgba(73, 243, 195, 0.05); border: 1px solid var(--border-color); border-radius: 8px;">
+            <div style="text-align: center; margin-top: 2rem; padding: 1.5rem; background: var(--primary-blue); border: 2px solid var(--border-color); border-radius: 8px;">
                 <p style="color: var(--text-gray); margin-bottom: 1rem;">Want to see your submission and connect with other creators?</p>
-                <a href="https://discord.bettercallzaal.com" target="_blank" style="display: inline-block; padding: 12px 24px; background: var(--neon-accent); color: var(--bg-black); text-decoration: none; border-radius: 6px; font-weight: 700; transition: all 0.3s ease;">Join the ZABAL Discord</a>
+                <a href="https://discord.bettercallzaal.com" target="_blank" style="display: inline-block; padding: 12px 24px; background: var(--accent-yellow); color: var(--bg-black); text-decoration: none; border-radius: 6px; font-weight: 700; transition: all 0.3s ease;">Join the ZABAL Discord</a>
             </div>
         </div>
     </section>
