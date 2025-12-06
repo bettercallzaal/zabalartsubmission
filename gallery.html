@@ -212,7 +212,7 @@
             transform: translateX(5px);
         }
 
-        /* Embedded Article Section */
+        /* Featured Article Preview Section */
         .featured-article {
             padding: 60px 20px;
             background: linear-gradient(180deg, #0a0a0a 0%, var(--bg-black) 100%);
@@ -239,21 +239,89 @@
             background: var(--accent-yellow);
         }
 
-        .article-embed {
+        .article-preview {
             max-width: 900px;
             margin: 0 auto;
             background: var(--primary-blue);
             border: 2px solid var(--border-color);
             border-radius: 12px;
-            padding: 2rem;
+            overflow: hidden;
             box-shadow: 0 0 30px rgba(224, 221, 170, 0.15);
+            transition: all 0.3s ease;
         }
 
-        .article-embed iframe {
-            width: 100%;
-            min-height: 800px;
-            border: none;
+        .article-preview:hover {
+            border-color: var(--accent-yellow);
+            box-shadow: 0 0 40px rgba(224, 221, 170, 0.25);
+        }
+
+        .article-preview-content {
+            padding: 3rem;
+        }
+
+        .article-tag {
+            display: inline-block;
+            padding: 6px 16px;
+            background: rgba(224, 221, 170, 0.15);
+            border: 1px solid var(--accent-yellow);
+            border-radius: 20px;
+            font-size: 0.85rem;
+            color: var(--accent-yellow);
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+        }
+
+        .article-preview h3 {
+            font-size: 2rem;
+            color: var(--text-white);
+            margin-bottom: 1rem;
+            line-height: 1.3;
+        }
+
+        .article-meta {
+            display: flex;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+            color: var(--text-gray);
+            font-size: 0.95rem;
+        }
+
+        .article-excerpt {
+            color: var(--text-gray);
+            font-size: 1.1rem;
+            line-height: 1.8;
+            margin-bottom: 2.5rem;
+        }
+
+        .article-cta {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 16px 32px;
+            background: var(--accent-yellow);
+            color: var(--bg-black);
+            text-decoration: none;
             border-radius: 8px;
+            font-weight: 700;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            border: 2px solid var(--accent-yellow);
+        }
+
+        .article-cta:hover {
+            background: transparent;
+            color: var(--accent-yellow);
+            transform: translateX(5px);
+        }
+
+        .article-cta svg {
+            width: 20px;
+            height: 20px;
+            transition: transform 0.3s ease;
+        }
+
+        .article-cta:hover svg {
+            transform: translateX(5px);
         }
 
         /* CTA Section */
@@ -344,12 +412,12 @@
                 grid-template-columns: 1fr;
             }
 
-            .article-embed {
-                padding: 1rem;
+            .article-preview-content {
+                padding: 2rem 1.5rem;
             }
 
-            .article-embed iframe {
-                min-height: 600px;
+            .article-preview h3 {
+                font-size: 1.5rem;
             }
         }
     </style>
@@ -457,12 +525,29 @@
         </div>
     </section>
 
-    <!-- Featured Article Embed -->
+    <!-- Featured Article Preview -->
     <section class="featured-article">
         <div class="container">
             <h2>Featured: ZABAL Origins</h2>
-            <div class="article-embed">
-                <iframe src="https://paragraph.com/@thezao/year-of-the-zao-day-276" title="Year of the ZAO - Day 276"></iframe>
+            <div class="article-preview">
+                <div class="article-preview-content">
+                    <span class="article-tag">Day 276 • Origin Story</span>
+                    <h3>A 13-Week Experiment in Collective Discovery</h3>
+                    <div class="article-meta">
+                        <span>📅 Q4 2024</span>
+                        <span>✍️ The ZAO Newsletter</span>
+                        <span>⏱️ 8 min read</span>
+                    </div>
+                    <p class="article-excerpt">
+                        The Year of the ZAO has been about experiments: festivals, drops, streams, new ways of building culture on-chain. Q4 is different. For the next 13 weeks, I'm focused on one experiment: Farcaster. The goal is clear: Push ZAO members into the top 10 of the weekly leaderboard. This is the story of ZABAL — a collective discovery engine built for the creator economy.
+                    </p>
+                    <a href="https://paragraph.com/@thezao/year-of-the-zao-day-276" target="_blank" class="article-cta">
+                        Read Full Article
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path>
+                        </svg>
+                    </a>
+                </div>
             </div>
         </div>
     </section>
