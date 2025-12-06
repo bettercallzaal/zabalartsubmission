@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ZABAL Research & Updates | ZABAL.art</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-blue: #141e27;
+            --accent-yellow: #e0ddaa;
+            --bg-black: #000000;
+            --text-white: #ffffff;
+            --text-gray: #a0a0a0;
+            --border-color: #2a3a47;
+            --hover-glow: rgba(224, 221, 170, 0.2);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica', 'Arial', sans-serif;
+            background-color: var(--bg-black);
+            color: var(--text-white);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Header */
+        header {
+            padding: 2rem 0;
+            border-bottom: 1px solid var(--border-color);
+            background: var(--bg-black);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(10px);
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--text-white) 0%, var(--accent-yellow) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-decoration: none;
+        }
+
+        nav {
+            display: flex;
+            gap: 2rem;
+        }
+
+        nav a {
+            color: var(--text-gray);
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.3s ease;
+            position: relative;
+        }
+
+        nav a:hover {
+            color: var(--accent-yellow);
+        }
+
+        nav a.active {
+            color: var(--accent-yellow);
+        }
+
+        /* Hero Section */
+        .hero {
+            padding: 80px 20px 60px;
+            text-align: center;
+            background: linear-gradient(180deg, var(--bg-black) 0%, #0a0a0a 100%);
+        }
+
+        .hero h1 {
+            font-size: clamp(2.5rem, 8vw, 4rem);
+            font-weight: 900;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, var(--text-white) 0%, var(--accent-yellow) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero p {
+            font-size: clamp(1rem, 2vw, 1.2rem);
+            color: var(--text-gray);
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        /* Updates Grid */
+        .updates-section {
+            padding: 60px 20px;
+            background: var(--bg-black);
+        }
+
+        .updates-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .update-card {
+            background: var(--primary-blue);
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .update-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--accent-yellow);
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+
+        .update-card:hover {
+            border-color: var(--accent-yellow);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px var(--hover-glow);
+        }
+
+        .update-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .update-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .update-number {
+            display: inline-block;
+            padding: 4px 12px;
+            background: rgba(224, 221, 170, 0.1);
+            border: 1px solid var(--accent-yellow);
+            border-radius: 20px;
+            font-size: 0.85rem;
+            color: var(--accent-yellow);
+            font-weight: 700;
+            margin-bottom: 0.75rem;
+        }
+
+        .update-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--text-white);
+            margin-bottom: 0.5rem;
+        }
+
+        .update-date {
+            font-size: 0.9rem;
+            color: var(--text-gray);
+        }
+
+        .update-content {
+            padding: 1.5rem;
+        }
+
+        .update-excerpt {
+            color: var(--text-gray);
+            line-height: 1.8;
+            margin-bottom: 1.5rem;
+        }
+
+        .read-more {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 10px 20px;
+            background: var(--accent-yellow);
+            color: var(--bg-black);
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: 700;
+            transition: all 0.3s ease;
+        }
+
+        .read-more:hover {
+            background: var(--text-white);
+            transform: translateX(5px);
+        }
+
+        /* Embedded Article Section */
+        .featured-article {
+            padding: 60px 20px;
+            background: linear-gradient(180deg, #0a0a0a 0%, var(--bg-black) 100%);
+        }
+
+        .featured-article h2 {
+            text-align: center;
+            font-size: clamp(2rem, 5vw, 3rem);
+            font-weight: 800;
+            margin-bottom: 3rem;
+            position: relative;
+            display: inline-block;
+            width: 100%;
+        }
+
+        .featured-article h2::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 3px;
+            background: var(--accent-yellow);
+        }
+
+        .article-embed {
+            max-width: 900px;
+            margin: 0 auto;
+            background: var(--primary-blue);
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 0 30px rgba(224, 221, 170, 0.15);
+        }
+
+        .article-embed iframe {
+            width: 100%;
+            min-height: 800px;
+            border: none;
+            border-radius: 8px;
+        }
+
+        /* CTA Section */
+        .cta-section {
+            padding: 80px 20px;
+            background: var(--bg-black);
+            text-align: center;
+        }
+
+        .cta-box {
+            max-width: 700px;
+            margin: 0 auto;
+            padding: 3rem 2rem;
+            background: var(--primary-blue);
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+        }
+
+        .cta-box h2 {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            color: var(--accent-yellow);
+        }
+
+        .cta-box p {
+            color: var(--text-gray);
+            margin-bottom: 2rem;
+            font-size: 1.1rem;
+        }
+
+        .cta-button {
+            display: inline-block;
+            padding: 14px 32px;
+            background: var(--accent-yellow);
+            color: var(--bg-black);
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+        }
+
+        .cta-button:hover {
+            background: var(--text-white);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px var(--hover-glow);
+        }
+
+        /* Footer */
+        footer {
+            background: var(--bg-black);
+            border-top: 1px solid var(--border-color);
+            padding: 40px 20px;
+            text-align: center;
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 30px;
+            margin-bottom: 1.5rem;
+        }
+
+        .footer-links a {
+            color: var(--text-white);
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.3s ease;
+        }
+
+        .footer-links a:hover {
+            color: var(--accent-yellow);
+        }
+
+        .footer-tagline {
+            color: var(--text-gray);
+            font-size: 0.9rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            nav {
+                gap: 1rem;
+            }
+
+            .updates-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .article-embed {
+                padding: 1rem;
+            }
+
+            .article-embed iframe {
+                min-height: 600px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="header-content">
+            <a href="index.html" class="logo">ZABAL.art</a>
+            <nav>
+                <a href="index.html">Submit</a>
+                <a href="gallery.html" class="active">Research</a>
+                <a href="https://discord.bettercallzaal.com" target="_blank">Discord</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <h1>ZABAL Research & Updates</h1>
+            <p>Streaming the evolution of the ZABAL ecosystem. Deep dives, experiments, and collective discovery.</p>
+        </div>
+    </section>
+
+    <!-- Updates Grid -->
+    <section class="updates-section">
+        <div class="container">
+            <div class="updates-grid">
+                <!-- Update 5 -->
+                <div class="update-card">
+                    <div class="update-header">
+                        <span class="update-number">Update #5</span>
+                        <h3 class="update-title">ZABAL Update 5</h3>
+                        <p class="update-date">Latest Update</p>
+                    </div>
+                    <div class="update-content">
+                        <p class="update-excerpt">The latest developments in the ZABAL ecosystem, community growth, and what's next for collective discovery.</p>
+                        <a href="https://paragraph.com/@thezao/zabal-update-5" target="_blank" class="read-more">
+                            Read Full Update →
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Update 4 -->
+                <div class="update-card">
+                    <div class="update-header">
+                        <span class="update-number">Update #4</span>
+                        <h3 class="update-title">ZABAL Update 4</h3>
+                        <p class="update-date">Recent</p>
+                    </div>
+                    <div class="update-content">
+                        <p class="update-excerpt">Insights on creator economy experiments, community engagement, and the path forward.</p>
+                        <a href="https://paragraph.com/@thezao/zabal-update-4" target="_blank" class="read-more">
+                            Read Full Update →
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Update 3 -->
+                <div class="update-card">
+                    <div class="update-header">
+                        <span class="update-number">Update #3</span>
+                        <h3 class="update-title">ZABAL Update 3</h3>
+                        <p class="update-date">Archive</p>
+                    </div>
+                    <div class="update-content">
+                        <p class="update-excerpt">Exploring new frontiers in collective discovery and community-driven culture.</p>
+                        <a href="https://paragraph.com/@thezao/zabal-update-3" target="_blank" class="read-more">
+                            Read Full Update →
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Update 2 -->
+                <div class="update-card">
+                    <div class="update-header">
+                        <span class="update-number">Day 334</span>
+                        <h3 class="update-title">Year of the ZAO - Day 334</h3>
+                        <p class="update-date">Archive</p>
+                    </div>
+                    <div class="update-content">
+                        <p class="update-excerpt">Reflections on the Year of the ZAO journey and the emergence of ZABAL.</p>
+                        <a href="https://paragraph.com/@thezao/year-of-the-zao-day-334" target="_blank" class="read-more">
+                            Read Full Update →
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Update 1 -->
+                <div class="update-card">
+                    <div class="update-header">
+                        <span class="update-number">Day 276</span>
+                        <h3 class="update-title">Year of the ZAO - Day 276</h3>
+                        <p class="update-date">Archive</p>
+                    </div>
+                    <div class="update-content">
+                        <p class="update-excerpt">A 13-week experiment in collective discovery. Introducing ZABAL and the Farcaster leaderboard game.</p>
+                        <a href="https://paragraph.com/@thezao/year-of-the-zao-day-276" target="_blank" class="read-more">
+                            Read Full Update →
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Featured Article Embed -->
+    <section class="featured-article">
+        <div class="container">
+            <h2>Featured: ZABAL Origins</h2>
+            <div class="article-embed">
+                <iframe src="https://paragraph.com/@thezao/year-of-the-zao-day-276" title="Year of the ZAO - Day 276"></iframe>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta-section">
+        <div class="container">
+            <div class="cta-box">
+                <h2>Join the Movement</h2>
+                <p>Submit your work, connect with creators, and help build the ZABAL ecosystem.</p>
+                <a href="index.html" class="cta-button">Submit Your Work</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-links">
+                <a href="https://zao.xyz" target="_blank">ZAO</a>
+                <a href="https://zabal.xyz" target="_blank">ZABAL</a>
+                <a href="https://wavewarz.xyz" target="_blank">WaveWarZ</a>
+                <a href="https://bettercallzaal.com" target="_blank">BetterCallZaal</a>
+            </div>
+            <p class="footer-tagline">Built for the ZABAL network of creators.</p>
+        </div>
+    </footer>
+</body>
+</html>
