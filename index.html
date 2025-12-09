@@ -204,6 +204,112 @@
             line-height: 1.8;
         }
 
+        /* ZABAL Links Section */
+        .zabal-links {
+            background: linear-gradient(180deg, var(--bg-black) 0%, #0a0a0a 100%);
+            padding: 60px 20px;
+        }
+
+        .zabal-links h2 {
+            text-align: center;
+            font-size: clamp(2rem, 5vw, 2.5rem);
+            font-weight: 800;
+            margin-bottom: 3rem;
+            position: relative;
+            display: inline-block;
+            width: 100%;
+        }
+
+        .zabal-links h2::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 3px;
+            background: var(--accent-yellow);
+        }
+
+        .links-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .link-card {
+            background: var(--primary-blue);
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            padding: 2.5rem 2rem;
+            text-align: center;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .link-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--accent-yellow);
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+
+        .link-card:hover {
+            border-color: var(--accent-yellow);
+            transform: translateY(-8px);
+            box-shadow: 0 15px 40px var(--hover-glow);
+        }
+
+        .link-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .link-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .link-card h3 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-white);
+            margin-bottom: 0.75rem;
+        }
+
+        .link-card p {
+            color: var(--text-gray);
+            font-size: 1rem;
+            line-height: 1.6;
+            margin-bottom: 1.5rem;
+        }
+
+        .link-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 12px 28px;
+            background: var(--accent-yellow);
+            color: var(--bg-black);
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .link-button:hover {
+            background: var(--text-white);
+            transform: translateX(5px);
+        }
+
         /* Submission Types Section */
         .submission-types {
             background: var(--bg-black);
@@ -526,6 +632,31 @@
             <h1>ZABAL.art</h1>
             <h2>A Creative Submission Portal</h2>
             <p>A place for creators to submit work inspired by the ZABAL ecosystem.</p>
+        </div>
+    </section>
+
+    <!-- ZABAL Links Section -->
+    <section class="zabal-links">
+        <div class="container">
+            <h2>ZABAL Ecosystem</h2>
+            <div class="links-grid">
+                <div class="link-card">
+                    <div class="link-icon">🎵</div>
+                    <h3>Songjam Leaderboard</h3>
+                    <p>Track top creators and compete on the ZABAL Songjam leaderboard</p>
+                    <a href="https://www.songjam.space/zabal" target="_blank" class="link-button">
+                        Visit Leaderboard →
+                    </a>
+                </div>
+                <div class="link-card">
+                    <div class="link-icon">🎯</div>
+                    <h3>Incented Campaign</h3>
+                    <p>Join the ZABAL incented campaign and earn rewards for participation</p>
+                    <a href="https://incented.zabal.art" target="_blank" class="link-button">
+                        Join Campaign →
+                    </a>
+                </div>
+            </div>
         </div>
     </section>
 
