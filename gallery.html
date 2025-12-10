@@ -324,6 +324,145 @@
             transform: translateX(5px);
         }
 
+        /* Weekly Recaps Section */
+        .weekly-recaps {
+            padding: 80px 20px;
+            background: linear-gradient(180deg, var(--bg-black) 0%, #0a0a0a 100%);
+        }
+
+        .weekly-recaps h2 {
+            text-align: center;
+            font-size: clamp(2rem, 5vw, 2.5rem);
+            font-weight: 800;
+            margin-bottom: 3rem;
+            position: relative;
+            display: inline-block;
+            width: 100%;
+        }
+
+        .weekly-recaps h2::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 3px;
+            background: var(--accent-yellow);
+        }
+
+        .recaps-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 2rem;
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        .recap-card {
+            background: var(--primary-blue);
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .recap-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--accent-yellow);
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+
+        .recap-card:hover {
+            border-color: var(--accent-yellow);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px var(--hover-glow);
+        }
+
+        .recap-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .recap-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .recap-week {
+            display: inline-block;
+            padding: 4px 12px;
+            background: rgba(224, 221, 170, 0.1);
+            border: 1px solid var(--accent-yellow);
+            border-radius: 20px;
+            font-size: 0.85rem;
+            color: var(--accent-yellow);
+            font-weight: 700;
+            margin-bottom: 0.75rem;
+        }
+
+        .recap-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--text-white);
+            margin-bottom: 0.5rem;
+        }
+
+        .recap-date {
+            font-size: 0.9rem;
+            color: var(--text-gray);
+        }
+
+        .recap-content {
+            padding: 1.5rem;
+        }
+
+        .recap-highlights {
+            list-style: none;
+            padding: 0;
+            margin: 0 0 1.5rem 0;
+        }
+
+        .recap-highlights li {
+            color: var(--text-gray);
+            padding: 0.5rem 0;
+            padding-left: 1.5rem;
+            position: relative;
+            line-height: 1.6;
+        }
+
+        .recap-highlights li::before {
+            content: '→';
+            position: absolute;
+            left: 0;
+            color: var(--accent-yellow);
+            font-weight: 700;
+        }
+
+        .recap-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 10px 20px;
+            background: var(--accent-yellow);
+            color: var(--bg-black);
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: 700;
+            transition: all 0.3s ease;
+        }
+
+        .recap-link:hover {
+            background: var(--text-white);
+            transform: translateX(5px);
+        }
+
         /* CTA Section */
         .cta-section {
             padding: 80px 20px;
@@ -537,6 +676,73 @@
         </div>
     </section>
 
+    <!-- Weekly Recaps Section -->
+    <section class="weekly-recaps">
+        <div class="container">
+            <h2>Weekly Recaps</h2>
+            <div class="recaps-grid">
+                <!-- Recap Week 1 -->
+                <div class="recap-card">
+                    <div class="recap-header">
+                        <span class="recap-week">Week 1 • Dec 1-7</span>
+                        <h3 class="recap-title">Launch Week Highlights</h3>
+                        <p class="recap-date">Published Dec 8, 2024</p>
+                    </div>
+                    <div class="recap-content">
+                        <ul class="recap-highlights">
+                            <li>ZABAL.art officially launched</li>
+                            <li>First AMA with SongJam community</li>
+                            <li>ZAO Fractal Week 1 results</li>
+                            <li>Leaderboard tracking begins</li>
+                        </ul>
+                        <a href="https://paragraph.com/@thezao/zabal-update-3" target="_blank" class="recap-link">
+                            Read Full Recap →
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Recap Week 2 -->
+                <div class="recap-card">
+                    <div class="recap-header">
+                        <span class="recap-week">Week 2 • Dec 8-14</span>
+                        <h3 class="recap-title">Submission Portal Live</h3>
+                        <p class="recap-date">Published Dec 15, 2024</p>
+                    </div>
+                    <div class="recap-content">
+                        <ul class="recap-highlights">
+                            <li>Tally form integration complete</li>
+                            <li>First wave of creator submissions</li>
+                            <li>Stream review sessions begin</li>
+                            <li>Discord community growth</li>
+                        </ul>
+                        <a href="https://paragraph.com/@thezao/zabal-update-4" target="_blank" class="recap-link">
+                            Read Full Recap →
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Recap Week 3 -->
+                <div class="recap-card">
+                    <div class="recap-header">
+                        <span class="recap-week">Latest • This Week</span>
+                        <h3 class="recap-title">Ecosystem Expansion</h3>
+                        <p class="recap-date">Published Dec 22, 2024</p>
+                    </div>
+                    <div class="recap-content">
+                        <ul class="recap-highlights">
+                            <li>WatchTower Space AMA success</li>
+                            <li>Three pillars clarified</li>
+                            <li>SongJam leaderboard updates</li>
+                            <li>Community momentum building</li>
+                        </ul>
+                        <a href="https://paragraph.com/@thezao/zabal-update-5" target="_blank" class="recap-link">
+                            Read Full Recap →
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
 
     <!-- CTA Section -->
     <section class="cta-section">

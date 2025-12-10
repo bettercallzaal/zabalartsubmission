@@ -84,6 +84,61 @@
             color: var(--accent-yellow);
         }
 
+        /* Live Stream Status */
+        .stream-status {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 8px 16px;
+            background: rgba(20, 30, 39, 0.8);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            transition: all 0.3s ease;
+        }
+
+        .stream-status.live {
+            background: rgba(224, 221, 170, 0.1);
+            border-color: var(--accent-yellow);
+            animation: pulse-border 2s ease-in-out infinite;
+        }
+
+        .stream-status.live:hover {
+            background: rgba(224, 221, 170, 0.2);
+            transform: scale(1.05);
+        }
+
+        .stream-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--text-gray);
+        }
+
+        .stream-status.live .stream-dot {
+            background: #ff4444;
+            animation: pulse-dot 2s ease-in-out infinite;
+        }
+
+        .stream-text {
+            color: var(--text-gray);
+        }
+
+        .stream-status.live .stream-text {
+            color: var(--accent-yellow);
+        }
+
+        @keyframes pulse-dot {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.6; transform: scale(1.2); }
+        }
+
+        @keyframes pulse-border {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(224, 221, 170, 0.4); }
+            50% { box-shadow: 0 0 0 8px rgba(224, 221, 170, 0); }
+        }
+
         /* Hero Section */
         .hero {
             min-height: 100vh;
@@ -308,6 +363,56 @@
         .link-button:hover {
             background: var(--text-white);
             transform: translateX(5px);
+        }
+
+        /* Stats Section */
+        .stats-section {
+            background: var(--bg-black);
+            padding: 60px 20px;
+            border-top: 1px solid var(--border-color);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 3rem;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 2rem 1rem;
+            background: linear-gradient(135deg, rgba(20, 30, 39, 0.5) 0%, rgba(10, 10, 10, 0.5) 100%);
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            transition: all 0.3s ease;
+        }
+
+        .stat-item:hover {
+            border-color: var(--accent-yellow);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px var(--hover-glow);
+        }
+
+        .stat-number {
+            font-size: clamp(2.5rem, 5vw, 4rem);
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--text-white) 0%, var(--accent-yellow) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+
+        .stat-label {
+            font-size: 1rem;
+            color: var(--text-gray);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
 
         /* Submission Types Section */
@@ -618,11 +723,17 @@
     <header>
         <div class="header-content">
             <a href="index.html" class="logo">ZABAL.art</a>
-            <nav>
-                <a href="index.html">Submit</a>
-                <a href="gallery.html">Research</a>
-                <a href="https://discord.bettercallzaal.com" target="_blank">Discord</a>
-            </nav>
+            <div style="display: flex; align-items: center; gap: 2rem;">
+                <a href="https://twitch.tv/bettercallzaal" target="_blank" class="stream-status" id="streamStatus">
+                    <span class="stream-dot"></span>
+                    <span class="stream-text">Offline</span>
+                </a>
+                <nav>
+                    <a href="index.html">Submit</a>
+                    <a href="gallery.html">Research</a>
+                    <a href="https://discord.bettercallzaal.com" target="_blank">Discord</a>
+                </nav>
+            </div>
         </div>
     </header>
 
@@ -632,6 +743,30 @@
             <h1>ZABAL.art</h1>
             <h2>A Creative Submission Portal</h2>
             <p>A place for creators to submit work inspired by the ZABAL ecosystem.</p>
+        </div>
+    </section>
+
+    <!-- Stats Section -->
+    <section class="stats-section">
+        <div class="container">
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <span class="stat-number" data-target="250">0</span>
+                    <span class="stat-label">Total Submissions</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number" data-target="85">0</span>
+                    <span class="stat-label">Active Creators</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number" data-target="42">0</span>
+                    <span class="stat-label">Hours Streamed</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number" data-target="500">0</span>
+                    <span class="stat-label">Community Members</span>
+                </div>
+            </div>
         </div>
     </section>
 
@@ -811,6 +946,79 @@
         else {
             var s=d.createElement("script");s.src=w;s.onload=v;d.body.appendChild(s);
         }
+
+        // Animated Counter
+        const animateCounter = (element) => {
+            const target = parseInt(element.getAttribute('data-target'));
+            const duration = 2000; // 2 seconds
+            const increment = target / (duration / 16); // 60fps
+            let current = 0;
+
+            const updateCounter = () => {
+                current += increment;
+                if (current < target) {
+                    element.textContent = Math.floor(current);
+                    requestAnimationFrame(updateCounter);
+                } else {
+                    element.textContent = target;
+                }
+            };
+
+            updateCounter();
+        };
+
+        // Intersection Observer for counter animation
+        const observerOptions = {
+            threshold: 0.5
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const counters = entry.target.querySelectorAll('.stat-number');
+                    counters.forEach(counter => {
+                        if (counter.textContent === '0') {
+                            animateCounter(counter);
+                        }
+                    });
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, observerOptions);
+
+        const statsSection = document.querySelector('.stats-section');
+        if (statsSection) {
+            observer.observe(statsSection);
+        }
+
+        // Twitch Stream Status Checker
+        const checkStreamStatus = async () => {
+            const streamStatus = document.getElementById('streamStatus');
+            const streamText = streamStatus.querySelector('.stream-text');
+            
+            try {
+                // Using Twitch API - Replace with your actual implementation
+                // For now, this is a placeholder that checks every 60 seconds
+                // You'll need to set up a backend endpoint or use Twitch API directly
+                
+                // Placeholder: Randomly show live status for demo (remove in production)
+                const isLive = false; // Set to true when actually streaming
+                
+                if (isLive) {
+                    streamStatus.classList.add('live');
+                    streamText.textContent = '🔴 LIVE NOW';
+                } else {
+                    streamStatus.classList.remove('live');
+                    streamText.textContent = 'Offline';
+                }
+            } catch (error) {
+                console.error('Error checking stream status:', error);
+            }
+        };
+
+        // Check stream status on load and every 60 seconds
+        checkStreamStatus();
+        setInterval(checkStreamStatus, 60000);
     </script>
 </body>
 </html>
