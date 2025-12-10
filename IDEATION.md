@@ -1,6 +1,31 @@
-# ZABAL.art Website Ideation & Next Steps
+# ZABAL.art — Development Roadmap & Next Steps
 
-## Research Summary: Understanding the ZABAL Ecosystem
+> **Last Updated:** December 10, 2024  
+> **Status:** Phase 1 Complete ✅ | Phase 2 Ready 🚀
+
+---
+
+## 📊 Quick Status
+
+### ✅ Completed (Phase 1)
+- Live stream status indicator with pulsing animation
+- Animated stats counter (submissions, creators, hours, members)
+- Weekly recaps section on gallery page
+- Mobile-responsive design
+- Comprehensive README documentation
+
+### 🚧 In Progress
+- Planning Phase 2 features
+- Backend infrastructure decisions
+
+### 📋 Up Next
+- SongJam leaderboard integration
+- Recent submissions feed
+- Creator profiles
+
+---
+
+## 🎯 Understanding the ZABAL Ecosystem
 
 ### Core Pillars (from Update #5)
 1. **ZABAL** - The Coordination Layer
@@ -47,86 +72,150 @@
 
 ## Current State Analysis
 
-### ✅ What's Working
-- Clean, modern design with brand colors
-- Tally form integration for submissions
-- FAQ section addresses common questions
-- Gallery/Research page with newsletter updates
-- Prominent ecosystem links (Songjam, Incented)
-- Mobile responsive
-- Discord integration
+### ✅ What's Live Now
 
-### 🔍 What's Missing
-1. **Live Stream Integration** - No visibility into current/upcoming streams
-2. **Community Activity** - No leaderboard, no recent submissions showcase
-3. **Creator Profiles** - No way to highlight top contributors
-4. **Recap Archive** - Weekly recaps not integrated
-5. **Token/Rewards Info** - No mention of ZABAL token, multipliers, incentives
-6. **WaveWarZ Connection** - Music battles not prominently featured
-7. **Fractal Visibility** - ZAO governance not explained
-8. **Real-time Data** - Static content, no dynamic updates
+**Homepage (`index.html`):**
+- ✅ Fixed header with live stream status
+- ✅ Animated stats counter (250 submissions, 85 creators, 42 hours, 500 members)
+- ✅ ZABAL Ecosystem links (Songjam, Incented)
+- ✅ Tally form integration
+- ✅ FAQ section (6 questions)
+- ✅ Submission types grid
+- ✅ Discord CTA
 
----
+**Gallery Page (`gallery.html`):**
+- ✅ Featured article preview (Update #5)
+- ✅ Newsletter archive (Updates #1-5)
+- ✅ Weekly recaps section (3 recap cards)
+- ✅ Mobile responsive
 
-## Strategic Next Steps
+**Infrastructure:**
+- ✅ GitHub version control
+- ✅ Vercel auto-deployment
+- ✅ README.md documentation
 
-### 🎯 Phase 1: High-Impact Quick Wins (1-2 weeks)
-
-#### 1. **Live Stream Status Widget**
-**Why**: Streams are the heartbeat of ZABAL
-**What**:
-- Embed Twitch/YouTube live status
-- "🔴 LIVE NOW" indicator when streaming
-- Next stream countdown timer
-- Link to watch/VOD archive
-
-**Implementation**:
-- Use Twitch API or YouTube Data API
-- Simple status check every 30 seconds
-- Prominent placement in header or hero section
-
-#### 2. **Weekly Recap Integration**
-**Why**: Recaps are core to the submission → stream → recap loop
-**What**:
-- Dedicated "Weekly Recaps" section on gallery page
-- Pull latest Paragraph posts automatically
-- Show featured submissions from each week
-- Link to full newsletter
-
-**Implementation**:
-- Paragraph RSS feed or API
-- Card layout matching current design
-- Auto-updates when new recap published
-
-#### 3. **Submission Status Tracker**
-**Why**: Transparency and engagement
-**What**:
-- "Your submission is queued for review"
-- "Featured in Stream #X"
-- "Added to Weekly Recap"
-- Email/Discord notifications
-
-**Implementation**:
-- Tally webhook → Airtable/Notion
-- Status page with unique submission ID
-- Simple tracking dashboard
+### 🔍 What's Still Missing
+1. **Backend Database** - No data persistence for submissions
+2. **Real-time Leaderboard** - SongJam not embedded
+3. **Submissions Feed** - Can't see recent submissions
+4. **Creator Profiles** - No way to highlight contributors
+5. **Token/Rewards Info** - No ZABAL token details
+6. **WaveWarZ Integration** - Music battles not featured
+7. **Fractal Explainer** - ZAO governance not explained
+8. **Event Calendar** - No schedule visibility
 
 ---
 
-### 🚀 Phase 2: Community Features (2-4 weeks)
+## 🗺️ Development Roadmap
 
-#### 4. **Leaderboard Integration**
-**Why**: Gamification drives engagement
+### ✅ Phase 1: Foundation (COMPLETED)
+
+#### 1. **Live Stream Status Widget** ✅
+**Status**: Live in header
+- Pulsing red dot when streaming
+- "🔴 LIVE NOW" text
+- Links to twitch.tv/bettercallzaal
+- Auto-checks every 60 seconds
+- **Note**: Currently set to `isLive = false` - update when streaming
+
+#### 2. **Animated Stats Counter** ✅
+**Status**: Live on homepage
+- 250 total submissions
+- 85 active creators
+- 42 hours streamed
+- 500 community members
+- Scroll-triggered counting animation
+- Gradient text styling
+
+#### 3. **Weekly Recaps Section** ✅
+**Status**: Live on gallery page
+- 3 recap cards with highlights
+- Week 1: Launch Week
+- Week 2: Submission Portal Live
+- Week 3: Ecosystem Expansion
+- Links to full Paragraph posts
+
+---
+
+### 🚀 Phase 2: Community Features (NEXT - 2-4 weeks)
+
+**Priority Order:**
+
+#### 1. **Backend Setup** (Required First)
+**Why**: Foundation for all dynamic features
+**Options**:
+- **Airtable** (Recommended for MVP)
+  - ✅ Free tier available
+  - ✅ Visual interface
+  - ✅ Easy Tally webhook integration
+  - ✅ Simple API
+  
+- **Supabase** (For scale)
+  - PostgreSQL database
+  - Real-time subscriptions
+  - Built-in auth
+  - More powerful
+
+**Implementation Steps**:
+1. Create Airtable base
+2. Set up tables: Submissions, Creators, Stats
+3. Connect Tally webhook
+4. Test data flow
+5. Build API endpoints
+
+**Time**: 2-4 hours
+
+#### 2. **Recent Submissions Feed**
+**Why**: Shows ecosystem is alive and active
 **What**:
-- Embed SongJam leaderboard directly on site
+- Display last 10-20 submissions
+- Show: thumbnail, creator, type, timestamp
+- "Watch Review" link when streamed
+- Auto-refresh or manual update
+
+**Implementation**:
+- Pull from Airtable via API
+- Card layout matching design system
+- Add to homepage below stats
+
+**Time**: 3-4 hours  
+**Depends on**: Backend setup
+
+#### 3. **SongJam Leaderboard Embed**
+**Why**: Gamification and competition visibility
+**What**:
+- Embed leaderboard on homepage
 - Show top 10 ZABAL contributors
-- Weekly/monthly/all-time views
+- Real-time or cached rankings
 - Link to full SongJam page
 
 **Implementation**:
-- SongJam API integration
-- Real-time or cached updates
-- Visual ranking cards
+- Check SongJam API access
+- Iframe embed or API integration
+- Style to match site
+- Add below ecosystem links
+
+**Time**: 2-3 hours  
+**Depends on**: SongJam API availability
+
+#### 4. **Submission Status Tracker**
+**Why**: Transparency and creator engagement
+**What**:
+- Unique submission ID
+- Status: Queued → Reviewed → Featured
+- Email/Discord notifications
+- Public status page
+
+**Implementation**:
+- Tally webhook updates Airtable
+- Status field with options
+- Simple lookup page: `/status?id=xxx`
+- Notification triggers
+
+**Time**: 4-5 hours  
+**Depends on**: Backend setup
+
+---
 
 #### 5. **Featured Creators Gallery**
 **Why**: Showcase community talent
@@ -144,19 +233,8 @@
 - Manual curation initially
 - Auto-populate from Airtable
 
-#### 6. **Recent Submissions Feed**
-**Why**: Show ecosystem activity and momentum
-**What**:
-- Live feed of recent submissions
-- Thumbnail/preview
-- Creator name
-- Submission type
-- "Watch Review" link when streamed
-
-**Implementation**:
-- Tally webhook → database
-- Public feed (with creator permission)
-- Auto-refresh every minute
+**Time**: 5-6 hours  
+**Depends on**: Backend setup, submission data
 
 ---
 
@@ -413,38 +491,78 @@
 
 ---
 
-## Recommended Immediate Actions
+## 🎯 Recommended Next Actions
 
-### This Week
-1. ✅ Add live stream status indicator
-2. ✅ Create "Weekly Recaps" section on gallery
-3. ✅ Add submission counter to homepage
-4. ✅ Improve mobile navigation
+### This Week (Dec 10-16)
+**Focus**: Backend Setup + Quick Wins
 
-### Next Week
-1. Integrate SongJam leaderboard embed
-2. Add "Recent Submissions" feed
-3. Create /about page with full story
-4. Set up Tally webhook → database
+1. **Set up Airtable** (2 hours)
+   - Create base with tables
+   - Connect Tally webhook
+   - Test data flow
 
-### This Month
-1. Build creator profiles system
-2. Add event calendar
-3. Create WaveWarZ section
-4. Implement search/filter
+2. **Build Recent Submissions Feed** (3 hours)
+   - Pull from Airtable
+   - Display on homepage
+   - Style with existing design
+
+3. **Create /about Page** (2 hours)
+   - Full ZABAL story
+   - Three pillars explained
+   - Vision for 2026
+   - Add to navigation
+
+**Total Time**: ~7 hours
+
+### Next Week (Dec 17-23)
+**Focus**: Leaderboard + Creator Features
+
+1. **SongJam Leaderboard Integration** (3 hours)
+   - Check API access
+   - Embed on homepage
+   - Style to match
+
+2. **Submission Status Tracker** (4 hours)
+   - Build lookup page
+   - Add status field to Airtable
+   - Set up notifications
+
+3. **Update Stats Counter** (1 hour)
+   - Pull real numbers from Airtable
+   - Auto-update weekly
+
+**Total Time**: ~8 hours
+
+### This Month (December)
+**Focus**: Creator Profiles + Content
+
+1. **Featured Creators Section** (5 hours)
+2. **Event Calendar** (4 hours)
+3. **/rewards Page** (3 hours)
+4. **Mobile Menu Improvements** (2 hours)
+
+**Total Time**: ~14 hours
 
 ---
 
-## Questions to Answer
+## ❓ Questions to Resolve
 
-1. **Stream Schedule**: What's the regular streaming cadence?
-2. **Submission Review**: How long until submissions are reviewed?
-3. **Token Launch**: When is ZABAL token launching? Details?
-4. **Rewards**: What are the current reward structures?
-5. **API Access**: Do we have API access to SongJam, Paragraph?
-6. **Database**: What's the preferred backend (Airtable, Supabase)?
-7. **Authentication**: Should users create accounts or stay anonymous?
-8. **Moderation**: Who reviews/approves submissions?
+### Critical (Blocks Phase 2)
+1. **Backend Choice**: Airtable or Supabase?
+2. **SongJam API**: Do we have access? Documentation?
+3. **Tally Webhook**: Can we set up webhook to database?
+
+### Important (Affects Features)
+4. **Stream Schedule**: Regular cadence or ad-hoc?
+5. **Submission Review**: Average time from submit to review?
+6. **Creator Permissions**: Public profiles by default?
+7. **Moderation**: Who approves submissions before display?
+
+### Nice to Know (Future Planning)
+8. **Token Launch**: Timeline and details?
+9. **Rewards Structure**: Current multipliers and earning?
+10. **Authentication**: Wallet connect, email, or anonymous?
+11. **Analytics**: What metrics matter most?
 
 ---
 
@@ -461,14 +579,52 @@
 
 ---
 
-## Conclusion
+## 🎯 Success Criteria
 
-ZABAL.art has a strong foundation. The next phase is about **bringing the ecosystem to life** on the website:
+### Phase 2 Complete When:
+- ✅ Backend database operational
+- ✅ Recent submissions feed live
+- ✅ SongJam leaderboard embedded
+- ✅ Submission status tracking works
+- ✅ Real stats pulling from database
 
-1. **Make it dynamic** - Live data, real-time updates
-2. **Show the community** - Creators, leaderboards, activity
-3. **Connect the dots** - ZABAL ↔ ZAO ↔ WaveWarZ
-4. **Educate newcomers** - Clear onboarding and explainers
-5. **Reward participation** - Visible incentives and recognition
+### 3-Month Goals (March 2025)
+- 500+ total submissions
+- 100+ active creators
+- 10,000+ monthly visitors
+- Top 10 Farcaster presence
+- 5+ new pages launched
 
-The goal: Transform ZABAL.art from a submission portal into the **central nervous system** of the entire ecosystem.
+### 6-Month Goals (June 2025)
+- 1,000+ submissions
+- 200+ creators
+- 50,000+ monthly visitors
+- Token launch complete
+- ZAO Stock 2026 announced
+
+---
+
+## 🚀 Next Steps Summary
+
+**Immediate (This Week):**
+1. Choose backend (Airtable recommended)
+2. Set up database and webhook
+3. Build submissions feed
+4. Create /about page
+
+**Short-term (Next 2 weeks):**
+1. Integrate SongJam leaderboard
+2. Add submission tracking
+3. Update stats to pull real data
+
+**Medium-term (This Month):**
+1. Creator profiles
+2. Event calendar
+3. Rewards page
+4. Mobile improvements
+
+**The Goal**: Transform ZABAL.art from a submission portal into the **central nervous system** of the entire ecosystem.
+
+---
+
+*For full technical documentation, see [README.md](./README.md)*
