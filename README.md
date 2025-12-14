@@ -1,6 +1,6 @@
 # ZABAL.art
 
-> The official creative submission portal for the ZABAL ecosystem
+> The live coordination hub and creative submission portal for the ZABAL ecosystem
 
 [![Live Site](https://img.shields.io/badge/Live-ZABAL.art-e0ddaa?style=for-the-badge)](https://zabal.art)
 [![GitHub](https://img.shields.io/badge/GitHub-Repository-141e27?style=for-the-badge&logo=github)](https://github.com/bettercallzaal/zabalartsubmission)
@@ -10,21 +10,19 @@
 ## 📖 Table of Contents
 
 - [About](#about)
+- [Pages](#pages)
 - [Features](#features)
 - [Tech Stack](#tech-stack)
-- [Project Structure](#project-structure)
 - [Design System](#design-system)
-- [Pages](#pages)
-- [Integrations](#integrations)
-- [Development](#development)
 - [Roadmap](#roadmap)
+- [Development](#development)
 - [Contributing](#contributing)
 
 ---
 
 ## 🎯 About
 
-ZABAL.art is the central hub and intake layer for the ZABAL ecosystem. It serves as the front door where creators submit work to be reviewed live on stream, featured in weekly recaps, and showcased to the community.
+ZABAL.art is the central hub for the ZABAL ecosystem — a living coordination network where streams are decided by the community, creators submit work, and collective discovery happens in real-time.
 
 ### The ZABAL Ecosystem
 
@@ -32,6 +30,7 @@ ZABAL.art is the central hub and intake layer for the ZABAL ecosystem. It serves
 
 1. **ZABAL** - The Coordination Layer
    - Fast-moving distribution layer
+   - Stream wheel voting system
    - Submission hub → Stream review → Weekly recap
    - Leaderboards, community activity, daily presence
 
@@ -39,6 +38,7 @@ ZABAL.art is the central hub and intake layer for the ZABAL ecosystem. It serves
    - Contribution-based governance
    - Weekly fractals for recognition
    - Slow, steady, intentional culture
+   - Built on real work, not noise
 
 3. **WaveWarZ** - The Creative Engine
    - Weekly music battles
@@ -51,62 +51,101 @@ Building toward **ZAO Stock 2026** - a physical Maine-based event that brings th
 
 ---
 
+## 📄 Pages
+
+### 🎡 Live Hub (`/live.html`)
+**The stream isn't scheduled. It's decided.**
+
+- **Dynamic Hero** - Changes based on stream state (deciding/locked/live)
+- **Stream Wheel** - Vote for today's mode (Studio/Market/Social/Battle)
+- **Real-time Voting** - Community decides what happens each stream
+- **Today/Yesterday Display** - Shows current leader and previous winner
+- **Built on Stream Artifacts** - Proof of coordination, not just content
+- **Proof Section** - ∞ streams decided by you, 4 modes, 0 scheduled
+
+### 🎨 Submission Portal (`/index.html`)
+**A Creative Submission Portal**
+
+- **Live Stream Status** - Pulsing indicator when streaming
+- **Animated Stats Counter** - 250+ submissions, 85+ creators, 42+ hours
+- **ZABAL Ecosystem Links** - Songjam Leaderboard, Incented Campaign
+- **Tally Form Integration** - Submit art, music, videos, and more
+- **FAQ Section** - Common questions answered
+- **Submission Types** - Art, Music, Remix, Video, Photography, Memes, Writing, Code, Farcaster
+
+### 📰 Research Archive (`/gallery.html`)
+**ZABAL Research & Updates**
+
+- **Featured Article** - Latest ZABAL update highlighted
+- **Newsletter Archive** - ZABAL Updates #1-5
+- **Weekly Recaps** - Week-by-week highlights
+- **Day 276 Origin Story** - The beginning of collective discovery
+
+---
+
 ## ✨ Features
 
-### Current Features (v1.0)
+### Current Features (v2.0)
 
-#### 🏠 Homepage (`index.html`)
+#### Live Coordination Hub
+- **Stream Wheel Voting System**
+  - 4 modes: Studio, Market, Social, Battle
+  - Real-time vote counting
+  - Visual leader indicator
+  - Persistent voting (localStorage)
+  - Countdown to lock time
+
+- **Dynamic Hero States**
+  - DECIDING: "Today's Stream Is Being Decided"
+  - LOCKED: "Today's Stream: [Mode Name]"
+  - LIVE: "🔴 [Mode Name] — Live"
+
+- **Today/Yesterday Cards**
+  - Current leader with vote count
+  - Previous day's winner
+  - Links to change vote or watch replay
+
+- **Built on Stream Artifacts**
+  - Songs created live
+  - Decisions made by community
+  - Clips and highlights
+  - Experiments and coordination
+
+#### Submission Portal
 - **Fixed Header Navigation**
-  - Live stream status indicator with pulsing animation
-  - Links to Submit, Research, Discord
-  - Twitch integration (auto-checks every 60s)
+  - Live stream status indicator
+  - Links to Live Hub, Submit, Research, Discord
+  - Twitch integration
 
 - **Animated Stats Counter**
-  - Total Submissions: 250+
-  - Active Creators: 85+
-  - Hours Streamed: 42+
-  - Community Members: 500+
   - Scroll-triggered counting animation
-
-- **ZABAL Ecosystem Links**
-  - Songjam Leaderboard integration
-  - Incented Campaign portal
-  - Hover effects and prominent CTAs
-
-- **Submission Types Grid**
-  - Art, Music, Remix, Video, Photography
-  - Memes, Writing, Creative Code, Farcaster content
+  - Gradient text styling
+  - Real-time feel
 
 - **Tally Form Integration**
   - Embedded submission form
   - Discord webhook notifications
   - File upload support
+  - Multiple submission types
 
-- **FAQ Section**
-  - 6 common questions answered
-  - Expandable format
-  - Rights, timeline, formats covered
+- **FAQ & Guidelines**
+  - 6 common questions
+  - Submission process explained
+  - Rights and timeline covered
 
-- **What Happens Next**
-  - Submission flow explained
-  - Discord community info
-  - Review process transparency
-
-#### 📰 Research/Gallery Page (`gallery.html`)
+#### Research Archive
 - **Featured Article Preview**
-  - Latest ZABAL update highlighted
   - Extended excerpt and metadata
   - Prominent CTA to full article
 
-- **Newsletter Archive Grid**
+- **Newsletter Archive**
   - ZABAL Updates #1-5
-  - Day 276 origin story
   - Card-based layout with read times
+  - Links to Paragraph.com posts
 
-- **Weekly Recaps Section**
+- **Weekly Recaps**
   - Week-by-week highlights
   - Bullet-point summaries
-  - Links to full Paragraph posts
 
 ### Design Features
 - **Dark theme** with blue (#141e27) and yellow (#e0ddaa) accents
@@ -130,7 +169,7 @@ Building toward **ZAO Stock 2026** - a physical Maine-based event that brings th
 - **Tally.so** - Form builder and submission management
 - **Paragraph.com** - Newsletter hosting (The ZAO Newsletter)
 - **Discord** - Community and submission notifications
-- **Twitch** - Live streaming platform
+- **Twitch** - Live streaming platform (twitch.tv/bettercallzaal)
 - **SongJam** - Leaderboard tracking
 - **Incented** - Campaign management
 
@@ -138,50 +177,6 @@ Building toward **ZAO Stock 2026** - a physical Maine-based event that brings th
 - **GitHub** - Version control
 - **Vercel** - Automatic deployment from main branch
 - **Custom Domain** - ZABAL.art
-
----
-
-## 📁 Project Structure
-
-```
-ZABAL ART WEBSITE/
-├── index.html          # Homepage - Submission portal
-├── gallery.html        # Research & Updates page
-├── README.md          # This file
-├── IDEATION.md        # Future features and planning
-└── .git/              # Git repository
-```
-
-### File Overview
-
-#### `index.html` (34KB)
-**Sections:**
-1. Header with live stream status
-2. Hero section
-3. Animated stats counter
-4. ZABAL Ecosystem links
-5. About section
-6. Submission types grid
-7. Tally form embed
-8. Guidelines
-9. What Happens Next (with Discord CTA)
-10. FAQ
-11. Footer
-
-**JavaScript Features:**
-- Tally form loader
-- Animated counter with Intersection Observer
-- Stream status checker (60s interval)
-
-#### `gallery.html` (25KB)
-**Sections:**
-1. Header navigation
-2. Hero section
-3. Featured article preview (Update #5)
-4. Newsletter archive grid (Updates #1-4)
-5. Weekly recaps section
-6. CTA section
-7. Footer
 
 ---
 
@@ -208,8 +203,8 @@ font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI',
 ```
 
 **Heading Sizes:**
-- H1: `clamp(3rem, 10vw, 6rem)` - Hero titles
-- H2: `clamp(2rem, 5vw, 2.5rem)` - Section headings
+- H1: `clamp(2.5rem, 8vw, 5rem)` - Hero titles
+- H2: `clamp(2rem, 5vw, 3rem)` - Section headings
 - H3: `1.2rem - 2rem` - Card titles
 - Body: `1rem - 1.2rem` - Paragraph text
 
@@ -230,23 +225,6 @@ font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI',
     transform: translateY(-5px);
     box-shadow: 0 10px 30px var(--hover-glow);
 }
-
-.card::before {
-    /* Top accent line */
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 3px;
-    background: var(--accent-yellow);
-    transform: scaleX(0);
-    transition: transform 0.3s ease;
-}
-
-.card:hover::before {
-    transform: scaleX(1);
-}
 ```
 
 #### Button Pattern
@@ -266,349 +244,159 @@ font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI',
 }
 ```
 
-### Animations
-
-**Pulse Dot (Live Indicator):**
-```css
-@keyframes pulse-dot {
-    0%, 100% { opacity: 1; transform: scale(1); }
-    50% { opacity: 0.6; transform: scale(1.2); }
-}
-```
-
-**Pulse Border:**
-```css
-@keyframes pulse-border {
-    0%, 100% { box-shadow: 0 0 0 0 rgba(224, 221, 170, 0.4); }
-    50% { box-shadow: 0 0 0 8px rgba(224, 221, 170, 0); }
-}
-```
-
-**Fade In Up:**
-```css
-@keyframes fadeInUp {
-    from {
-        opacity: 0;
-        transform: translateY(30px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-```
-
 ---
 
-## 📄 Pages
+## 🗺️ Roadmap
 
-### Homepage (`/` or `index.html`)
+### ✅ Phase 1: Foundation (COMPLETED)
+- Live stream status indicator with pulsing animation
+- Animated stats counter (submissions, creators, hours, members)
+- Weekly recaps section on gallery page
+- Mobile-responsive design
+- Comprehensive documentation
 
-**Purpose:** Primary submission portal and ecosystem overview
+### ✅ Phase 2: Live Coordination (COMPLETED)
+- Stream wheel voting system
+- Dynamic hero with state management
+- Today/yesterday mode display
+- Built on stream artifacts section
+- Proof section with live metrics
 
-**Key Sections:**
-- Live stream status in header
-- Stats showcase (submissions, creators, hours, members)
-- Ecosystem links (Songjam, Incented)
-- Submission form (Tally embed)
-- FAQ and guidelines
+### 🚀 Phase 3: Backend & Dynamic Features (NEXT)
 
-**Target Audience:** Creators wanting to submit work
+**Priority: Backend Setup**
+- Supabase integration via Vercel marketplace
+- Database tables: Submissions, Creators, Stats
+- Tally webhook → Supabase connection
+- API endpoints for data fetching
 
-**CTA:** Submit your work via Tally form
+**Features Enabled by Backend:**
 
----
+1. **Recent Submissions Feed**
+   - Display last 10-20 submissions
+   - Show: thumbnail, creator, type, timestamp
+   - "Watch Review" link when streamed
+   - Auto-refresh
 
-### Research Page (`/gallery.html`)
+2. **Real Voting Persistence**
+   - Store votes in database
+   - Real-time vote counting across users
+   - Voting history and analytics
+   - Lock mechanism at stream time
 
-**Purpose:** Newsletter archive and weekly recaps
+3. **Submission Status Tracker**
+   - Unique submission ID
+   - Status: Queued → Reviewed → Featured
+   - Email/Discord notifications
+   - Public status page
 
-**Key Sections:**
-- Featured latest update
-- Historical updates archive (#1-5)
-- Weekly recap highlights
-- Links to full Paragraph articles
+4. **Creator Profiles**
+   - Profile cards with avatar, bio
+   - Submitted works gallery
+   - Social links (Farcaster, Twitter)
+   - Leaderboard rank
 
-**Target Audience:** Community members, researchers, newcomers learning about ZABAL
+### 🏗️ Phase 4: Ecosystem Integration (FUTURE)
 
-**CTA:** Read full articles, submit your work
-
----
-
-## 🔗 Integrations
-
-### Tally.so
-**Purpose:** Submission form management
-
-**Form URL:** `https://tally.so/r/5BXeqv`
-
-**Features:**
-- File uploads
-- Custom fields (name, intro, wallet)
-- Discord webhook integration
-- Transparent background
-- Dynamic height
-
-**Implementation:**
-```html
-<iframe 
-    data-tally-src="https://tally.so/embed/5BXeqv?hideTitle=1&transparentBackground=1&dynamicHeight=1"
-    width="100%" 
-    height="600" 
-    frameborder="0" 
-    marginheight="0" 
-    marginwidth="0" 
-    title="ZABAL Submission Form">
-</iframe>
-```
-
----
-
-### Paragraph.com
-**Purpose:** Newsletter hosting
-
-**Publication:** [@thezao](https://paragraph.com/@thezao)
-
-**Articles:**
-- ZABAL Update #5: Latest developments
-- ZABAL Update #4: ZABAL.art launch
-- ZABAL Update #3: Day 1 recap
-- ZABAL Update #2: Day 334 reflections
-- ZABAL Update #1: Day 276 origin story
-
-**Integration:** Manual links (future: RSS feed auto-pull)
-
----
-
-### Discord
-**Purpose:** Community hub and submission notifications
-
-**Link:** [discord.bettercallzaal.com](https://discord.bettercallzaal.com)
-
-**Integration:**
-- Tally webhook sends submissions to Discord
-- Community discussion and feedback
-- Real-time engagement
-
----
-
-### Twitch
-**Purpose:** Live streaming platform
-
-**Channel:** [twitch.tv/bettercallzaal](https://twitch.tv/bettercallzaal)
-
-**Integration:**
-- Live status checker (JavaScript)
-- Auto-refresh every 60 seconds
-- Pulsing indicator when live
-
-**Status Check Code:**
-```javascript
-const checkStreamStatus = async () => {
-    const streamStatus = document.getElementById('streamStatus');
-    const streamText = streamStatus.querySelector('.stream-text');
-    
-    // Set isLive = true when streaming
-    const isLive = false;
-    
-    if (isLive) {
-        streamStatus.classList.add('live');
-        streamText.textContent = '🔴 LIVE NOW';
-    } else {
-        streamStatus.classList.remove('live');
-        streamText.textContent = 'Offline';
-    }
-};
-
-setInterval(checkStreamStatus, 60000);
-```
-
----
-
-### SongJam
-**Purpose:** Leaderboard tracking
-
-**Link:** [songjam.space/zabal](https://www.songjam.space/zabal)
-
-**Integration:** Link card on homepage (future: embed leaderboard)
-
----
-
-### Incented
-**Purpose:** Campaign management
-
-**Link:** [incented.zabal.art](https://incented.zabal.art)
-
-**Integration:** Link card on homepage
+- **SongJam Leaderboard** - Real-time embed on homepage
+- **WaveWarZ Integration** - Music battles calendar and voting
+- **ZAO Fractal Explainer** - Governance education page
+- **Token & Rewards Dashboard** - ZABAL token info and multipliers
+- **Farcaster Integration** - Native Web3 social presence
 
 ---
 
 ## 💻 Development
 
-### Prerequisites
-- Modern web browser
-- Text editor (VS Code recommended)
-- Git for version control
-- GitHub account
+### Project Structure
+
+```
+ZABAL ART WEBSITE/
+├── index.html          # Submission portal
+├── live.html           # Live coordination hub
+├── gallery.html        # Research & updates archive
+├── README.md          # This file
+└── .git/              # Git repository
+```
 
 ### Local Development
 
-1. **Clone the repository:**
-```bash
-git clone https://github.com/bettercallzaal/zabalartsubmission.git
-cd zabalartsubmission
-```
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/bettercallzaal/zabalartsubmission.git
+   cd zabalartsubmission
+   ```
 
-2. **Open in browser:**
-```bash
-# macOS
-open index.html
+2. **Open in browser**
+   ```bash
+   open index.html
+   # or
+   open live.html
+   # or
+   open gallery.html
+   ```
 
-# Linux
-xdg-open index.html
+3. **Make changes**
+   - Edit HTML/CSS/JS directly
+   - Test in browser
+   - Commit changes
 
-# Windows
-start index.html
-```
+4. **Deploy**
+   ```bash
+   git add .
+   git commit -m "Your commit message"
+   git push origin main
+   ```
+   - Vercel auto-deploys from main branch
+   - Live at zabal.art in ~2 minutes
 
-3. **Or use a local server:**
-```bash
-# Python 3
-python -m http.server 8000
+### Key Files
 
-# Node.js
-npx serve
+#### `index.html` (34KB)
+**Sections:**
+1. Header with live stream status
+2. Hero section
+3. Animated stats counter
+4. ZABAL Ecosystem links
+5. About section
+6. Submission types grid
+7. Tally form embed
+8. Guidelines
+9. What Happens Next
+10. FAQ
+11. Footer
 
-# VS Code Live Server extension
-# Right-click index.html → Open with Live Server
-```
+**JavaScript Features:**
+- Tally form loader
+- Animated counter with Intersection Observer
+- Stream status checker (60s interval)
 
-4. **View in browser:**
-```
-http://localhost:8000
-```
+#### `live.html` (34KB)
+**Sections:**
+1. Header navigation
+2. Dynamic hero (state-based)
+3. Stream wheel with voting
+4. Today/yesterday cards
+5. Built on stream artifacts
+6. Proof section
+7. Footer
 
-### Making Changes
+**JavaScript Features:**
+- Stream state management (deciding/locked/live)
+- Countdown timer
+- Voting system with localStorage
+- Leader calculation and display
+- Real-time UI updates
 
-1. **Edit HTML/CSS directly** in `index.html` or `gallery.html`
-2. **Test locally** in browser
-3. **Commit changes:**
-```bash
-git add .
-git commit -m "Description of changes"
-git push origin main
-```
-4. **Auto-deploy** via Vercel (connected to GitHub)
-
-### Updating Stats Counter
-
-Edit the `data-target` attributes in `index.html`:
-
-```html
-<span class="stat-number" data-target="250">0</span> <!-- Submissions -->
-<span class="stat-number" data-target="85">0</span>  <!-- Creators -->
-<span class="stat-number" data-target="42">0</span>  <!-- Hours -->
-<span class="stat-number" data-target="500">0</span> <!-- Members -->
-```
-
-### Updating Stream Status
-
-Change `isLive` variable in JavaScript:
-
-```javascript
-const isLive = true; // Set to true when streaming
-```
-
-### Adding New Newsletter Posts
-
-Add a new card to the updates grid in `gallery.html`:
-
-```html
-<div class="update-card">
-    <div class="update-header">
-        <span class="update-number">ZABAL Update #6</span>
-        <h3 class="update-title">Your Title Here</h3>
-        <p class="update-date">Recent • 5 min read</p>
-    </div>
-    <div class="update-content">
-        <p class="update-excerpt">Your excerpt here...</p>
-        <a href="https://paragraph.com/@thezao/your-post" target="_blank" class="read-more">
-            Read Full Update →
-        </a>
-    </div>
-</div>
-```
-
----
-
-## 🗺 Roadmap
-
-### ✅ Phase 1: Foundation (Completed)
-- [x] Homepage with submission form
-- [x] Gallery/research page
-- [x] Tally form integration
-- [x] Discord notifications
-- [x] FAQ section
-- [x] Animated stats counter
-- [x] Live stream status indicator
-- [x] Weekly recaps section
-- [x] Mobile responsive design
-
-### 🚧 Phase 2: Community Features (In Progress)
-- [ ] SongJam leaderboard embed
-- [ ] Recent submissions feed
-- [ ] Creator profiles/spotlight
-- [ ] Event calendar
-- [ ] Search and filter functionality
-
-### 📋 Phase 3: Ecosystem Integration (Planned)
-- [ ] WaveWarZ integration
-- [ ] ZAO Fractal explainer page
-- [ ] Token & rewards dashboard
-- [ ] Farcaster integration
-- [ ] Wallet connect
-
-### 🚀 Phase 4: Advanced Features (Future)
-- [ ] Interactive submission queue
-- [ ] Creator dashboard with analytics
-- [ ] Community challenges
-- [ ] Voting/judging system
-- [ ] Real-time updates via WebSocket
-- [ ] Backend database (Airtable/Supabase)
-
-### 📄 New Pages Planned
-- `/about` - Full ZABAL story and mission
-- `/ecosystem` - Visual map of pillars
-- `/creators` - Community directory
-- `/events` - Calendar and past events
-- `/rewards` - Token and earning guide
-- `/fractal` - ZAO governance explainer
-- `/wavewarz` - Music battles hub
-- `/stream` - Live stream embed
-
----
-
-## 🎯 Success Metrics
-
-### Current (December 2024)
-- 250+ total submissions
-- 85+ active creators
-- 42+ hours streamed
-- 500+ community members
-
-### 6-Month Goals (June 2025)
-- 500+ total submissions
-- 100+ active creators
-- 10,000+ site visitors/month
-- 1,000+ newsletter subscribers
-- Top 10 Farcaster leaderboard presence
-
-### 12-Month Goals (December 2025)
-- Successful ZABAL token launch
-- ZAO Stock 2026 event announced
-- 1,000+ submissions
-- 200+ active creators
-- 50,000+ site visitors/month
+#### `gallery.html` (25KB)
+**Sections:**
+1. Header navigation
+2. Hero section
+3. Featured article preview
+4. Newsletter archive grid
+5. Weekly recaps section
+6. CTA section
+7. Footer
 
 ---
 
@@ -616,87 +404,71 @@ Add a new card to the updates grid in `gallery.html`:
 
 ### How to Contribute
 
-1. **Submit Work** - Use the Tally form on the homepage
-2. **Join Discord** - [discord.bettercallzaal.com](https://discord.bettercallzaal.com)
-3. **Participate in Fractals** - Weekly ZAO governance meetings
-4. **Engage on Farcaster** - Follow [@bettercallzaal](https://warpcast.com/bettercallzaal)
-5. **Compete on Leaderboard** - [songjam.space/zabal](https://www.songjam.space/zabal)
+1. **Submit Work** - Use the Tally form on index.html
+2. **Vote on Streams** - Visit live.html and spin the wheel
+3. **Join Discord** - [discord.bettercallzaal.com](https://discord.bettercallzaal.com)
+4. **Report Issues** - Open GitHub issues for bugs
+5. **Suggest Features** - Share ideas in Discord
 
-### Code Contributions
+### Development Guidelines
 
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
+- **Keep it simple** - Vanilla JS, no frameworks
+- **Match the design system** - Use CSS variables
+- **Mobile-first** - Test responsive design
+- **Accessibility** - Semantic HTML, proper contrast
+- **Performance** - Optimize images, minimize JS
 
-### Reporting Issues
+### Code Style
 
-Open an issue on GitHub with:
-- Clear description
-- Steps to reproduce
-- Expected vs actual behavior
-- Screenshots if applicable
+- **Indentation**: 4 spaces
+- **Naming**: kebab-case for CSS, camelCase for JS
+- **Comments**: Explain complex logic
+- **Commits**: Clear, descriptive messages
 
 ---
 
-## 📚 Resources
+## 📊 Current Status
 
-### Official Links
-- **Website:** [ZABAL.art](https://zabal.art)
-- **Newsletter:** [The ZAO Newsletter](https://paragraph.com/@thezao)
-- **Discord:** [discord.bettercallzaal.com](https://discord.bettercallzaal.com)
-- **Twitch:** [twitch.tv/bettercallzaal](https://twitch.tv/bettercallzaal)
-- **GitHub:** [github.com/bettercallzaal/zabalartsubmission](https://github.com/bettercallzaal/zabalartsubmission)
+**Live Features:**
+- ✅ Live coordination hub with stream wheel
+- ✅ Submission portal with Tally integration
+- ✅ Research archive with newsletter posts
+- ✅ Mobile-responsive design
+- ✅ Live stream status indicator
+- ✅ Animated stats counter
 
-### Ecosystem Links
-- **ZAO:** [zao.xyz](https://zao.xyz)
-- **ZABAL:** [zabal.xyz](https://zabal.xyz)
-- **WaveWarZ:** [wavewarz.xyz](https://wavewarz.xyz)
-- **BetterCallZaal:** [bettercallzaal.com](https://bettercallzaal.com)
-- **SongJam:** [songjam.space/zabal](https://www.songjam.space/zabal)
-- **Incented:** [incented.zabal.art](https://incented.zabal.art)
+**In Progress:**
+- 🚧 Backend setup (Supabase)
+- 🚧 Real voting persistence
+- 🚧 Submissions feed
 
-### Documentation
-- [IDEATION.md](./IDEATION.md) - Future features and planning
-- [Tally Form](https://tally.so/r/5BXeqv) - Submission portal
+**Next Up:**
+- 📋 Creator profiles
+- 📋 SongJam leaderboard embed
+- 📋 Submission status tracker
+
+---
+
+## 🔗 Links
+
+- **Live Site**: [zabal.art](https://zabal.art)
+- **Live Hub**: [zabal.art/live.html](https://zabal.art/live.html)
+- **Research**: [zabal.art/gallery.html](https://zabal.art/gallery.html)
+- **GitHub**: [github.com/bettercallzaal/zabalartsubmission](https://github.com/bettercallzaal/zabalartsubmission)
+- **Twitch**: [twitch.tv/bettercallzaal](https://twitch.tv/bettercallzaal)
+- **Discord**: [discord.bettercallzaal.com](https://discord.bettercallzaal.com)
+- **Newsletter**: [paragraph.com/@thezao](https://paragraph.com/@thezao)
+- **SongJam**: [songjam.space/zabal](https://www.songjam.space/zabal)
+- **Incented**: [incented.zabal.art](https://incented.zabal.art)
 
 ---
 
 ## 📝 License
 
-This project is part of the ZABAL ecosystem. All rights reserved.
-
-Submissions retain creator ownership. See FAQ for details.
-
----
-
-## 🙏 Acknowledgments
-
 Built for the ZABAL network of creators.
 
-**Core Team:**
-- [@bettercallzaal](https://twitter.com/bettercallzaal) - Founder & Lead
-- ZAO Community - Governance & Support
-- WaveWarZ Artists - Creative Engine
-
-**Special Thanks:**
-- SongJam for leaderboard integration
-- Paragraph for newsletter hosting
-- Tally for form infrastructure
-- Discord community for feedback
-
 ---
 
-## 📞 Contact
-
-- **Twitter:** [@bettercallzaal](https://twitter.com/bettercallzaal)
-- **Farcaster:** [@bettercallzaal](https://warpcast.com/bettercallzaal)
-- **Discord:** [discord.bettercallzaal.com](https://discord.bettercallzaal.com)
-- **Email:** Via Discord or Farcaster
-
----
-
-**Built with 💛 for the ZABAL ecosystem**
-
-*Last Updated: December 10, 2024*
+**Last Updated:** December 14, 2024  
+**Version:** 2.0  
+**Status:** Live Coordination Hub Active 🎡
