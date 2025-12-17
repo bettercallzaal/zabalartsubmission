@@ -856,63 +856,101 @@
             countdownTime.textContent = `${hours}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
         }
 
-        // Voting system
+        // Voting system with debug logging
+        console.log('🎡 ZABAL Live Hub - Voting System Initialized');
+        
         let userVote = localStorage.getItem('userVote');
+        console.log('📦 localStorage.userVote:', userVote);
+        
         const votes = {
             studio: 42,
             market: 28,
             social: 35,
             battle: 31
         };
+        console.log('🗳️ Initial vote counts:', votes);
 
         function vote(mode) {
+            console.log('🎯 Vote function called with mode:', mode);
+            console.log('⏰ Current state:', currentState);
+            
             if (currentState !== StreamState.DECIDING) {
+                console.warn('⚠️ Voting blocked - state is not DECIDING');
                 alert('Voting is closed. Stream is locked or live.');
                 return;
             }
 
+            console.log('✅ Voting allowed - state is DECIDING');
+
             if (userVote) {
+                console.log('🔄 User already voted for:', userVote);
+                console.log('📉 Removing vote from:', userVote, 'Old count:', votes[userVote]);
                 votes[userVote]--;
+                console.log('📉 New count for', userVote + ':', votes[userVote]);
             }
 
+            console.log('📈 Adding vote to:', mode, 'Old count:', votes[mode]);
             votes[mode]++;
+            console.log('📈 New count for', mode + ':', votes[mode]);
+            
             userVote = mode;
+            console.log('💾 Saving to localStorage:', mode);
             localStorage.setItem('userVote', mode);
+            console.log('✅ Saved to localStorage');
 
+            console.log('🔄 Updating UI...');
             updateVotes();
             updateLeader();
+            console.log('✅ Vote complete!');
         }
 
         function updateVotes() {
+            console.log('🔄 updateVotes() called');
+            console.log('📊 Current votes:', votes);
+            
             Object.keys(votes).forEach(mode => {
                 const voteElement = document.querySelector(`[data-votes="${mode}"]`);
                 if (voteElement) {
+                    console.log(`📝 Updating ${mode} display to ${votes[mode]}`);
                     voteElement.textContent = votes[mode];
+                } else {
+                    console.warn(`⚠️ Vote element not found for mode: ${mode}`);
                 }
             });
 
+            console.log('🔘 Resetting all vote buttons...');
             document.querySelectorAll('.vote-button').forEach(btn => {
                 btn.disabled = false;
                 btn.textContent = 'Vote';
             });
 
             if (userVote) {
+                console.log('👤 User has voted for:', userVote);
                 const votedCard = document.querySelector(`[data-mode="${userVote}"]`);
                 if (votedCard) {
                     const btn = votedCard.querySelector('.vote-button');
                     btn.disabled = true;
                     btn.textContent = 'Voted';
+                    console.log('✅ Marked', userVote, 'button as "Voted"');
+                } else {
+                    console.warn('⚠️ Could not find card for mode:', userVote);
                 }
+            } else {
+                console.log('👤 User has not voted yet');
             }
         }
 
         function getLeader() {
-            return Object.keys(votes).reduce((a, b) => votes[a] > votes[b] ? a : b);
+            const leader = Object.keys(votes).reduce((a, b) => votes[a] > votes[b] ? a : b);
+            console.log('🏆 Current leader:', leader, 'with', votes[leader], 'votes');
+            return leader;
         }
 
         function updateLeader() {
+            console.log('🔄 updateLeader() called');
             const leader = getLeader();
             
+            console.log('🏆 Highlighting leader:', leader);
             document.querySelectorAll('.mode-card').forEach(card => {
                 card.classList.remove('leading');
             });
@@ -920,6 +958,9 @@
             const leaderCard = document.querySelector(`[data-mode="${leader}"]`);
             if (leaderCard) {
                 leaderCard.classList.add('leading');
+                console.log('✅ Added "leading" class to', leader);
+            } else {
+                console.warn('⚠️ Could not find leader card for:', leader);
             }
 
             const todayMode = document.getElementById('todayMode');
@@ -928,15 +969,24 @@
                 const modeName = leaderCard.querySelector('.mode-name').textContent;
                 todayMode.textContent = modeName;
                 todayDesc.textContent = `Leading with ${votes[leader]} votes`;
+                console.log('✅ Updated today section:', modeName);
+            } else {
+                console.warn('⚠️ Today section elements not found');
             }
         }
 
         // Initialize
+        console.log('🚀 Initializing app...');
         updateHeroState();
+        console.log('✅ Hero state updated');
         updateVotes();
+        console.log('✅ Votes updated');
         updateLeader();
+        console.log('✅ Leader updated');
         setInterval(updateCountdown, 1000);
         updateCountdown();
+        console.log('✅ Countdown started');
+        console.log('🎉 ZABAL Live Hub ready!');
     </script>
 </body>
 </html>
