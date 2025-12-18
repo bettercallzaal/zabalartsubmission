@@ -12,16 +12,15 @@
 - [About](#about)
 - [Quick Start](#quick-start)
 - [Pages Overview](#pages-overview)
-- [File Structure & Explanations](#file-structure--explanations)
-- [User Flows](#user-flows)
-- [User Manual](#user-manual)
 - [Features](#features)
 - [Tech Stack](#tech-stack)
-- [Design System](#design-system)
-- [Development Guide](#development-guide)
+- [Farcaster Mini App Setup](#farcaster-mini-app-setup)
+- [Database Setup](#database-setup)
+- [Manifest Configuration](#manifest-configuration)
 - [Deployment](#deployment)
+- [Testing](#testing)
 - [Roadmap](#roadmap)
-- [Contributing](#contributing)
+- [File Structure](#file-structure)
 - [Troubleshooting](#troubleshooting)
 
 ---
@@ -363,7 +362,206 @@ font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI',
 
 ---
 
-## 📁 File Structure & Explanations
+## 🔧 Farcaster Mini App Setup
+
+### Prerequisites
+
+**Required Services:**
+1. **Supabase Account** - PostgreSQL database
+2. **Neynar API Key** - Get from [dev.neynar.com](https://dev.neynar.com)
+3. **Farcaster Account** - For manifest signing
+4. **Vercel Account** - For deployment
+
+### Environment Variables
+
+Create `.env` file with:
+
+```bash
+# Supabase
+VITE_SUPABASE_URL=https://xxx.supabase.co
+VITE_SUPABASE_ANON_KEY=eyJ...
+
+# Neynar API
+VITE_NEYNAR_API_KEY=your-neynar-api-key
+
+# Farcaster
+VITE_ZAO_FID=19640  # @thezao FID
+```
+
+### Vote Power System
+
+Votes are weighted based on Farcaster activity:
+- **Base**: 1 vote (any Farcaster user)
+- **Follower**: 2 votes (following @thezao)
+- **Active**: 3 votes (following + 5+ casts in /zao channel)
+- **Holder**: 4 votes (active + holds ZAO/LOANZ tokens - future)
+
+---
+
+## 🗄️ Database Setup
+
+### Step 1: Run SQL Schema
+
+1. Go to Supabase Dashboard → SQL Editor
+2. Run `supabase-schema-fid.sql`
+3. This creates:
+   - `votes` table - FID-based vote storage
+   - `vote_power_cache` table - Neynar data cache
+   - `mode_votes_daily` table - Daily aggregations
+   - Helper functions and RLS policies
+
+### Step 2: Configure Vercel
+
+1. Go to Vercel Project Settings → Environment Variables
+2. Add all variables from `.env`
+3. Redeploy project
+
+---
+
+## 📱 Manifest Configuration
+
+### Current Status
+
+**What we have:**
+- ✅ Basic manifest structure
+- ✅ SDK integration with `ready()` call
+- ✅ Share functionality
+- ❌ Missing: Working images
+- ❌ Missing: Account association
+
+### Option A: Farcaster Hosted Manifests (RECOMMENDED)
+
+**Benefits:**
+- No manifest file in codebase
+- Update without redeploying
+- Automatic account association
+- Built-in validation
+
+**Setup:**
+
+1. **Create Hosted Manifest**
+   - Visit: https://farcaster.xyz/~/developers/mini-apps/manifest
+   - Domain: `zabal.art`
+   - Fill in app details
+   - Sign with Farcaster account
+   - Get manifest ID
+
+2. **Configure Redirect in vercel.json**
+   ```json
+   {
+     "redirects": [
+       {
+         "source": "/.well-known/farcaster.json",
+         "destination": "https://api.farcaster.xyz/miniapps/hosted-manifest/YOUR_ID",
+         "permanent": false
+       }
+     ]
+   }
+   ```
+
+3. **Remove Static Manifest**
+   ```bash
+   rm -rf .well-known/
+   rm -rf public/.well-known/
+   ```
+
+### Required Images for Discovery
+
+**Critical:** App won't appear in search without these!
+
+1. **logo.png** (512x512px)
+   - ZABAL branding on dark background
+   - Colors: #141e27, #e0ddaa
+   - Place in root directory
+
+2. **preview.png** (1200x630px)
+   - "Vote on ZABAL's Direction" + mode icons 🎬🛒🌐⚔️
+   - Used for social sharing
+
+3. **splash.png** (1024x1024px)
+   - ZABAL logo centered
+   - Background: #141e27
+   - Loading screen
+
+---
+
+## 🚀 Deployment
+
+### Vercel Configuration
+
+**vercel.json:**
+```json
+{
+  "buildCommand": null,
+  "outputDirectory": ".",
+  "cleanUrls": true,
+  "trailingSlash": false,
+  "redirects": [
+    {
+      "source": "/.well-known/farcaster.json",
+      "destination": "https://api.farcaster.xyz/miniapps/hosted-manifest/YOUR_ID",
+      "permanent": false
+    }
+  ]
+}
+```
+
+### Deployment Steps
+
+1. **Push to GitHub**
+   ```bash
+   git add -A
+   git commit -m "feat: update configuration"
+   git push origin main
+   ```
+
+2. **Vercel Auto-Deploys** (~2 minutes)
+   - Check: https://vercel.com/dashboard
+
+3. **Verify Deployment**
+   - Test pages load: https://zabal.art/live.html
+   - Check manifest redirect: https://zabal.art/.well-known/farcaster.json
+   - Verify images: https://zabal.art/logo.png
+
+---
+
+## 🧪 Testing
+
+### In Warpcast
+
+1. **Enable Developer Mode**
+   - Settings → Advanced → Developer Mode
+
+2. **Test App**
+   - Open: https://zabal.art/live.html
+   - Check splash screen disappears
+   - Verify FID authentication
+   - Test voting
+   - Test share button
+
+### Validation Tools
+
+1. **Manifest Validator**
+   - https://farcaster.xyz/~/developers/mini-apps/manifest
+   - Enter domain: `zabal.art`
+   - Check for green checkmarks
+
+2. **Preview Tool**
+   - https://farcaster.xyz/~/developers/mini-apps/preview
+   - Test: https://zabal.art/live.html
+
+### Test Scenarios
+
+- **Base User**: 1 vote power
+- **Follower**: 2 vote power (following @thezao)
+- **Active**: 3 vote power (5+ casts in /zao)
+- **Daily Limit**: Can only vote once per day
+- **Vote Changing**: Can change vote same day
+- **Share Flow**: Share button after voting
+
+---
+
+## 📁 File Structure
 
 ### Complete File Tree
 
