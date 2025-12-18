@@ -2,11 +2,11 @@
   "miniapp": {
     "version": "1",
     "name": "ZABAL Live Hub",
-    "iconUrl": "https://zabal.art/logo.png",
-    "homeUrl": "https://zabal.art/live.html",
-    "imageUrl": "https://zabal.art/preview.png",
+    "iconUrl": "https://zabalartsubmission.vercel.app/logo.png",
+    "homeUrl": "https://zabalartsubmission.vercel.app/live.html",
+    "imageUrl": "https://zabalartsubmission.vercel.app/preview.png",
     "buttonTitle": "🎨 Vote Now",
-    "splashImageUrl": "https://zabal.art/splash.png",
+    "splashImageUrl": "https://zabalartsubmission.vercel.app/splash.png",
     "splashBackgroundColor": "#141e27",
     "category": "art-creativity",
     "description": "Vote daily on ZABAL's creative direction! Choose between Studio, Market, Social, or Battle mode to shape the next stream. Your voice matters in this community-driven art project."
