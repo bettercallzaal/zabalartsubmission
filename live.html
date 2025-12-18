@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ZABAL Live Hub — Stream Coordination</title>
+    <script src="https://unpkg.com/@supabase/supabase-js@2.39.0/dist/umd/supabase.js"></script>
     <style>
         * {
             margin: 0;
@@ -861,8 +862,19 @@
         const SUPABASE_URL = 'https://cbtvnuklqwdkpyeioafb.supabase.co';
         const SUPABASE_ANON_KEY = 'sb_publishable_iQGk6gSjsv8ml-pPoiPcfQ_OL5lXa2J';
         
-        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-        console.log('✅ Supabase client initialized');
+        let supabase;
+        try {
+            if (typeof window.supabase === 'undefined') {
+                console.error('❌ Supabase library not loaded');
+                alert('Error: Database connection failed. Please refresh the page.');
+            } else {
+                supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+                console.log('✅ Supabase client initialized');
+            }
+        } catch (err) {
+            console.error('❌ Error initializing Supabase:', err);
+            alert('Error: Database connection failed. Please refresh the page.');
+        }
 
         // User state (for now using localStorage FID, will add Farcaster SDK later)
         let userFID = localStorage.getItem('userFID') || Math.floor(Math.random() * 1000000);
@@ -880,6 +892,11 @@
         // Load votes from database
         async function loadVotes() {
             console.log('📊 Loading votes from database...');
+            
+            if (!supabase) {
+                console.warn('⚠️ Supabase not initialized, skipping vote load');
+                return;
+            }
             
             try {
                 // Get today's vote totals
@@ -934,6 +951,12 @@
         async function vote(mode) {
             console.log('🎯 Vote function called with mode:', mode);
             console.log('⏰ Current state:', currentState);
+            
+            if (!supabase) {
+                console.error('❌ Supabase not initialized');
+                alert('Database connection not ready. Please refresh the page.');
+                return;
+            }
             
             if (currentState !== StreamState.DECIDING) {
                 console.warn('⚠️ Voting blocked - state is not DECIDING');
