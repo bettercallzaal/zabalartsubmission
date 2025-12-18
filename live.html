@@ -989,6 +989,13 @@
             console.log('🎯 Vote function called with mode:', mode);
             console.log('⏰ Current state:', currentState);
             
+            // Check if user is authenticated with Farcaster
+            if (!isAuthenticated) {
+                console.warn('⚠️ User not authenticated with Farcaster');
+                alert('🔐 Please open this page in Warpcast or another Farcaster client to vote!\n\nThis is a Farcaster Mini App that requires authentication.');
+                return;
+            }
+            
             if (!supabase) {
                 console.error('❌ Supabase not initialized');
                 alert('Database connection not ready. Please refresh the page.');
@@ -1076,7 +1083,8 @@
             console.log('🔘 Resetting all vote buttons...');
             document.querySelectorAll('.vote-button').forEach(btn => {
                 btn.disabled = false;
-                btn.textContent = 'Vote';
+                // Show different text based on authentication
+                btn.textContent = isAuthenticated ? 'Vote' : '🔒 Login to Vote';
             });
 
             if (userVote) {
