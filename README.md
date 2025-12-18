@@ -30,6 +30,8 @@
 
 ZABAL.art is the central hub for the ZABAL ecosystem — a living coordination network where streams are decided by the community, creators submit work, and collective discovery happens in real-time.
 
+**Now available as a Farcaster Mini App!** Vote on stream direction directly from Warpcast with seamless authentication and social sharing.
+
 ### The ZABAL Ecosystem
 
 **Three Core Pillars:**
@@ -60,10 +62,11 @@ Building toward **ZAO Stock 2026** - a physical Maine-based event that brings th
 ## 🚀 Quick Start
 
 ### For Users
-1. **Visit** [zabal.art](https://zabal.art) to submit creative work
+1. **Submit** creative work at [zabal.art](https://zabal.art)
 2. **Vote** at [zabal.art/live.html](https://zabal.art/live.html) for today's stream mode
-3. **Read** updates at [zabal.art/gallery.html](https://zabal.art/gallery.html)
-4. **Join** [Discord](https://discord.bettercallzaal.com) for community
+3. **Vote in Warpcast** - Open live.html in Farcaster for native Mini App experience
+4. **Read** updates at [zabal.art/gallery.html](https://zabal.art/gallery.html)
+5. **Join** [Discord](https://discord.bettercallzaal.com) for community
 
 ### For Developers
 ```bash
@@ -83,12 +86,14 @@ python -m http.server 8000
 
 ## 📄 Pages Overview
 
-### 🎡 Live Hub (`/live.html`)
+### 🎡 Live Hub (`/live.html`) - Farcaster Mini App
 **The stream isn't scheduled. It's decided.**
 
+- **Farcaster Integration** - Native Mini App with automatic authentication
 - **Dynamic Hero** - Changes based on stream state (deciding/locked/live)
 - **Stream Wheel** - Vote for today's mode (Studio/Market/Social/Battle)
-- **Real-time Voting** - Community decides what happens each stream
+- **Real-time Voting** - Supabase-powered voting with FID authentication
+- **Social Sharing** - One-click cast composition with vote results
 - **Today/Yesterday Display** - Shows current leader and previous winner
 - **Built on Stream Artifacts** - Proof of coordination, not just content
 - **Proof Section** - ∞ streams decided by you, 4 modes, 0 scheduled
@@ -196,6 +201,9 @@ python -m http.server 8000
 - **System Fonts** - Apple/SF Pro, Segoe UI, Roboto
 
 ### Integrations
+- **Farcaster** - Decentralized social protocol for Mini App
+- **Supabase** - PostgreSQL database for vote storage and real-time updates
+- **Neynar API** - Farcaster data access (planned for vote power)
 - **Tally.so** - Form builder and submission management
 - **Paragraph.com** - Newsletter hosting (The ZAO Newsletter)
 - **Discord** - Community and submission notifications
@@ -292,15 +300,31 @@ font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI',
 - Built on stream artifacts section
 - Proof section with live metrics
 
-### 🚀 Phase 3: Backend & Dynamic Features (NEXT)
+### ✅ Phase 2.5: Farcaster Mini App (COMPLETED)
+- Farcaster SDK integration with proper splash screen handling
+- FID-based authentication and voting
+- Supabase database for vote persistence
+- Vote changing functionality with RLS policies
+- Social sharing with composeCast integration
+- Manifest file for app discovery
+- Comprehensive ecosystem research documentation
 
-**Priority: Backend Setup**
-- Supabase integration via Vercel marketplace
-- Database tables: Submissions, Creators, Stats
-- Tally webhook → Supabase connection
-- API endpoints for data fetching
+### 🚀 Phase 3: Enhanced Mini App Features (NEXT)
 
-**Features Enabled by Backend:**
+**Priority: Mini App Optimization**
+- Create app icon, preview, and splash images
+- Add account association to manifest
+- Implement vote power calculation with Neynar
+- Add social proof (recent voters, friends who voted)
+- Implement notifications for engagement
+- Create /zabal channel for community
+
+**Additional Backend Features:**
+- Tally webhook → Supabase connection for submissions
+- API endpoints for creator profiles
+- Submission status tracking
+
+**Features In Progress:**
 
 1. **Recent Submissions Feed**
    - Display last 10-20 submissions
@@ -308,11 +332,12 @@ font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI',
    - "Watch Review" link when streamed
    - Auto-refresh
 
-2. **Real Voting Persistence**
-   - Store votes in database
+2. **Real Voting Persistence** ✅ COMPLETED
+   - Store votes in Supabase database
    - Real-time vote counting across users
-   - Voting history and analytics
-   - Lock mechanism at stream time
+   - FID-based authentication
+   - Vote changing functionality
+   - Daily vote aggregation
 
 3. **Submission Status Tracker**
    - Unique submission ID
@@ -328,11 +353,13 @@ font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI',
 
 ### 🏗️ Phase 4: Ecosystem Integration (FUTURE)
 
+- **Vote Power System** - Follower-based vote weighting with Neynar
+- **Leaderboards** - Top voters, voting streaks, achievements
 - **SongJam Leaderboard** - Real-time embed on homepage
 - **WaveWarZ Integration** - Music battles calendar and voting
 - **ZAO Fractal Explainer** - Governance education page
 - **Token & Rewards Dashboard** - ZABAL token info and multipliers
-- **Farcaster Integration** - Native Web3 social presence
+- **Enhanced Farcaster Features** - Notifications, channel integration, gamification
 
 ---
 
@@ -342,16 +369,19 @@ font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI',
 
 ```
 ZABAL ART WEBSITE/
-├── index.html              # Main submission portal page
-├── live.html               # Live coordination hub with voting
-├── gallery.html            # Research & updates archive
-├── live-backup.html        # Backup of live.html (for rollback)
-├── index-new.html          # Development/staging version of index
-├── README.md               # This comprehensive documentation
-├── SETUP.md                # Technical setup guide for voting system
-├── .env.example            # Environment variables template
-├── supabase-schema.sql     # Database schema for voting system
-└── .git/                   # Git version control
+├── index.html                      # Main submission portal page
+├── live.html                       # Live coordination hub (Farcaster Mini App)
+├── gallery.html                    # Research & updates archive
+├── README.md                       # This comprehensive documentation
+├── FARCASTER_ECOSYSTEM.md          # Complete Farcaster research & strategy
+├── NEXT_STEPS.md                   # Implementation roadmap & testing guide
+├── SETUP.md                        # Technical setup guide for voting system
+├── ARCHITECTURE.md                 # System architecture documentation
+├── .env.example                    # Environment variables template
+├── supabase-schema-fid.sql         # FID-based database schema
+├── public/.well-known/
+│   └── farcaster.json              # Farcaster Mini App manifest
+└── .git/                           # Git version control
 ```
 
 ### File Explanations
@@ -394,13 +424,16 @@ ZABAL ART WEBSITE/
 
 ---
 
-#### **`live.html`** (30KB)
-**Purpose:** Live coordination hub where community votes for stream mode
+#### **`live.html`** (35KB) - Farcaster Mini App
+**Purpose:** Live coordination hub where community votes for stream mode via Farcaster
 
 **What it does:**
+- Integrates with Farcaster SDK for seamless authentication
 - Shows dynamic hero based on stream state (deciding/locked/live)
 - Displays stream wheel with 4 voting options
-- Counts votes and shows current leader
+- Stores votes in Supabase with FID-based authentication
+- Enables one-click social sharing to Farcaster feed
+- Shows real-time vote counts across all users
 - Displays today's leader and yesterday's winner
 - Shows artifacts built on stream
 - Provides proof metrics (streams, modes, schedule)
@@ -409,18 +442,22 @@ ZABAL ART WEBSITE/
 1. **Header** - Navigation matching other pages
 2. **Dynamic Hero** - Changes based on time/state
 3. **Stream Wheel** - 4 mode cards (Studio, Market, Social, Battle)
-4. **Today/Yesterday** - Current and previous winners
-5. **Built on Stream** - Artifacts and creations
-6. **Proof** - Metrics showing community coordination
-7. **Footer** - Consistent across site
+4. **Share Button** - Appears after voting to cast results
+5. **Today/Yesterday** - Current and previous winners
+6. **Built on Stream** - Artifacts and creations
+7. **Proof** - Metrics showing community coordination
+8. **Footer** - Consistent across site
 
 **JavaScript features:**
+- Farcaster SDK integration with `sdk.actions.ready()`
+- FID-based user authentication
+- Supabase database for vote persistence
+- Vote changing functionality (DELETE + INSERT)
+- Social sharing with `composeCast`
 - State management (deciding/locked/live)
 - Countdown timer to lock time
-- Vote counting with localStorage
+- Real-time vote counting across users
 - Leader calculation and display
-- Real-time UI updates
-- Vote persistence across page loads
 
 **States:**
 - **DECIDING** (before 5 PM EST) - "Today's Stream Is Being Decided"
@@ -469,19 +506,53 @@ ZABAL ART WEBSITE/
 
 ---
 
-#### **`SETUP.md`** (4.4KB)
-**Purpose:** Technical setup guide for token-gated voting system
+#### **`FARCASTER_ECOSYSTEM.md`** (50KB)
+**Purpose:** Comprehensive research on Farcaster ecosystem and Mini Apps
 
 **What it contains:**
-- Privy credentials and configuration
-- Token addresses (ZAO on Optimism, LOANZ on Base)
-- RPC endpoints for blockchain queries
-- Voting rules and power calculation
+- Farcaster ecosystem overview and statistics
+- Analysis of 20+ successful Mini Apps
+- 8 principles for viral Mini Apps
+- Discovery and ranking algorithm details
+- Technical implementation guide
+- Neynar API integration patterns
+- Voting app case studies
+- ZABAL-specific optimization strategies
+- Complete implementation roadmap
+
+**Who uses this:**
+- Developers building Farcaster features
+- Product managers planning features
+- Designers creating Mini App assets
+
+---
+
+#### **`NEXT_STEPS.md`** (15KB)
+**Purpose:** Action plan and testing guide for Mini App launch
+
+**What it contains:**
+- Completed features checklist
+- Immediate action items
+- Testing instructions for Warpcast
+- Troubleshooting common issues
+- Launch strategy and timeline
+- Success metrics and targets
+- Asset creation requirements
+
+---
+
+#### **`SETUP.md`** (4.4KB)
+**Purpose:** Technical setup guide for FID-based voting system
+
+**What it contains:**
+- Supabase configuration
+- Farcaster SDK setup
+- Neynar API credentials
+- Environment variables
 - Database setup instructions
-- Architecture flow diagram
+- RLS policy configuration
 - Testing scenarios
 - Deployment checklist
-- Security notes
 
 **Who uses this:**
 - Developers implementing voting
@@ -490,26 +561,47 @@ ZABAL ART WEBSITE/
 
 **When to reference:**
 - Setting up Supabase database
-- Configuring environment variables
-- Testing voting functionality
+- Configuring Farcaster SDK
+- Integrating Neynar API
+- Testing Mini App in Warpcast
 - Deploying to production
 
 ---
 
-#### **`supabase-schema.sql`** (3.9KB)
-**Purpose:** PostgreSQL database schema for voting system
+#### **`public/.well-known/farcaster.json`** (0.3KB)
+**Purpose:** Farcaster Mini App manifest for discovery
+
+**What it contains:**
+- App metadata (name, description, category)
+- Icon and preview image URLs
+- Home URL and button text
+- Splash screen configuration
+- Required for app store listing
+
+**When to update:**
+- Changing app name or description
+- Updating images
+- Modifying category
+- Adding account association
+
+---
+
+#### **`supabase-schema-fid.sql`** (4.5KB)
+**Purpose:** PostgreSQL database schema for FID-based voting system
 
 **What it creates:**
-1. **`votes` table** - Stores all votes with wallet address and power
-2. **`token_holdings` table** - Caches token balance checks
+1. **`votes` table** - Stores all votes with FID and vote power
+2. **`vote_power_cache` table** - Caches Neynar follower data
 3. **`mode_votes_daily` table** - Aggregated daily vote totals
 4. **Functions:**
-   - `update_daily_totals()` - Auto-updates aggregates
+   - `update_daily_totals()` - Auto-updates aggregates on vote changes
    - `get_todays_votes()` - Returns current vote counts
-   - `has_voted_today()` - Checks if wallet voted
-5. **Triggers** - Auto-update daily totals on vote insert
-6. **RLS Policies** - Row Level Security for data protection
-7. **Indexes** - Optimized queries on wallet, date, mode
+   - `has_voted_today()` - Checks if FID voted today
+   - `get_vote_power()` - Calculates vote weight from cache
+5. **Triggers** - Auto-update daily totals on INSERT/UPDATE/DELETE
+6. **RLS Policies** - Public read/write for all tables
+7. **Indexes** - Optimized queries on FID, date, mode
+8. **Constraints** - Unique vote per FID per day
 
 **How to use:**
 1. Open Supabase SQL Editor
