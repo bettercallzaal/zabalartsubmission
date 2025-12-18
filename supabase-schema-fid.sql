@@ -172,6 +172,11 @@ CREATE POLICY "Allow public read access on mode_votes_daily"
   ON mode_votes_daily FOR SELECT
   USING (true);
 
+CREATE POLICY "Allow public insert/update on mode_votes_daily"
+  ON mode_votes_daily FOR ALL
+  USING (true)
+  WITH CHECK (true);
+
 -- Insert initial daily totals for today
 INSERT INTO mode_votes_daily (mode, vote_date, total_votes, unique_voters)
 VALUES 
