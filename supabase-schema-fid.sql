@@ -160,6 +160,10 @@ CREATE POLICY "Allow public insert on votes"
   ON votes FOR INSERT
   WITH CHECK (true);
 
+CREATE POLICY "Allow public delete on votes"
+  ON votes FOR DELETE
+  USING (true);
+
 CREATE POLICY "Allow public read access on vote_power_cache"
   ON vote_power_cache FOR SELECT
   USING (true);

@@ -969,17 +969,25 @@
             try {
                 // First, delete any existing vote for today
                 const today = new Date().toISOString().split('T')[0];
-                const { error: deleteError } = await supabase
+                console.log('🗑️ Attempting to delete existing vote for FID:', userFID, 'Date:', today);
+                
+                const { data: deleteData, error: deleteError } = await supabase
                     .from('votes')
                     .delete()
                     .eq('fid', parseInt(userFID))
-                    .eq('vote_date', today);
+                    .eq('vote_date', today)
+                    .select();
                 
                 if (deleteError) {
                     console.error('❌ Error deleting old vote:', deleteError);
+                } else if (deleteData && deleteData.length > 0) {
+                    console.log('✅ Deleted old vote:', deleteData);
+                } else {
+                    console.log('ℹ️ No existing vote to delete (first vote today)');
                 }
                 
                 // Insert new vote (trigger will update daily totals)
+                console.log('➕ Inserting new vote:', { fid: userFID, mode, vote_power: 1 });
                 const { data, error } = await supabase
                     .from('votes')
                     .insert([
@@ -994,6 +1002,7 @@
                 
                 if (error) {
                     console.error('❌ Error voting:', error);
+                    console.error('❌ Error details:', JSON.stringify(error, null, 2));
                     alert('Error voting. Please try again.');
                     return;
                 }
