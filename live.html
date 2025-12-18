@@ -856,21 +856,82 @@
             countdownTime.textContent = `${hours}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
         }
 
-        // Voting system with debug logging
-        console.log('🎡 ZABAL Live Hub - Voting System Initialized');
+        // Initialize Supabase
+        console.log('🎡 ZABAL Live Hub - Initializing Supabase...');
+        const SUPABASE_URL = 'https://cbtvnuklqwdkpyeioafb.supabase.co';
+        const SUPABASE_ANON_KEY = 'sb_publishable_iQGk6gSjsv8ml-pPoiPcfQ_OL5lXa2J';
         
-        let userVote = localStorage.getItem('userVote');
-        console.log('📦 localStorage.userVote:', userVote);
-        
-        const votes = {
-            studio: 42,
-            market: 28,
-            social: 35,
-            battle: 31
-        };
-        console.log('🗳️ Initial vote counts:', votes);
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        console.log('✅ Supabase client initialized');
 
-        function vote(mode) {
+        // User state (for now using localStorage FID, will add Farcaster SDK later)
+        let userFID = localStorage.getItem('userFID') || Math.floor(Math.random() * 1000000);
+        localStorage.setItem('userFID', userFID);
+        console.log('👤 User FID:', userFID);
+        
+        let userVote = null;
+        const votes = {
+            studio: 0,
+            market: 0,
+            social: 0,
+            battle: 0
+        };
+
+        // Load votes from database
+        async function loadVotes() {
+            console.log('📊 Loading votes from database...');
+            
+            try {
+                // Get today's vote totals
+                const { data, error } = await supabase
+                    .rpc('get_todays_votes');
+                
+                if (error) {
+                    console.error('❌ Error loading votes:', error);
+                    return;
+                }
+                
+                console.log('📥 Received vote data:', data);
+                
+                // Reset votes
+                votes.studio = 0;
+                votes.market = 0;
+                votes.social = 0;
+                votes.battle = 0;
+                
+                // Update with database values
+                if (data) {
+                    data.forEach(row => {
+                        votes[row.mode] = parseInt(row.total_votes) || 0;
+                    });
+                }
+                
+                console.log('✅ Votes loaded:', votes);
+                
+                // Check if user has voted today
+                const { data: userVoteData, error: voteError } = await supabase
+                    .rpc('has_voted_today', { user_fid: parseInt(userFID) });
+                
+                if (voteError) {
+                    console.error('❌ Error checking user vote:', voteError);
+                } else if (userVoteData && userVoteData.length > 0) {
+                    const result = userVoteData[0];
+                    if (result.has_voted) {
+                        userVote = result.voted_mode;
+                        console.log('✅ User has already voted for:', userVote);
+                    }
+                }
+                
+                updateVotes();
+                updateLeader();
+                
+            } catch (err) {
+                console.error('❌ Exception loading votes:', err);
+            }
+        }
+
+        // Vote function with database
+        async function vote(mode) {
             console.log('🎯 Vote function called with mode:', mode);
             console.log('⏰ Current state:', currentState);
             
@@ -881,27 +942,79 @@
             }
 
             console.log('✅ Voting allowed - state is DECIDING');
-
-            if (userVote) {
-                console.log('🔄 User already voted for:', userVote);
-                console.log('📉 Removing vote from:', userVote, 'Old count:', votes[userVote]);
-                votes[userVote]--;
-                console.log('📉 New count for', userVote + ':', votes[userVote]);
-            }
-
-            console.log('📈 Adding vote to:', mode, 'Old count:', votes[mode]);
-            votes[mode]++;
-            console.log('📈 New count for', mode + ':', votes[mode]);
             
-            userVote = mode;
-            console.log('💾 Saving to localStorage:', mode);
-            localStorage.setItem('userVote', mode);
-            console.log('✅ Saved to localStorage');
-
-            console.log('🔄 Updating UI...');
-            updateVotes();
-            updateLeader();
-            console.log('✅ Vote complete!');
+            try {
+                // Insert vote into database
+                const { data, error } = await supabase
+                    .from('votes')
+                    .insert([
+                        {
+                            fid: parseInt(userFID),
+                            mode: mode,
+                            vote_power: 1,
+                            source: 'web'
+                        }
+                    ])
+                    .select();
+                
+                if (error) {
+                    if (error.code === '23505') {
+                        // Unique constraint violation - user already voted
+                        console.log('🔄 User already voted, updating vote...');
+                        
+                        // Delete old vote
+                        const { error: deleteError } = await supabase
+                            .from('votes')
+                            .delete()
+                            .eq('fid', parseInt(userFID))
+                            .eq('vote_date', new Date().toISOString().split('T')[0]);
+                        
+                        if (deleteError) {
+                            console.error('❌ Error deleting old vote:', deleteError);
+                            alert('Error updating vote. Please try again.');
+                            return;
+                        }
+                        
+                        // Insert new vote
+                        const { data: newData, error: insertError } = await supabase
+                            .from('votes')
+                            .insert([
+                                {
+                                    fid: parseInt(userFID),
+                                    mode: mode,
+                                    vote_power: 1,
+                                    source: 'web'
+                                }
+                            ])
+                            .select();
+                        
+                        if (insertError) {
+                            console.error('❌ Error inserting new vote:', insertError);
+                            alert('Error voting. Please try again.');
+                            return;
+                        }
+                        
+                        console.log('✅ Vote updated successfully');
+                    } else {
+                        console.error('❌ Error voting:', error);
+                        alert('Error voting. Please try again.');
+                        return;
+                    }
+                } else {
+                    console.log('✅ Vote recorded:', data);
+                }
+                
+                userVote = mode;
+                console.log('💾 User vote saved:', mode);
+                
+                // Reload votes from database
+                await loadVotes();
+                console.log('✅ Vote complete!');
+                
+            } catch (err) {
+                console.error('❌ Exception during voting:', err);
+                alert('Error voting. Please try again.');
+            }
         }
 
         function updateVotes() {
@@ -979,10 +1092,14 @@
         console.log('🚀 Initializing app...');
         updateHeroState();
         console.log('✅ Hero state updated');
-        updateVotes();
-        console.log('✅ Votes updated');
-        updateLeader();
-        console.log('✅ Leader updated');
+        
+        // Load votes from database
+        loadVotes();
+        
+        // Refresh votes every 10 seconds
+        setInterval(loadVotes, 10000);
+        console.log('✅ Vote refresh interval set (10s)');
+        
         setInterval(updateCountdown, 1000);
         updateCountdown();
         console.log('✅ Countdown started');
