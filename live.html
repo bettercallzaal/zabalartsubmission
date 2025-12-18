@@ -985,39 +985,21 @@
                         // Unique constraint violation - user already voted
                         console.log('🔄 User already voted, updating vote...');
                         
-                        // Delete old vote
-                        const { error: deleteError } = await supabase
+                        // Update existing vote using upsert
+                        const { data: updateData, error: updateError } = await supabase
                             .from('votes')
-                            .delete()
+                            .update({ mode: mode, vote_power: 1 })
                             .eq('fid', parseInt(userFID))
-                            .eq('vote_date', new Date().toISOString().split('T')[0]);
+                            .eq('vote_date', new Date().toISOString().split('T')[0])
+                            .select();
                         
-                        if (deleteError) {
-                            console.error('❌ Error deleting old vote:', deleteError);
+                        if (updateError) {
+                            console.error('❌ Error updating vote:', updateError);
                             alert('Error updating vote. Please try again.');
                             return;
                         }
                         
-                        // Insert new vote
-                        const { data: newData, error: insertError } = await supabase
-                            .from('votes')
-                            .insert([
-                                {
-                                    fid: parseInt(userFID),
-                                    mode: mode,
-                                    vote_power: 1,
-                                    source: 'web'
-                                }
-                            ])
-                            .select();
-                        
-                        if (insertError) {
-                            console.error('❌ Error inserting new vote:', insertError);
-                            alert('Error voting. Please try again.');
-                            return;
-                        }
-                        
-                        console.log('✅ Vote updated successfully');
+                        console.log('✅ Vote updated successfully:', updateData);
                     } else {
                         console.error('❌ Error voting:', error);
                         alert('Error voting. Please try again.');
