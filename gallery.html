@@ -160,6 +160,37 @@
             border-bottom: 1px solid var(--border-color);
         }
 
+        .content-type {
+            display: inline-block;
+            padding: 4px 12px;
+            background: rgba(224, 221, 170, 0.1);
+            border: 1px solid var(--accent-yellow);
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-right: 8px;
+        }
+
+        .content-type.article {
+            background: rgba(224, 221, 170, 0.1);
+            border-color: var(--accent-yellow);
+            color: var(--accent-yellow);
+        }
+
+        .content-type.space {
+            background: rgba(138, 180, 248, 0.1);
+            border-color: #8ab4f8;
+            color: #8ab4f8;
+        }
+
+        .content-type.stream {
+            background: rgba(255, 87, 87, 0.1);
+            border-color: #ff5757;
+            color: #ff5757;
+        }
+
         .update-number {
             display: inline-block;
             padding: 4px 12px;
@@ -614,12 +645,29 @@
     <section class="updates-section">
         <div class="container">
             <div class="updates-grid">
+                <!-- Update 6 -->
+                <div class="update-card">
+                    <div class="update-header">
+                        <span class="content-type article">📄 Article</span>
+                        <span class="update-number">ZABAL Update #6</span>
+                        <h3 class="update-title">Latest Updates</h3>
+                        <p class="update-date">Recent • 5 min read</p>
+                    </div>
+                    <div class="update-content">
+                        <p class="update-excerpt">Latest developments in the ZABAL ecosystem and community updates.</p>
+                        <a href="https://paragraph.com/@thezao/zabal-update-6" target="_blank" class="read-more">
+                            Read Full Update →
+                        </a>
+                    </div>
+                </div>
+
                 <!-- Update 4 -->
                 <div class="update-card">
                     <div class="update-header">
+                        <span class="content-type article">📄 Article</span>
                         <span class="update-number">ZABAL Update #4</span>
                         <h3 class="update-title">Creator Economy Experiments</h3>
-                        <p class="update-date">Recent • 7 min read</p>
+                        <p class="update-date">Archive • 7 min read</p>
                     </div>
                     <div class="update-content">
                         <p class="update-excerpt">Insights on creator economy experiments, community engagement, and the path forward.</p>
@@ -632,6 +680,7 @@
                 <!-- Update 3 -->
                 <div class="update-card">
                     <div class="update-header">
+                        <span class="content-type article">📄 Article</span>
                         <span class="update-number">ZABAL Update #3</span>
                         <h3 class="update-title">New Frontiers in Collective Discovery</h3>
                         <p class="update-date">Archive • 6 min read</p>
@@ -647,6 +696,7 @@
                 <!-- Update 2 -->
                 <div class="update-card">
                     <div class="update-header">
+                        <span class="content-type article">📄 Article</span>
                         <span class="update-number">ZABAL Update #2</span>
                         <h3 class="update-title">Reflections on the Year of the ZAO</h3>
                         <p class="update-date">Day 334 • 6 min read</p>
@@ -662,6 +712,7 @@
                 <!-- Update 1 -->
                 <div class="update-card">
                     <div class="update-header">
+                        <span class="content-type article">📄 Article</span>
                         <span class="update-number">ZABAL Update #1</span>
                         <h3 class="update-title">A 13-Week Experiment in Collective Discovery</h3>
                         <p class="update-date">Day 276 • 8 min read</p>
