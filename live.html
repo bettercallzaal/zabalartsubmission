@@ -166,6 +166,28 @@
             50% { opacity: 0.6; }
         }
 
+        @keyframes slideDown {
+            from {
+                transform: translate(-50%, -20px);
+                opacity: 0;
+            }
+            to {
+                transform: translate(-50%, 0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translate(-50%, 0);
+                opacity: 1;
+            }
+            to {
+                transform: translate(-50%, -20px);
+                opacity: 0;
+            }
+        }
+
         .hero-title {
             font-size: clamp(2.5rem, 8vw, 5rem);
             font-weight: 900;
@@ -629,6 +651,9 @@
                 <a href="gallery.html">Archive</a>
                 <a href="https://discord.bettercallzaal.com" target="_blank">Discord</a>
             </nav>
+            <div id="userProfile" style="display: none; padding: 8px 16px; background: rgba(224, 221, 170, 0.1); border: 1px solid var(--accent-yellow); border-radius: 20px; font-size: 0.85rem; color: var(--accent-yellow); font-weight: 600;">
+                <span id="userIcon">👤</span> <span id="userName">Loading...</span>
+            </div>
         </div>
     </header>
 
@@ -942,6 +967,14 @@
                         isAuthenticated = true;
                         
                         console.log('✅ Farcaster user authenticated:', { fid: userFID, username });
+                        
+                        // Show user profile in header
+                        const userProfileEl = document.getElementById('userProfile');
+                        const userNameEl = document.getElementById('userName');
+                        if (userProfileEl && userNameEl) {
+                            userNameEl.textContent = `@${username}`;
+                            userProfileEl.style.display = 'block';
+                        }
                     } else {
                         console.warn('⚠️ No Farcaster user context found');
                         throw new Error('Not in Farcaster context');
@@ -1115,6 +1148,31 @@
                 
                 userVote = mode;
                 console.log('💾 User vote saved:', mode);
+                
+                // Show vote confirmation
+                const modeNames = {
+                    studio: 'Studio Mode 🎬',
+                    market: 'Market Mode 🛒',
+                    social: 'Social Mode 🌐',
+                    battle: 'Battle Mode ⚔️'
+                };
+                
+                // Create confirmation banner
+                const confirmBanner = document.createElement('div');
+                confirmBanner.style.cssText = 'position: fixed; top: 80px; left: 50%; transform: translateX(-50%); background: linear-gradient(135deg, #141e27 0%, #1a2a37 100%); border: 2px solid var(--accent-yellow); border-radius: 12px; padding: 16px 24px; z-index: 1000; box-shadow: 0 10px 30px rgba(0,0,0,0.5); animation: slideDown 0.3s ease;';
+                confirmBanner.innerHTML = `
+                    <div style="text-align: center;">
+                        <div style="font-size: 1.2rem; font-weight: 700; color: var(--accent-yellow); margin-bottom: 4px;">✅ Vote Recorded!</div>
+                        <div style="font-size: 0.9rem; color: var(--text-white);">You voted for ${modeNames[mode]}</div>
+                    </div>
+                `;
+                document.body.appendChild(confirmBanner);
+                
+                // Remove banner after 3 seconds
+                setTimeout(() => {
+                    confirmBanner.style.animation = 'slideUp 0.3s ease';
+                    setTimeout(() => confirmBanner.remove(), 300);
+                }, 3000);
                 
                 // Reload votes from database
                 await loadVotes();
