@@ -917,15 +917,15 @@
                         username = context.user.username;
                         isAuthenticated = true;
                         
-                        // CRITICAL: Hide splash screen and show app
-                        await window.farcasterSDK.actions.ready();
-                        
                         console.log('✅ Farcaster user authenticated:', { fid: userFID, username });
-                        console.log('✅ Splash screen hidden, app ready');
                     } else {
                         console.warn('⚠️ No Farcaster user context found');
                         throw new Error('Not in Farcaster context');
                     }
+                    
+                    // CRITICAL: Always call ready() to hide splash screen
+                    await window.farcasterSDK.actions.ready();
+                    console.log('✅ Splash screen hidden, app ready');
                 } else {
                     console.warn('⚠️ Farcaster SDK not loaded');
                     throw new Error('Farcaster SDK not available');
@@ -937,6 +937,16 @@
                 localStorage.setItem('userFID', userFID);
                 username = 'Test User';
                 isAuthenticated = false;
+                
+                // Try to call ready() even in fallback mode
+                try {
+                    if (window.farcasterSDK) {
+                        await window.farcasterSDK.actions.ready();
+                        console.log('✅ Splash screen hidden (fallback mode)');
+                    }
+                } catch (readyErr) {
+                    console.log('ℹ️ Could not call ready() in fallback mode');
+                }
             }
             
             console.log('👤 User FID:', userFID, '| Username:', username, '| Authenticated:', isAuthenticated);
