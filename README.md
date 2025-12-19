@@ -83,7 +83,49 @@ python -m http.server 8000
 
 ---
 
-## 📄 Pages Overview
+## � File Structure
+
+```
+ZABAL ART WEBSITE/
+├── index.html              # Main submission portal
+├── live.html               # Farcaster Mini App voting hub
+├── gallery.html            # Research & updates archive
+├── .well-known/
+│   └── farcaster.json      # Farcaster Mini App manifest
+├── logo.png                # App icon (512x512)
+├── preview.png             # Social preview image (1200x630)
+├── splash.png              # Splash screen (1024x1024)
+├── vercel.json             # Vercel deployment config
+├── supabase-schema-fid.sql # Database schema for voting
+├── .env.example            # Environment variables template
+├── README.md               # This file
+├── FARCASTER_ECOSYSTEM.md  # Deep-dive Farcaster documentation
+└── public/                 # Legacy folder (empty)
+```
+
+### Core Files Explained
+
+**HTML Pages:**
+- `index.html` - Submission portal with type selection and form
+- `live.html` - Main Mini App with voting, authentication, and sharing
+- `gallery.html` - Archive of Paragraph articles, Spaces, and streams
+
+**Farcaster Integration:**
+- `.well-known/farcaster.json` - Manifest with account association
+- `logo.png`, `preview.png`, `splash.png` - Required Mini App images
+- Embed meta tags in `live.html` for rich social sharing
+
+**Backend:**
+- `supabase-schema-fid.sql` - PostgreSQL schema with RLS policies
+- `.env.example` - Template for Supabase and Neynar API keys
+
+**Configuration:**
+- `vercel.json` - Static site deployment settings
+- No build step required - pure HTML/CSS/JS
+
+---
+
+## �📄 Pages Overview
 
 ### 🎡 Live Hub (`/live.html`) - Farcaster Mini App
 **The stream isn't scheduled. It's decided.**
