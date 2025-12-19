@@ -188,6 +188,125 @@
             }
         }
 
+        /* Share Modal */
+        .share-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .share-modal.active {
+            display: flex;
+        }
+
+        .share-modal-content {
+            background: linear-gradient(135deg, #141e27 0%, #1a2a37 100%);
+            border: 2px solid var(--accent-yellow);
+            border-radius: 16px;
+            padding: 32px;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+        }
+
+        .share-modal-header {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+
+        .share-modal-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--accent-yellow);
+            margin-bottom: 8px;
+        }
+
+        .share-modal-subtitle {
+            font-size: 0.9rem;
+            color: var(--text-gray);
+        }
+
+        .share-link-box {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .share-link-text {
+            flex: 1;
+            font-size: 0.85rem;
+            color: var(--text-white);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .copy-link-btn {
+            padding: 8px 16px;
+            background: var(--accent-yellow);
+            color: var(--primary-blue);
+            border: none;
+            border-radius: 6px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .copy-link-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 12px rgba(224, 221, 170, 0.3);
+        }
+
+        .share-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .share-action-btn {
+            padding: 14px 24px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .share-farcaster-btn {
+            background: linear-gradient(135deg, #8a63d2 0%, #7c4dff 100%);
+            color: white;
+        }
+
+        .share-farcaster-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(138, 99, 210, 0.4);
+        }
+
+        .share-close-btn {
+            background: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-gray);
+        }
+
+        .share-close-btn:hover {
+            border-color: var(--accent-yellow);
+            color: var(--accent-yellow);
+        }
+
         .hero-title {
             font-size: clamp(2.5rem, 8vw, 5rem);
             font-weight: 900;
@@ -739,6 +858,30 @@
         </div>
     </section>
 
+    <!-- Share Modal -->
+    <div id="shareModal" class="share-modal">
+        <div class="share-modal-content">
+            <div class="share-modal-header">
+                <div class="share-modal-title">📢 Share Your Vote</div>
+                <div class="share-modal-subtitle">Spread the word and get more people voting!</div>
+            </div>
+            
+            <div class="share-link-box">
+                <div class="share-link-text">https://zabalartsubmission.vercel.app/live.html</div>
+                <button class="copy-link-btn" onclick="copyMiniappLink()">Copy Link</button>
+            </div>
+            
+            <div class="share-buttons">
+                <button class="share-action-btn share-farcaster-btn" onclick="shareVote(currentShareMode)">
+                    🟣 Share to Farcaster
+                </button>
+                <button class="share-action-btn share-close-btn" onclick="closeShareModal()">
+                    Close
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- Today/Yesterday Section -->
     <section class="stream-history">
         <div class="container">
@@ -1187,6 +1330,38 @@
             }
         }
 
+        // Share modal functions
+        let currentShareMode = null;
+        const MINIAPP_URL = 'https://zabalartsubmission.vercel.app/live.html';
+        
+        window.openShareModal = function(mode) {
+            currentShareMode = mode;
+            const modal = document.getElementById('shareModal');
+            if (modal) {
+                modal.classList.add('active');
+            }
+        }
+        
+        window.closeShareModal = function() {
+            const modal = document.getElementById('shareModal');
+            if (modal) {
+                modal.classList.remove('active');
+            }
+        }
+        
+        window.copyMiniappLink = function() {
+            navigator.clipboard.writeText(MINIAPP_URL).then(() => {
+                const btn = document.querySelector('.copy-link-btn');
+                const originalText = btn.textContent;
+                btn.textContent = '✓ Copied!';
+                setTimeout(() => {
+                    btn.textContent = originalText;
+                }, 2000);
+            }).catch(err => {
+                console.error('Failed to copy:', err);
+            });
+        }
+        
         // Share vote to Farcaster - exposed to global scope
         window.shareVote = async function(mode) {
             const modeEmojis = {
@@ -1203,14 +1378,16 @@
                 battle: 'BATTLE'
             };
             
-            const castText = `Just voted for ${modeEmojis[mode]} ${modeNames[mode]} mode on ZABAL Live Hub! 🎨\n\nCurrent standings:\n🎬 Studio: ${votes.studio}\n🛒 Market: ${votes.market}\n🌐 Social: ${votes.social}\n⚔️ Battle: ${votes.battle}\n\nWhat's your vote?`;
+            const castText = `Just voted for ${modeEmojis[mode]} ${modeNames[mode]} mode on ZABAL Live Hub! 🎨\n\nCurrent standings:\n🎬 Studio: ${votes.studio}\n🛒 Market: ${votes.market}\n🌐 Social: ${votes.social}\n⚔️ Battle: ${votes.battle}\n\nVote now! 👇`;
             
             try {
                 await window.farcasterSDK.actions.composeCast({
                     text: castText,
-                    embeds: ['https://zabal.art/live.html']
+                    embeds: [MINIAPP_URL],
+                    channelKey: 'zabal'
                 });
                 console.log('✅ Vote shared to Farcaster');
+                closeShareModal();
             } catch (error) {
                 console.error('❌ Failed to share vote:', error);
                 alert('Could not share to Farcaster. Please try again.');
@@ -1257,7 +1434,7 @@
                 shareBtn.style.boxShadow = '0 4px 6px rgba(0,0,0,0.1)';
             };
             
-            shareBtn.onclick = () => shareVote(mode);
+            shareBtn.onclick = () => openShareModal(mode);
             
             // Insert after vote buttons
             const voteSection = document.querySelector('.mode-grid');
