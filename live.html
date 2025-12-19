@@ -307,6 +307,78 @@
             color: var(--accent-yellow);
         }
 
+        /* User Profile Badge */
+        .user-profile-badge {
+            padding: 6px 14px;
+            background: rgba(224, 221, 170, 0.08);
+            border: 1px solid rgba(224, 221, 170, 0.3);
+            border-radius: 16px;
+            font-size: 0.8rem;
+            color: var(--accent-yellow);
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .user-profile-badge:hover {
+            background: rgba(224, 221, 170, 0.15);
+            border-color: var(--accent-yellow);
+        }
+
+        /* Personal Stats Section */
+        .personal-stats {
+            background: linear-gradient(135deg, rgba(20, 30, 39, 0.5) 0%, rgba(26, 42, 55, 0.5) 100%);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 20px;
+            margin: 20px 0;
+            display: none;
+        }
+
+        .personal-stats.active {
+            display: block;
+        }
+
+        .stats-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .stats-title {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--accent-yellow);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 16px;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-value {
+            display: block;
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--accent-yellow);
+            margin-bottom: 4px;
+        }
+
+        .stat-label {
+            display: block;
+            font-size: 0.75rem;
+            color: var(--text-gray);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
         .hero-title {
             font-size: clamp(2.5rem, 8vw, 5rem);
             font-weight: 900;
@@ -832,11 +904,38 @@
                 <a href="gallery.html">Archive</a>
                 <a href="https://discord.bettercallzaal.com" target="_blank">Discord</a>
             </nav>
-            <div id="userProfile" style="display: none; padding: 8px 16px; background: rgba(224, 221, 170, 0.1); border: 1px solid var(--accent-yellow); border-radius: 20px; font-size: 0.85rem; color: var(--accent-yellow); font-weight: 600;">
-                <span id="userIcon">👤</span> <span id="userName">Loading...</span>
+            <div id="userProfile" class="user-profile-badge" style="display: none;">
+                <span id="userName">Loading...</span>
             </div>
         </div>
     </header>
+
+    <!-- Personal Stats -->
+    <section class="container" style="padding-top: 100px;">
+        <div id="personalStats" class="personal-stats">
+            <div class="stats-header">
+                <span class="stats-title">📊 Your Stats</span>
+            </div>
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <span class="stat-value" id="statTotalVotes">0</span>
+                    <span class="stat-label">Total Votes</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-value" id="statStreak">0</span>
+                    <span class="stat-label">Day Streak</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-value" id="statFavoriteMode">—</span>
+                    <span class="stat-label">Favorite Mode</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-value" id="statVotePower">1x</span>
+                    <span class="stat-label">Vote Power</span>
+                </div>
+            </div>
+        </div>
+    </section>
 
     <!-- Live State Hero -->
     <section class="live-hero">
@@ -1156,6 +1255,9 @@
                             userNameEl.textContent = `@${username}`;
                             userProfileEl.style.display = 'block';
                         }
+                        
+                        // Show personal stats and load user data
+                        loadPersonalStats();
                     } else {
                         console.warn('⚠️ No Farcaster user context found');
                         throw new Error('Not in Farcaster context');
@@ -1522,6 +1624,78 @@
             const leader = Object.keys(votes).reduce((a, b) => votes[a] > votes[b] ? a : b);
             console.log('🏆 Current leader:', leader, 'with', votes[leader], 'votes');
             return leader;
+        }
+
+        // Load and display personal stats
+        async function loadPersonalStats() {
+            if (!isAuthenticated || !userFID || !supabase) return;
+            
+            try {
+                // Show stats section
+                const statsSection = document.getElementById('personalStats');
+                if (statsSection) {
+                    statsSection.classList.add('active');
+                }
+                
+                // Get total votes for this user
+                const { data: userVotes, error: votesError } = await supabase
+                    .from('votes')
+                    .select('*')
+                    .eq('fid', parseInt(userFID));
+                
+                if (votesError) {
+                    console.error('Error loading user votes:', votesError);
+                    return;
+                }
+                
+                // Calculate stats
+                const totalVotes = userVotes ? userVotes.length : 0;
+                
+                // Calculate favorite mode
+                const modeCounts = {};
+                if (userVotes) {
+                    userVotes.forEach(vote => {
+                        modeCounts[vote.mode] = (modeCounts[vote.mode] || 0) + 1;
+                    });
+                }
+                const favoriteMode = Object.keys(modeCounts).length > 0
+                    ? Object.keys(modeCounts).reduce((a, b) => modeCounts[a] > modeCounts[b] ? a : b)
+                    : '—';
+                
+                const modeEmojis = {
+                    studio: '🎬',
+                    market: '🛒',
+                    social: '🌐',
+                    battle: '⚔️'
+                };
+                
+                // Calculate streak (simplified - just check if voted today and yesterday)
+                const today = new Date().toISOString().split('T')[0];
+                const yesterday = new Date(Date.now() - 86400000).toISOString().split('T')[0];
+                
+                const votedToday = userVotes?.some(v => v.vote_date === today);
+                const votedYesterday = userVotes?.some(v => v.vote_date === yesterday);
+                
+                let streak = 0;
+                if (votedToday) streak = 1;
+                if (votedToday && votedYesterday) streak = 2; // Simplified - could be extended
+                
+                // Calculate vote power (base 1x, +1 for streak, etc.)
+                let votePower = 1;
+                if (streak >= 5) votePower += 1;
+                if (userFID === 19640) votePower += 1; // @thezao bonus
+                
+                // Update UI
+                document.getElementById('statTotalVotes').textContent = totalVotes;
+                document.getElementById('statStreak').textContent = streak;
+                document.getElementById('statFavoriteMode').textContent = 
+                    favoriteMode !== '—' ? modeEmojis[favoriteMode] : '—';
+                document.getElementById('statVotePower').textContent = `${votePower}x`;
+                
+                console.log('✅ Personal stats loaded:', { totalVotes, streak, favoriteMode, votePower });
+            } catch (err) {
+                console.error('Error loading personal stats:', err);
+            }
         }
 
         function updateLeader() {
