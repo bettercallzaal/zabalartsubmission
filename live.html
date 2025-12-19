@@ -989,8 +989,8 @@
             }
         }
 
-        // Vote function with database
-        async function vote(mode) {
+        // Vote function with database - exposed to global scope for onclick handlers
+        window.vote = async function(mode) {
             console.log('🎯 Vote function called with mode:', mode);
             console.log('⏰ Current state:', currentState);
             
@@ -1074,8 +1074,8 @@
             }
         }
 
-        // Share vote to Farcaster
-        async function shareVote(mode) {
+        // Share vote to Farcaster - exposed to global scope
+        window.shareVote = async function(mode) {
             const modeEmojis = {
                 studio: '🎬',
                 market: '🛒',
