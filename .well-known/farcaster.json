@@ -1,5 +1,10 @@
 {
-  "miniapp": {
+  "accountAssociation": {
+    "header": "eyJmaWQiOjE5NjQwLCJ0eXBlIjoiYXV0aCIsImtleSI6IjB4Yjc5Y2RBYkY2ZjJmQjhGZWE3MEMyZTUxNUFFQzM1RTgyN2JGNzkzMiJ9",
+    "payload": "eyJkb21haW4iOiJ6YWJhbGFydHN1Ym1pc3Npb24udmVyY2VsLmFwcCJ9",
+    "signature": "yK+8HkI9cxeQ5cmHZ76CRjHCywoDz0zbmdPIMAJb0lUP3Ts9Of3jTA71BhnS+DIf4OjMaTNXwXCqI66EdPDKWhw="
+  },
+  "frame": {
     "version": "1",
     "name": "ZABAL Live Hub",
     "iconUrl": "https://zabalartsubmission.vercel.app/logo.png",
@@ -8,7 +13,13 @@
     "buttonTitle": "🎨 Vote Now",
     "splashImageUrl": "https://zabalartsubmission.vercel.app/splash.png",
     "splashBackgroundColor": "#141e27",
-    "category": "art-creativity",
-    "description": "Vote daily on ZABAL's creative direction! Choose between Studio, Market, Social, or Battle mode to shape the next stream. Your voice matters in this community-driven art project."
+    "webhookUrl": "https://zabalartsubmission.vercel.app/api/webhook",
+    "subtitle": "Community-driven stream coordination",
+    "description": "Vote daily on ZABAL's creative direction! Choose between Studio, Market, Social, or Battle mode to shape the next stream. Your voice matters in this community-driven art project.",
+    "primaryCategory": "art-creativity",
+    "tags": ["art", "voting", "community", "streaming", "creative"],
+    "ogTitle": "ZABAL Live Hub - Vote on Stream Direction",
+    "ogDescription": "Vote daily on ZABAL's creative direction! Choose between Studio, Market, Social, or Battle mode to shape the next stream.",
+    "ogImageUrl": "https://zabalartsubmission.vercel.app/preview.png"
   }
 }
