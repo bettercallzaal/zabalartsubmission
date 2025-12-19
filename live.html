@@ -18,12 +18,10 @@
     <meta name="twitter:description" content="Vote daily on ZABAL's direction! Choose Studio, Market, Social, or Battle mode to shape the stream.">
     <meta name="twitter:image" content="https://zabalartsubmission.vercel.app/preview.png">
     
-    <!-- Farcaster Mini App Embed Meta Tags -->
-    <meta property="fc:miniapp" content="https://zabalartsubmission.vercel.app/.well-known/farcaster.json">
-    <meta property="fc:miniapp:name" content="ZABAL Live Hub">
-    <meta property="fc:miniapp:icon" content="https://zabalartsubmission.vercel.app/logo.png">
-    <meta property="fc:miniapp:splash:image" content="https://zabalartsubmission.vercel.app/splash.png">
-    <meta property="fc:miniapp:splash:background_color" content="#141e27">
+    <!-- Farcaster Mini App Embed Meta Tag -->
+    <meta name="fc:miniapp" content='{"version":"1","imageUrl":"https://zabalartsubmission.vercel.app/preview.png","button":{"title":"🎨 Vote Now","action":{"type":"launch_miniapp","name":"ZABAL Live Hub","url":"https://zabalartsubmission.vercel.app/live.html","splashImageUrl":"https://zabalartsubmission.vercel.app/splash.png","splashBackgroundColor":"#141e27"}}}' />
+    <!-- For backward compatibility -->
+    <meta name="fc:frame" content='{"version":"1","imageUrl":"https://zabalartsubmission.vercel.app/preview.png","button":{"title":"🎨 Vote Now","action":{"type":"launch_frame","name":"ZABAL Live Hub","url":"https://zabalartsubmission.vercel.app/live.html","splashImageUrl":"https://zabalartsubmission.vercel.app/splash.png","splashBackgroundColor":"#141e27"}}}' />
     
     <script src="https://unpkg.com/@supabase/supabase-js@2.39.0/dist/umd/supabase.js"></script>
     <script type="module">
