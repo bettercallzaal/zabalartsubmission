@@ -817,7 +817,7 @@
         /* Mobile Responsive */
         @media (max-width: 768px) {
             header {
-                padding: 12px 16px;
+                padding: 10px 16px;
             }
 
             .header-content {
@@ -842,22 +842,52 @@
                 border-radius: 12px;
             }
 
+            .container {
+                padding: 0 16px;
+            }
+
+            section {
+                padding: 40px 0;
+            }
+
             .personal-stats {
-                margin: 16px;
-                padding: 16px;
+                margin: 12px 16px;
+                padding: 12px;
+            }
+
+            .stats-header {
+                margin-bottom: 10px;
+                padding-bottom: 8px;
             }
 
             .stats-grid {
                 grid-template-columns: repeat(2, 1fr);
-                gap: 12px;
+                gap: 10px;
             }
 
             .stat-value {
-                font-size: 1.5rem;
+                font-size: 1.4rem;
+                margin-bottom: 2px;
             }
 
             .stat-label {
                 font-size: 0.65rem;
+            }
+
+            .live-hero {
+                padding: 60px 20px 40px;
+            }
+
+            .hero-title {
+                margin-bottom: 1rem;
+            }
+
+            .hero-subtitle {
+                margin-bottom: 1.5rem;
+            }
+
+            .countdown {
+                margin-top: 1.5rem;
             }
 
             .mode-card {
@@ -909,6 +939,10 @@
         }
 
         @media (max-width: 480px) {
+            header {
+                padding: 8px 12px;
+            }
+
             .logo {
                 font-size: 1rem;
             }
@@ -919,46 +953,86 @@
                 max-width: 100px;
             }
 
+            .container {
+                padding: 0 12px;
+            }
+
+            section {
+                padding: 30px 0;
+            }
+
+            .live-hero {
+                padding: 40px 16px 30px;
+            }
+
             .hero-title {
-                font-size: 2rem;
+                font-size: 1.8rem;
+                margin-bottom: 0.75rem;
             }
 
             .hero-subtitle {
-                font-size: 1rem;
+                font-size: 0.95rem;
+                margin-bottom: 1.25rem;
             }
 
             .countdown {
-                font-size: 2rem;
+                font-size: 1.8rem;
+                margin-top: 1.25rem;
+            }
+
+            .countdown-label {
+                font-size: 0.8rem;
+                margin-bottom: 0.5rem;
             }
 
             .mode-card {
-                padding: 1rem;
+                padding: 0.875rem;
+            }
+
+            .mode-grid {
+                gap: 0.75rem;
             }
 
             .vote-button {
                 width: 100%;
+                padding: 10px;
             }
 
             .personal-stats {
-                margin: 12px;
-                padding: 12px;
+                margin: 10px 12px;
+                padding: 10px;
             }
 
             .stats-header {
-                margin-bottom: 12px;
-                padding-bottom: 8px;
+                margin-bottom: 8px;
+                padding-bottom: 6px;
             }
 
             .stats-title {
-                font-size: 0.9rem;
+                font-size: 0.85rem;
+            }
+
+            .stats-grid {
+                gap: 8px;
             }
 
             .stat-value {
-                font-size: 1.3rem;
+                font-size: 1.25rem;
+                margin-bottom: 2px;
             }
 
             .stat-label {
-                font-size: 0.6rem;
+                font-size: 0.58rem;
+            }
+
+            .history-grid,
+            .artifacts-grid {
+                gap: 0.75rem;
+            }
+
+            .history-card,
+            .artifact-card {
+                padding: 1rem;
             }
         }
     </style>
