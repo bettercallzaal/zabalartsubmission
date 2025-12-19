@@ -119,13 +119,90 @@ ZABAL ART WEBSITE/
 - `supabase-schema-fid.sql` - PostgreSQL schema with RLS policies
 - `.env.example` - Template for Supabase and Neynar API keys
 
-**Configuration:**
-- `vercel.json` - Static site deployment settings
-- No build step required - pure HTML/CSS/JS
+**Voting Streaks**
+- Track consecutive days
+- Display streak counter in header
+- Unlock vote power at milestones
+- Badges: First Vote, Week Warrior, Trendsetter
+
+**Enhanced Leaderboard**
+- Multiple categories (votes, streak, accuracy)
+- Real-time updates
+- User highlighting
+- Weekly/monthly views
+
+**Vote History**
+- Personal voting calendar
+- Win/loss record
+- Favorite mode statistics
+
+### Phase 2: Social Proof (Week 3-4)
+
+**Friends Who Voted (Neynar API)**
+- "12 of your friends voted today"
+- Show mutual followers
+- Increases voting by 5x
+
+**Vote Power System**
+- Following @thezao: +1
+- Active in /zabal: +1
+- 5+ day streak: +1
+- Display multiplier prominently
+
+**Activity Feed**
+- Recent votes ticker
+- "@alice just voted for Studio!"
+- Creates FOMO and urgency
+
+### Phase 3: Notifications & Growth (Month 2)
+
+**Farcaster Notifications**
+- "Voting closes in 2 hours!"
+- "Your mode won! 🎉"
+- "Don't break your streak!"
+- Requires webhook setup
+
+**Channel Integration**
+- Auto-post daily results to /zabal
+- Weekly recap casts
+- Highlight top voters
+
+**Discovery**
+- Submit to Farcaster directory
+- Get featured in Art & Creativity
+- Cross-promote with other Mini Apps
+
+### Phase 4: Analytics (Month 2-3)
+
+**User Dashboard**
+- Personal voting stats
+- Prediction accuracy
+- Influence score
+- Contribution metrics
+
+**Community Insights**
+- Vote trends over time
+- Mode popularity charts
+- Peak voting hours
+- Geographic distribution
+
+### Long-term Vision
+
+**ZAO Stock 2026 Integration**
+- Voting history as proof of participation
+- Early voter NFTs/POAPs
+- VIP access for top contributors
+- Physical leaderboard at event
+
+**Ecosystem Expansion**
+- WaveWarZ voting integration
+- Cross-app reputation system
+- Unified ZABAL identity
+- Token-gated features
 
 ---
 
-## �📄 Pages Overview
+## � Pages Overview
 
 ### 🎡 Live Hub (`/live.html`) - Farcaster Mini App
 **The stream isn't scheduled. It's decided.**
