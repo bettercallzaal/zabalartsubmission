@@ -1683,9 +1683,6 @@
         let userFID = null;
         let username = null;
         let isAuthenticated = false;
-        
-        // Load share preferences on page load
-        loadSharePreferences();
 
         async function initializeFarcaster() {
             console.log('🔐 Initializing Farcaster authentication...');
@@ -1997,6 +1994,25 @@
             shareMilestones: true
         };
 
+        // Update toggle UI
+        function updateToggleUI() {
+            const toggles = {
+                autoShare: document.getElementById('autoShareToggle'),
+                shareLeading: document.getElementById('shareLeadingToggle'),
+                shareMilestones: document.getElementById('shareMilestonesToggle')
+            };
+
+            Object.keys(toggles).forEach(key => {
+                if (toggles[key]) {
+                    if (sharePreferences[key]) {
+                        toggles[key].classList.add('active');
+                    } else {
+                        toggles[key].classList.remove('active');
+                    }
+                }
+            });
+        }
+
         // Load preferences from localStorage
         function loadSharePreferences() {
             const saved = localStorage.getItem('sharePreferences');
@@ -2019,25 +2035,6 @@
             console.log('📝 Share preference updated:', setting, sharePreferences[setting]);
         }
 
-        // Update toggle UI
-        function updateToggleUI() {
-            const toggles = {
-                autoShare: document.getElementById('autoShareToggle'),
-                shareLeading: document.getElementById('shareLeadingToggle'),
-                shareMilestones: document.getElementById('shareMilestonesToggle')
-            };
-
-            Object.keys(toggles).forEach(key => {
-                if (toggles[key]) {
-                    if (sharePreferences[key]) {
-                        toggles[key].classList.add('active');
-                    } else {
-                        toggles[key].classList.remove('active');
-                    }
-                }
-            });
-        }
-
         // Check if should auto-share based on preferences
         function shouldAutoShare(mode) {
             if (!sharePreferences.autoShare) return false;
@@ -2054,6 +2051,9 @@
             const milestones = [10, 25, 50, 100, 250, 500];
             return milestones.includes(totalVotes);
         }
+
+        // Initialize share preferences
+        loadSharePreferences();
 
         // Share vote to Farcaster - exposed to global scope
         window.shareVote = async function(mode, isAuto = false) {
