@@ -89,13 +89,17 @@ python -m http.server 8000
 **The stream isn't scheduled. It's decided.**
 
 - **Farcaster Integration** - Native Mini App with automatic authentication
+- **User Profile Display** - Shows @username when signed in with Farcaster
 - **Dynamic Hero** - Changes based on stream state (deciding/locked/live)
 - **Stream Wheel** - Vote for today's mode (Studio/Market/Social/Battle)
 - **Real-time Voting** - Supabase-powered voting with FID authentication
-- **Social Sharing** - One-click cast composition with vote results
+- **Vote Confirmation** - Visual banner showing which mode you voted for
+- **Share Modal** - Copy miniapp link or share to Farcaster with one click
+- **Social Sharing** - Posts to /zabal channel with vote results and miniapp link
 - **Today/Yesterday Display** - Shows current leader and previous winner
 - **Built on Stream Artifacts** - Proof of coordination, not just content
 - **Proof Section** - ∞ streams decided by you, 4 modes, 0 scheduled
+- **Fully Mobile Responsive** - Optimized for all screen sizes
 
 ### 🎨 Submission Portal (`/index.html`)
 **A Creative Submission Portal**
