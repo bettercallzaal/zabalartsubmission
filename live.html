@@ -309,23 +309,61 @@
 
         /* User Profile Badge */
         .user-profile-badge {
-            padding: 6px 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 4px 12px 4px 4px;
             background: rgba(224, 221, 170, 0.08);
             border: 1px solid rgba(224, 221, 170, 0.3);
-            border-radius: 16px;
+            border-radius: 20px;
             font-size: 0.8rem;
             color: var(--accent-yellow);
             font-weight: 600;
             transition: all 0.3s ease;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            max-width: 150px;
+            max-width: 200px;
         }
 
         .user-profile-badge:hover {
             background: rgba(224, 221, 170, 0.15);
             border-color: var(--accent-yellow);
+        }
+
+        .user-pfp {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            border: 2px solid var(--accent-yellow);
+            object-fit: cover;
+        }
+
+        .user-info {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            overflow: hidden;
+        }
+
+        .user-name-row {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .user-name {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .verified-badge {
+            font-size: 0.7rem;
+            color: var(--accent-yellow);
+        }
+
+        .user-fid {
+            font-size: 0.65rem;
+            color: var(--text-gray);
+            opacity: 0.8;
         }
 
         /* Personal Stats Section */
@@ -818,10 +856,20 @@
             }
 
             .user-profile-badge {
-                padding: 4px 10px;
+                padding: 3px 10px 3px 3px;
                 font-size: 0.7rem;
-                max-width: 120px;
-                border-radius: 12px;
+                max-width: 160px;
+                border-radius: 16px;
+                gap: 6px;
+            }
+
+            .user-pfp {
+                width: 24px;
+                height: 24px;
+            }
+
+            .user-fid {
+                font-size: 0.6rem;
             }
 
             .container {
@@ -1011,9 +1059,28 @@
             }
 
             .user-profile-badge {
-                padding: 3px 8px;
+                padding: 2px 8px 2px 2px;
                 font-size: 0.65rem;
-                max-width: 100px;
+                max-width: 140px;
+                border-radius: 14px;
+                gap: 5px;
+            }
+
+            .user-pfp {
+                width: 22px;
+                height: 22px;
+            }
+
+            .user-name {
+                font-size: 0.65rem;
+            }
+
+            .user-fid {
+                font-size: 0.55rem;
+            }
+
+            .verified-badge {
+                font-size: 0.6rem;
             }
 
             .container {
@@ -1183,7 +1250,14 @@
                 <a href="https://discord.bettercallzaal.com" target="_blank">Discord</a>
             </nav>
             <div id="userProfile" class="user-profile-badge" style="display: none;">
-                <span id="userName">Loading...</span>
+                <img id="userPfp" class="user-pfp" src="" alt="Profile" onerror="this.style.display='none'">
+                <div class="user-info">
+                    <div class="user-name-row">
+                        <span class="user-name" id="userName">Loading...</span>
+                        <span class="verified-badge" id="verifiedBadge" style="display: none;">✓</span>
+                    </div>
+                    <span class="user-fid" id="userFidDisplay"></span>
+                </div>
             </div>
         </div>
     </header>
@@ -1522,14 +1596,31 @@
                         username = context.user.username;
                         isAuthenticated = true;
                         
-                        console.log('✅ Farcaster user authenticated:', { fid: userFID, username });
+                        console.log('✅ Farcaster user authenticated:', { fid: userFID, username, user: context.user });
                         
-                        // Show user profile in header
+                        // Show enhanced user profile in header
                         const userProfileEl = document.getElementById('userProfile');
                         const userNameEl = document.getElementById('userName');
+                        const userPfpEl = document.getElementById('userPfp');
+                        const userFidEl = document.getElementById('userFidDisplay');
+                        const verifiedBadgeEl = document.getElementById('verifiedBadge');
+                        
                         if (userProfileEl && userNameEl) {
                             userNameEl.textContent = `@${username}`;
-                            userProfileEl.style.display = 'block';
+                            userFidEl.textContent = `FID: ${userFID}`;
+                            
+                            // Set profile picture if available
+                            if (context.user.pfpUrl) {
+                                userPfpEl.src = context.user.pfpUrl;
+                                userPfpEl.style.display = 'block';
+                            }
+                            
+                            // Show verification badge if user has it
+                            if (context.user.verified || context.user.verifications?.length > 0) {
+                                verifiedBadgeEl.style.display = 'inline';
+                            }
+                            
+                            userProfileEl.style.display = 'flex';
                         }
                         
                         // Show personal stats and load user data
