@@ -2055,6 +2055,39 @@
         // Initialize share preferences
         loadSharePreferences();
 
+        // Get user stats for sharing
+        function getUserShareStats() {
+            const totalVotes = parseInt(document.getElementById('statTotalVotes')?.textContent || '0');
+            const streak = parseInt(document.getElementById('statStreak')?.textContent || '0');
+            const favoriteMode = document.getElementById('statFavoriteMode')?.textContent || '—';
+            return { totalVotes, streak, favoriteMode };
+        }
+
+        // Generate achievement badges
+        function getAchievementBadges(userStats, mode, isLeading) {
+            const badges = [];
+            
+            if (userStats.streak >= 7) badges.push('🔥 7-Day Streak');
+            if (userStats.streak >= 30) badges.push('🏆 30-Day Legend');
+            if (userStats.totalVotes >= 10) badges.push('⭐ 10 Votes');
+            if (userStats.totalVotes >= 50) badges.push('🌟 50 Votes');
+            if (userStats.totalVotes >= 100) badges.push('💫 100 Votes');
+            if (isLeading) badges.push('👑 Leading');
+            
+            return badges.length > 0 ? badges.join(' ') : '';
+        }
+
+        // Generate social proof
+        function getSocialProof(totalVotes, mode) {
+            const modeVotes = votes[mode];
+            const percentage = totalVotes > 0 ? Math.round((modeVotes / totalVotes) * 100) : 0;
+            
+            if (percentage >= 50) return `🔥 ${percentage}% of voters agree!`;
+            if (modeVotes >= 10) return `👥 ${modeVotes} people voted for this!`;
+            if (totalVotes >= 50) return `🎯 ${totalVotes} total votes cast today!`;
+            return '';
+        }
+
         // Share vote to Farcaster - exposed to global scope
         window.shareVote = async function(mode, isAuto = false) {
             const modeEmojis = {
@@ -2071,6 +2104,13 @@
                 battle: 'BATTLE'
             };
             
+            const modeDescriptions = {
+                studio: 'Creative art sessions',
+                market: 'NFT drops & trading',
+                social: 'Community hangouts',
+                battle: 'Competitive challenges'
+            };
+            
             // Calculate total votes and percentages
             const totalVotes = votes.studio + votes.market + votes.social + votes.battle;
             const getPercentage = (count) => totalVotes > 0 ? Math.round((count / totalVotes) * 100) : 0;
@@ -2078,6 +2118,11 @@
             // Find leader
             const leader = getLeader();
             const isLeading = mode === leader;
+            
+            // Get user stats and achievements
+            const userStats = getUserShareStats();
+            const achievements = getAchievementBadges(userStats, mode, isLeading);
+            const socialProof = getSocialProof(totalVotes, mode);
             
             // Create vote standings with visual bars and leader indicator
             const createBar = (count, isLeader) => {
@@ -2098,15 +2143,28 @@
             // Check for milestone
             const isMilestone = checkMilestone(totalVotes);
             
-            // Create personalized message
+            // Create engaging personalized message
             let castText;
+            let callToAction;
+            
             if (isMilestone) {
-                castText = `🎉 Milestone: ${totalVotes} total votes!\n\nJust voted ${modeEmojis[mode]} ${modeNames[mode]}\n\n${standings}\n\nJoin the celebration! Vote now 👇`;
+                castText = `🎉 WE HIT ${totalVotes} VOTES!\n\nJust voted ${modeEmojis[mode]} ${modeNames[mode]} - ${modeDescriptions[mode]}\n\n${standings}\n\n${achievements ? achievements + '\n\n' : ''}Join the celebration! 🎊`;
+                callToAction = 'Vote & celebrate with us! 👇';
             } else if (isLeading) {
-                castText = `Just voted ${modeEmojis[mode]} ${modeNames[mode]} - and we're LEADING! 👑\n\n${standings}\n\nTotal: ${totalVotes} votes\n\nHelp us win! Vote now 👇`;
+                const gap = votes[mode] - Math.max(...Object.entries(votes).filter(([k]) => k !== mode).map(([, v]) => v));
+                castText = `${modeEmojis[mode]} ${modeNames[mode]} IS WINNING! 👑\n\nLeading by ${gap} vote${gap !== 1 ? 's' : ''}!\n\n${standings}\n\n${socialProof ? socialProof + '\n\n' : ''}${achievements ? achievements + '\n\n' : ''}`;
+                callToAction = 'Help us dominate! Vote now 👇';
+            } else if (userStats.streak >= 7) {
+                castText = `🔥 ${userStats.streak}-day streak! Voted ${modeEmojis[mode]} ${modeNames[mode]}\n\n${standings}\n\n${achievements}\n\n`;
+                callToAction = 'Can you beat my streak? 👇';
             } else {
-                castText = `Voted ${modeEmojis[mode]} ${modeNames[mode]} on ZABAL! 🎨\n\n${standings}\n\nTotal: ${totalVotes} votes\n\nJoin the vote! 👇`;
+                const urgency = getPercentage(votes[mode]) < 20 ? `\n\n🚨 ${modeNames[mode]} needs your support!` : '';
+                castText = `Voted ${modeEmojis[mode]} ${modeNames[mode]} on ZABAL! 🎨\n\n${standings}${urgency}\n\n${socialProof ? socialProof + '\n\n' : ''}`;
+                callToAction = 'Your turn! Vote now 👇';
             }
+            
+            // Add call to action
+            castText += callToAction;
             
             try {
                 await window.farcasterSDK.actions.composeCast({
@@ -2115,13 +2173,62 @@
                     channelKey: 'zao'
                 });
                 console.log('✅ Vote shared to Farcaster');
+                
+                // Track share for potential rewards
+                trackShare(mode, userStats.totalVotes);
+                
+                // Show share success feedback
                 if (!isAuto) {
-                    closeShareModal();
+                    showShareSuccess();
+                    setTimeout(() => closeShareModal(), 1500);
                 }
             } catch (error) {
                 console.error('❌ Failed to share vote:', error);
                 alert('Could not share to Farcaster. Please try again.');
             }
+        }
+
+        // Track shares for analytics and potential rewards
+        function trackShare(mode, userTotalVotes) {
+            const shareCount = parseInt(localStorage.getItem('shareCount') || '0') + 1;
+            localStorage.setItem('shareCount', shareCount.toString());
+            localStorage.setItem('lastShareMode', mode);
+            localStorage.setItem('lastShareTime', Date.now().toString());
+            
+            console.log('📊 Share tracked:', { shareCount, mode, userTotalVotes });
+            
+            // Check for share milestones
+            if (shareCount === 1) {
+                console.log('🎉 First share!');
+            } else if (shareCount === 10) {
+                console.log('🌟 10 shares milestone!');
+            } else if (shareCount === 50) {
+                console.log('💫 50 shares milestone!');
+            }
+        }
+
+        // Show share success animation
+        function showShareSuccess() {
+            const successMsg = document.createElement('div');
+            successMsg.style.cssText = `
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                background: linear-gradient(135deg, #e0ddaa 0%, #d4c96e 100%);
+                color: #0a0a0a;
+                padding: 20px 40px;
+                border-radius: 12px;
+                font-size: 1.2rem;
+                font-weight: 800;
+                z-index: 10001;
+                animation: shareSuccess 1.5s ease;
+                box-shadow: 0 8px 32px rgba(224, 221, 170, 0.4);
+            `;
+            successMsg.textContent = '✅ Shared to /zao!';
+            document.body.appendChild(successMsg);
+            
+            setTimeout(() => successMsg.remove(), 1500);
         }
         
         // Show share button after voting
