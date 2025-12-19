@@ -1885,7 +1885,37 @@
                 battle: 'BATTLE'
             };
             
-            const castText = `Just voted for ${modeEmojis[mode]} ${modeNames[mode]} mode on ZABAL Live Hub! 🎨\n\nCurrent standings:\n🎬 Studio: ${votes.studio}\n🛒 Market: ${votes.market}\n🌐 Social: ${votes.social}\n⚔️ Battle: ${votes.battle}\n\nVote now! 👇`;
+            // Calculate total votes and percentages
+            const totalVotes = votes.studio + votes.market + votes.social + votes.battle;
+            const getPercentage = (count) => totalVotes > 0 ? Math.round((count / totalVotes) * 100) : 0;
+            
+            // Find leader
+            const leader = getLeader();
+            const isLeading = mode === leader;
+            
+            // Create vote standings with visual bars and leader indicator
+            const createBar = (count, isLeader) => {
+                const pct = getPercentage(count);
+                const barLength = Math.round(pct / 10); // 10% = 1 block
+                const bar = '█'.repeat(Math.max(1, barLength));
+                const leaderMark = isLeader ? ' 👑' : '';
+                return `${bar} ${pct}%${leaderMark}`;
+            };
+            
+            const standings = [
+                `🎬 Studio: ${votes.studio} ${createBar(votes.studio, leader === 'studio')}`,
+                `🛒 Market: ${votes.market} ${createBar(votes.market, leader === 'market')}`,
+                `🌐 Social: ${votes.social} ${createBar(votes.social, leader === 'social')}`,
+                `⚔️ Battle: ${votes.battle} ${createBar(votes.battle, leader === 'battle')}`
+            ].join('\n');
+            
+            // Create personalized message
+            let castText;
+            if (isLeading) {
+                castText = `Just voted ${modeEmojis[mode]} ${modeNames[mode]} - and we're LEADING! 👑\n\n${standings}\n\nTotal: ${totalVotes} votes\n\nHelp us win! Vote now 👇`;
+            } else {
+                castText = `Voted ${modeEmojis[mode]} ${modeNames[mode]} on ZABAL! 🎨\n\n${standings}\n\nTotal: ${totalVotes} votes\n\nJoin the vote! 👇`;
+            }
             
             try {
                 await window.farcasterSDK.actions.composeCast({
