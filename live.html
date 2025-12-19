@@ -25,9 +25,23 @@
     
     <script src="https://unpkg.com/@supabase/supabase-js@2.39.0/dist/umd/supabase.js"></script>
     <script type="module">
-        // Import Farcaster SDK
+        // Import Farcaster SDK and wait for it to load
         import { sdk } from 'https://esm.sh/@farcaster/miniapp-sdk';
         window.farcasterSDK = sdk;
+        window.farcasterSDKLoaded = true;
+        console.log('✅ Farcaster SDK loaded');
+    </script>
+    <script>
+        // Fallback: Call ready() after timeout if SDK doesn't load
+        window.farcasterSDKLoaded = false;
+        setTimeout(() => {
+            if (!window.farcasterSDKLoaded && window.farcasterSDK && window.farcasterSDK.actions) {
+                console.log('⏰ Timeout: Calling ready() as fallback');
+                window.farcasterSDK.actions.ready().catch(err => {
+                    console.log('ℹ️ Ready() fallback failed:', err);
+                });
+            }
+        }, 2000);
     </script>
     <style>
         * {
@@ -908,8 +922,18 @@
         async function initializeFarcaster() {
             console.log('🔐 Initializing Farcaster authentication...');
             
+            // Wait for SDK to load (max 3 seconds)
+            let sdkReady = false;
+            for (let i = 0; i < 30; i++) {
+                if (window.farcasterSDK && window.farcasterSDK.actions) {
+                    sdkReady = true;
+                    break;
+                }
+                await new Promise(resolve => setTimeout(resolve, 100));
+            }
+            
             try {
-                if (window.farcasterSDK) {
+                if (sdkReady && window.farcasterSDK) {
                     const context = await window.farcasterSDK.context;
                     
                     if (context && context.user) {
@@ -927,7 +951,7 @@
                     await window.farcasterSDK.actions.ready();
                     console.log('✅ Splash screen hidden, app ready');
                 } else {
-                    console.warn('⚠️ Farcaster SDK not loaded');
+                    console.warn('⚠️ Farcaster SDK not loaded after 3s timeout');
                     throw new Error('Farcaster SDK not available');
                 }
             } catch (err) {
@@ -940,12 +964,14 @@
                 
                 // Try to call ready() even in fallback mode
                 try {
-                    if (window.farcasterSDK) {
+                    if (window.farcasterSDK && window.farcasterSDK.actions) {
                         await window.farcasterSDK.actions.ready();
                         console.log('✅ Splash screen hidden (fallback mode)');
+                    } else {
+                        console.log('⚠️ SDK not available, cannot call ready()');
                     }
                 } catch (readyErr) {
-                    console.log('ℹ️ Could not call ready() in fallback mode');
+                    console.log('ℹ️ Could not call ready() in fallback mode:', readyErr);
                 }
             }
             
