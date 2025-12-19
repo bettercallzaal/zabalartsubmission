@@ -14,12 +14,12 @@
     "splashImageUrl": "https://zabalartsubmission.vercel.app/splash.png",
     "splashBackgroundColor": "#141e27",
     "webhookUrl": "https://zabalartsubmission.vercel.app/api/webhook",
-    "subtitle": "Community-driven stream coordination",
-    "description": "Vote daily on ZABAL's creative direction! Choose between Studio, Market, Social, or Battle mode to shape the next stream. Your voice matters in this community-driven art project.",
+    "subtitle": "Vote on stream direction",
+    "description": "Vote daily on ZABAL's direction! Choose Studio, Market, Social, or Battle mode to shape the stream. Community-driven art coordination.",
     "primaryCategory": "art-creativity",
     "tags": ["art", "voting", "community", "streaming", "creative"],
-    "ogTitle": "ZABAL Live Hub - Vote on Stream Direction",
-    "ogDescription": "Vote daily on ZABAL's creative direction! Choose between Studio, Market, Social, or Battle mode to shape the next stream.",
+    "ogTitle": "ZABAL - Vote on Stream",
+    "ogDescription": "Vote daily on ZABAL's direction! Choose Studio, Market, Social, or Battle mode to shape the stream.",
     "ogImageUrl": "https://zabalartsubmission.vercel.app/preview.png"
   }
 }
