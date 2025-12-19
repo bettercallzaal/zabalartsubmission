@@ -188,6 +188,81 @@
             }
         }
 
+        /* Settings Toggle */
+        .settings-section {
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(20, 30, 39, 0.3);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+        }
+
+        .settings-title {
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: var(--text-white);
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .setting-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .setting-item:last-child {
+            border-bottom: none;
+        }
+
+        .setting-label {
+            font-size: 0.85rem;
+            color: var(--text-gray);
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+        }
+
+        .setting-description {
+            font-size: 0.7rem;
+            color: var(--text-gray);
+            opacity: 0.7;
+        }
+
+        .toggle-switch {
+            position: relative;
+            width: 44px;
+            height: 24px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+            border: 1px solid var(--border-color);
+        }
+
+        .toggle-switch.active {
+            background: var(--accent-yellow);
+        }
+
+        .toggle-slider {
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 18px;
+            height: 18px;
+            background: white;
+            border-radius: 50%;
+            transition: transform 0.3s ease;
+        }
+
+        .toggle-switch.active .toggle-slider {
+            transform: translateX(20px);
+        }
+
         /* Share Modal */
         .share-modal {
             display: none;
@@ -1391,6 +1466,41 @@
                     Close
                 </button>
             </div>
+
+            <!-- Share Settings -->
+            <div class="settings-section">
+                <div class="settings-title">⚙️ Share Preferences</div>
+                
+                <div class="setting-item">
+                    <div class="setting-label">
+                        <span>Auto-share votes</span>
+                        <span class="setting-description">Automatically share when you vote</span>
+                    </div>
+                    <div class="toggle-switch" id="autoShareToggle" onclick="toggleSetting('autoShare')">
+                        <div class="toggle-slider"></div>
+                    </div>
+                </div>
+
+                <div class="setting-item">
+                    <div class="setting-label">
+                        <span>Share only when leading</span>
+                        <span class="setting-description">Only auto-share if your mode is winning</span>
+                    </div>
+                    <div class="toggle-switch" id="shareLeadingToggle" onclick="toggleSetting('shareLeading')">
+                        <div class="toggle-slider"></div>
+                    </div>
+                </div>
+
+                <div class="setting-item">
+                    <div class="setting-label">
+                        <span>Milestone celebrations</span>
+                        <span class="setting-description">Share on 10th, 50th, 100th vote</span>
+                    </div>
+                    <div class="toggle-switch" id="shareMilestonesToggle" onclick="toggleSetting('shareMilestones')">
+                        <div class="toggle-slider"></div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -1574,6 +1684,9 @@
         let username = null;
         let isAuthenticated = false;
         
+        // Load share preferences on page load
+        loadSharePreferences();
+
         async function initializeFarcaster() {
             console.log('🔐 Initializing Farcaster authentication...');
             
@@ -1799,6 +1912,14 @@
                 userVote = mode;
                 console.log('💾 User vote saved:', mode);
                 
+                // Check if should auto-share
+                if (shouldAutoShare(mode)) {
+                    console.log('🔄 Auto-sharing vote...');
+                    setTimeout(() => shareVote(mode, true), 1000);
+                } else {
+                    showShareButton(mode);
+                }
+                
                 // Show vote confirmation
                 const modeNames = {
                     studio: 'Studio Mode 🎬',
@@ -1869,8 +1990,73 @@
             });
         }
         
+        // Share preferences stored in localStorage
+        const sharePreferences = {
+            autoShare: false,
+            shareLeading: false,
+            shareMilestones: true
+        };
+
+        // Load preferences from localStorage
+        function loadSharePreferences() {
+            const saved = localStorage.getItem('sharePreferences');
+            if (saved) {
+                Object.assign(sharePreferences, JSON.parse(saved));
+            }
+            updateToggleUI();
+        }
+
+        // Save preferences to localStorage
+        function saveSharePreferences() {
+            localStorage.setItem('sharePreferences', JSON.stringify(sharePreferences));
+        }
+
+        // Toggle setting
+        window.toggleSetting = function(setting) {
+            sharePreferences[setting] = !sharePreferences[setting];
+            saveSharePreferences();
+            updateToggleUI();
+            console.log('📝 Share preference updated:', setting, sharePreferences[setting]);
+        }
+
+        // Update toggle UI
+        function updateToggleUI() {
+            const toggles = {
+                autoShare: document.getElementById('autoShareToggle'),
+                shareLeading: document.getElementById('shareLeadingToggle'),
+                shareMilestones: document.getElementById('shareMilestonesToggle')
+            };
+
+            Object.keys(toggles).forEach(key => {
+                if (toggles[key]) {
+                    if (sharePreferences[key]) {
+                        toggles[key].classList.add('active');
+                    } else {
+                        toggles[key].classList.remove('active');
+                    }
+                }
+            });
+        }
+
+        // Check if should auto-share based on preferences
+        function shouldAutoShare(mode) {
+            if (!sharePreferences.autoShare) return false;
+            if (sharePreferences.shareLeading) {
+                const leader = getLeader();
+                return mode === leader;
+            }
+            return true;
+        }
+
+        // Check for milestone and share if enabled
+        function checkMilestone(totalVotes) {
+            if (!sharePreferences.shareMilestones) return false;
+            const milestones = [10, 25, 50, 100, 250, 500];
+            return milestones.includes(totalVotes);
+        }
+
         // Share vote to Farcaster - exposed to global scope
-        window.shareVote = async function(mode) {
+        window.shareVote = async function(mode, isAuto = false) {
             const modeEmojis = {
                 studio: '🎬',
                 market: '🛒',
@@ -1909,9 +2095,14 @@
                 `⚔️ Battle: ${votes.battle} ${createBar(votes.battle, leader === 'battle')}`
             ].join('\n');
             
+            // Check for milestone
+            const isMilestone = checkMilestone(totalVotes);
+            
             // Create personalized message
             let castText;
-            if (isLeading) {
+            if (isMilestone) {
+                castText = `🎉 Milestone: ${totalVotes} total votes!\n\nJust voted ${modeEmojis[mode]} ${modeNames[mode]}\n\n${standings}\n\nJoin the celebration! Vote now 👇`;
+            } else if (isLeading) {
                 castText = `Just voted ${modeEmojis[mode]} ${modeNames[mode]} - and we're LEADING! 👑\n\n${standings}\n\nTotal: ${totalVotes} votes\n\nHelp us win! Vote now 👇`;
             } else {
                 castText = `Voted ${modeEmojis[mode]} ${modeNames[mode]} on ZABAL! 🎨\n\n${standings}\n\nTotal: ${totalVotes} votes\n\nJoin the vote! 👇`;
@@ -1924,7 +2115,9 @@
                     channelKey: 'zao'
                 });
                 console.log('✅ Vote shared to Farcaster');
-                closeShareModal();
+                if (!isAuto) {
+                    closeShareModal();
+                }
             } catch (error) {
                 console.error('❌ Failed to share vote:', error);
                 alert('Could not share to Farcaster. Please try again.');
