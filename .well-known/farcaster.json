@@ -1,25 +1,25 @@
 {
   "accountAssociation": {
     "header": "eyJmaWQiOjE5NjQwLCJ0eXBlIjoiYXV0aCIsImtleSI6IjB4Yjc5Y2RBYkY2ZjJmQjhGZWE3MEMyZTUxNUFFQzM1RTgyN2JGNzkzMiJ9",
-    "payload": "eyJkb21haW4iOiJ6YWJhbGFydHN1Ym1pc3Npb24udmVyY2VsLmFwcCJ9",
-    "signature": "yK+8HkI9cxeQ5cmHZ76CRjHCywoDz0zbmdPIMAJb0lUP3Ts9Of3jTA71BhnS+DIf4OjMaTNXwXCqI66EdPDKWhw="
+    "payload": "eyJkb21haW4iOiJ6YWJhbC5hcnQifQ",
+    "signature": "feukx4JHjI9QDRWE3XcUYXpnb1PaODlA2Px44QhNro8jyoVryGOw/hm4jZosWSaPXgk0djFaFA09KCLVy6SR9xw="
   },
   "frame": {
     "version": "1",
     "name": "ZABAL Live Hub",
-    "iconUrl": "https://zabalartsubmission.vercel.app/logo.png",
-    "homeUrl": "https://zabalartsubmission.vercel.app/live.html",
-    "imageUrl": "https://zabalartsubmission.vercel.app/preview.png",
+    "iconUrl": "https://zabal.art/logo.png",
+    "homeUrl": "https://zabal.art/live.html",
+    "imageUrl": "https://zabal.art/preview.png",
     "buttonTitle": "🎨 Vote Now",
-    "splashImageUrl": "https://zabalartsubmission.vercel.app/splash.png",
+    "splashImageUrl": "https://zabal.art/splash.png",
     "splashBackgroundColor": "#141e27",
-    "webhookUrl": "https://zabalartsubmission.vercel.app/api/webhook",
+    "webhookUrl": "https://zabal.art/api/webhook",
     "subtitle": "Vote on stream direction",
     "description": "Vote daily on ZABAL's direction! Choose Studio, Market, Social, or Battle mode to shape the stream. Community-driven art coordination.",
     "primaryCategory": "art-creativity",
     "tags": ["art", "voting", "community", "streaming", "creative"],
     "ogTitle": "ZABAL - Vote on Stream",
     "ogDescription": "Vote daily on ZABAL's direction! Choose Studio, Market, Social, or Battle mode to shape the stream.",
-    "ogImageUrl": "https://zabalartsubmission.vercel.app/preview.png"
+    "ogImageUrl": "https://zabal.art/preview.png"
   }
 }
