@@ -423,25 +423,7 @@
         }
 
         .hero-cta {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.75rem;
-            padding: 18px 40px;
-            background: var(--accent-yellow);
-            color: var(--bg-black);
-            text-decoration: none;
-            border-radius: 12px;
-            font-weight: 800;
-            font-size: 1.1rem;
-            transition: all 0.3s ease;
-            border: 2px solid var(--accent-yellow);
-        }
-
-        .hero-cta:hover {
-            background: var(--text-white);
-            border-color: var(--text-white);
-            transform: translateY(-2px);
-            box-shadow: 0 10px 40px var(--hover-glow);
+            display: none;
         }
 
         /* Stream Wheel Section */
@@ -918,9 +900,7 @@
             }
 
             .hero-cta {
-                margin-top: 1rem;
-                padding: 10px 24px;
-                font-size: 0.9rem;
+                display: none;
             }
 
             .wheel-section {
@@ -939,53 +919,51 @@
             .mode-card {
                 grid-template-columns: 1fr;
                 text-align: center;
-                padding: 0.75rem;
-                gap: 0.5rem;
-                border-radius: 10px;
+                padding: 0.6rem;
+                gap: 0.4rem;
+                border-radius: 8px;
             }
 
             .mode-icon {
                 margin: 0 auto;
-                width: 40px;
-                height: 40px;
-                font-size: 1.5rem;
-                border-radius: 6px;
+                width: 36px;
+                height: 36px;
+                font-size: 1.4rem;
+                border-radius: 5px;
             }
 
             .mode-name {
-                font-size: 0.95rem;
-                margin-bottom: 0.2rem;
+                font-size: 0.9rem;
+                margin-bottom: 0.15rem;
             }
 
             .mode-description {
-                font-size: 0.7rem;
-                line-height: 1.3;
                 display: none;
             }
 
             .mode-votes {
                 min-width: auto;
-                margin-top: 0.25rem;
+                margin-top: 0.2rem;
             }
 
             .vote-count {
-                font-size: 1.3rem;
-                margin-bottom: 0.15rem;
+                font-size: 1.2rem;
+                margin-bottom: 0.1rem;
             }
 
             .vote-label {
-                font-size: 0.6rem;
+                font-size: 0.55rem;
             }
 
             .vote-button {
-                margin-top: 0.5rem;
-                padding: 7px 14px;
-                font-size: 0.8rem;
+                margin-top: 0.4rem;
+                padding: 6px 12px;
+                font-size: 0.75rem;
             }
 
             .mode-grid {
                 grid-template-columns: repeat(2, 1fr);
-                gap: 0.75rem;
+                gap: 0.6rem;
             }
 
             nav {
@@ -1112,9 +1090,7 @@
             }
 
             .hero-cta {
-                margin-top: 0.75rem;
-                padding: 8px 20px;
-                font-size: 0.85rem;
+                display: none;
             }
 
             .wheel-section {
@@ -1131,21 +1107,21 @@
             }
 
             .mode-card {
-                padding: 0.65rem;
-                gap: 0.4rem;
-                border-radius: 8px;
+                padding: 0.55rem;
+                gap: 0.35rem;
+                border-radius: 7px;
             }
 
             .mode-icon {
-                width: 35px;
-                height: 35px;
-                font-size: 1.3rem;
-                border-radius: 5px;
+                width: 32px;
+                height: 32px;
+                font-size: 1.2rem;
+                border-radius: 4px;
             }
 
             .mode-name {
-                font-size: 0.85rem;
-                margin-bottom: 0.15rem;
+                font-size: 0.8rem;
+                margin-bottom: 0.1rem;
             }
 
             .mode-description {
@@ -1154,29 +1130,29 @@
 
             .mode-votes {
                 min-width: auto;
-                margin-top: 0.25rem;
+                margin-top: 0.2rem;
             }
 
             .vote-count {
-                font-size: 1.2rem;
-                margin-bottom: 0.1rem;
+                font-size: 1.1rem;
+                margin-bottom: 0.08rem;
             }
 
             .vote-label {
-                font-size: 0.55rem;
-                letter-spacing: 0.3px;
+                font-size: 0.52rem;
+                letter-spacing: 0.2px;
             }
 
             .mode-grid {
                 grid-template-columns: repeat(2, 1fr);
-                gap: 0.5rem;
+                gap: 0.45rem;
             }
 
             .vote-button {
                 width: 100%;
-                padding: 6px;
-                font-size: 0.75rem;
-                margin-top: 0.4rem;
+                padding: 5px;
+                font-size: 0.7rem;
+                margin-top: 0.35rem;
             }
 
             .history-grid,
@@ -1246,7 +1222,6 @@
             <span class="countdown-time" id="countdownTime">2:34:12</span>
         </div>
 
-        <a href="#wheel" class="hero-cta" id="heroCTA">Spin the Stream</a>
     </section>
 
     <!-- Stream Wheel Section -->
@@ -1452,8 +1427,7 @@
                 heroState.className = 'hero-state deciding';
                 heroTitle.textContent = "Today's Stream Is Being Decided";
                 heroSubtitle.textContent = "Show up early. Influence the outcome.";
-                heroCTA.textContent = 'Spin the Stream';
-                heroCTA.href = '#wheel';
+                // CTA removed
                 countdown.style.display = 'inline-flex';
             } else if (currentState === StreamState.LOCKED) {
                 heroState.textContent = 'Stream Locked';
@@ -1822,7 +1796,7 @@
                 await window.farcasterSDK.actions.composeCast({
                     text: castText,
                     embeds: [MINIAPP_URL],
-                    channelKey: 'zabal'
+                    channelKey: 'zao'
                 });
                 console.log('✅ Vote shared to Farcaster');
                 closeShareModal();
