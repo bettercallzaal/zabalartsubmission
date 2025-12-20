@@ -1997,21 +1997,49 @@
         // Update toggle UI
         function updateToggleUI() {
             const toggles = {
-                autoShare: document.getElementById('autoShareToggle'),
-                shareLeading: document.getElementById('shareLeadingToggle'),
-                shareMilestones: document.getElementById('shareMilestonesToggle')
+                autoShare: [
+                    document.getElementById('autoShareToggle'),
+                    document.getElementById('autoShareToggleProfile')
+                ],
+                shareLeading: [
+                    document.getElementById('shareLeadingToggle'),
+                    document.getElementById('shareLeadingToggleProfile')
+                ],
+                shareMilestones: [
+                    document.getElementById('shareMilestonesToggle'),
+                    document.getElementById('shareMilestonesToggleProfile')
+                ]
             };
 
             Object.keys(toggles).forEach(key => {
-                if (toggles[key]) {
-                    if (sharePreferences[key]) {
-                        toggles[key].classList.add('active');
-                    } else {
-                        toggles[key].classList.remove('active');
+                toggles[key].forEach(toggle => {
+                    if (toggle) {
+                        if (sharePreferences[key]) {
+                            toggle.classList.add('active');
+                        } else {
+                            toggle.classList.remove('active');
+                        }
                     }
-                }
+                });
             });
         }
+
+        // Toggle settings dropdown
+        window.toggleSettingsDropdown = function() {
+            const dropdown = document.getElementById('settingsDropdown');
+            if (dropdown) {
+                dropdown.classList.toggle('active');
+            }
+        }
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(event) {
+            const dropdown = document.getElementById('settingsDropdown');
+            const profileBadge = document.getElementById('userProfile');
+            if (dropdown && !profileBadge?.contains(event.target)) {
+                dropdown.classList.remove('active');
+            }
+        });
 
         // Load preferences from localStorage
         function loadSharePreferences() {
@@ -2054,6 +2082,11 @@
 
         // Initialize share preferences
         loadSharePreferences();
+        
+        // Update toggles after DOM loads
+        document.addEventListener('DOMContentLoaded', function() {
+            updateToggleUI();
+        });
 
 
         // Share vote to Farcaster - exposed to global scope
