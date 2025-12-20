@@ -2055,38 +2055,6 @@
         // Initialize share preferences
         loadSharePreferences();
 
-        // Get user stats for sharing
-        function getUserShareStats() {
-            const totalVotes = parseInt(document.getElementById('statTotalVotes')?.textContent || '0');
-            const streak = parseInt(document.getElementById('statStreak')?.textContent || '0');
-            const favoriteMode = document.getElementById('statFavoriteMode')?.textContent || '—';
-            return { totalVotes, streak, favoriteMode };
-        }
-
-        // Generate achievement badges
-        function getAchievementBadges(userStats, mode, isLeading) {
-            const badges = [];
-            
-            if (userStats.streak >= 7) badges.push('🔥 7-Day Streak');
-            if (userStats.streak >= 30) badges.push('🏆 30-Day Legend');
-            if (userStats.totalVotes >= 10) badges.push('⭐ 10 Votes');
-            if (userStats.totalVotes >= 50) badges.push('🌟 50 Votes');
-            if (userStats.totalVotes >= 100) badges.push('💫 100 Votes');
-            if (isLeading) badges.push('👑 Leading');
-            
-            return badges.length > 0 ? badges.join(' ') : '';
-        }
-
-        // Generate social proof
-        function getSocialProof(totalVotes, mode) {
-            const modeVotes = votes[mode];
-            const percentage = totalVotes > 0 ? Math.round((modeVotes / totalVotes) * 100) : 0;
-            
-            if (percentage >= 50) return `🔥 ${percentage}% of voters agree!`;
-            if (modeVotes >= 10) return `👥 ${modeVotes} people voted for this!`;
-            if (totalVotes >= 50) return `🎯 ${totalVotes} total votes cast today!`;
-            return '';
-        }
 
         // Share vote to Farcaster - exposed to global scope
         window.shareVote = async function(mode, isAuto = false) {
@@ -2119,11 +2087,6 @@
             const leader = getLeader();
             const isLeading = mode === leader;
             
-            // Get user stats and achievements
-            const userStats = getUserShareStats();
-            const achievements = getAchievementBadges(userStats, mode, isLeading);
-            const socialProof = getSocialProof(totalVotes, mode);
-            
             // Create vote standings with visual bars and leader indicator
             const createBar = (count, isLeader) => {
                 const pct = getPercentage(count);
@@ -2148,18 +2111,15 @@
             let callToAction;
             
             if (isMilestone) {
-                castText = `🎉 WE HIT ${totalVotes} VOTES!\n\nJust voted ${modeEmojis[mode]} ${modeNames[mode]} - ${modeDescriptions[mode]}\n\n${standings}\n\n${achievements ? achievements + '\n\n' : ''}Join the celebration! 🎊`;
+                castText = `🎉 WE HIT ${totalVotes} VOTES!\n\nJust voted ${modeEmojis[mode]} ${modeNames[mode]} - ${modeDescriptions[mode]}\n\n${standings}\n\nJoin the celebration! 🎊`;
                 callToAction = 'Vote & celebrate with us! 👇';
             } else if (isLeading) {
                 const gap = votes[mode] - Math.max(...Object.entries(votes).filter(([k]) => k !== mode).map(([, v]) => v));
-                castText = `${modeEmojis[mode]} ${modeNames[mode]} IS WINNING! 👑\n\nLeading by ${gap} vote${gap !== 1 ? 's' : ''}!\n\n${standings}\n\n${socialProof ? socialProof + '\n\n' : ''}${achievements ? achievements + '\n\n' : ''}`;
+                castText = `${modeEmojis[mode]} ${modeNames[mode]} IS WINNING! 👑\n\nLeading by ${gap} vote${gap !== 1 ? 's' : ''}!\n\n${standings}\n\n`;
                 callToAction = 'Help us dominate! Vote now 👇';
-            } else if (userStats.streak >= 7) {
-                castText = `🔥 ${userStats.streak}-day streak! Voted ${modeEmojis[mode]} ${modeNames[mode]}\n\n${standings}\n\n${achievements}\n\n`;
-                callToAction = 'Can you beat my streak? 👇';
             } else {
                 const urgency = getPercentage(votes[mode]) < 20 ? `\n\n🚨 ${modeNames[mode]} needs your support!` : '';
-                castText = `Voted ${modeEmojis[mode]} ${modeNames[mode]} on ZABAL! 🎨\n\n${standings}${urgency}\n\n${socialProof ? socialProof + '\n\n' : ''}`;
+                castText = `Voted ${modeEmojis[mode]} ${modeNames[mode]} on ZABAL! 🎨\n\n${standings}${urgency}\n\n`;
                 callToAction = 'Your turn! Vote now 👇';
             }
             
@@ -2174,8 +2134,8 @@
                 });
                 console.log('✅ Vote shared to Farcaster');
                 
-                // Track share for potential rewards
-                trackShare(mode, userStats.totalVotes);
+                // Track share for analytics
+                trackShare(mode);
                 
                 // Show share success feedback
                 if (!isAuto) {
