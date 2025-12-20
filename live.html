@@ -1914,7 +1914,8 @@
                     console.log('🔄 Auto-sharing vote...');
                     setTimeout(() => shareVote(mode, true), 1000);
                 } else {
-                    showShareButton(mode);
+                    // Open share modal directly after vote
+                    setTimeout(() => openShareModal(mode), 500);
                 }
                 
                 // Show vote confirmation
@@ -1946,8 +1947,7 @@
                 await loadVotes();
                 console.log('✅ Vote complete!');
                 
-                // Show share button after successful vote
-                showShareButton(mode);
+                // Share modal will open from above logic
                 
             } catch (err) {
                 console.error('❌ Exception during voting:', err);
@@ -2191,54 +2191,6 @@
             setTimeout(() => successMsg.remove(), 1500);
         }
         
-        // Show share button after voting
-        function showShareButton(mode) {
-            // Remove any existing share button
-            const existingBtn = document.querySelector('.share-vote-button');
-            if (existingBtn) {
-                existingBtn.remove();
-            }
-            
-            // Only show if authenticated
-            if (!isAuthenticated) return;
-            
-            // Create share button
-            const shareBtn = document.createElement('button');
-            shareBtn.className = 'share-vote-button';
-            shareBtn.textContent = '📢 Share Your Vote';
-            shareBtn.style.cssText = `
-                margin: 20px auto;
-                display: block;
-                padding: 15px 30px;
-                background: linear-gradient(135deg, #e0ddaa 0%, #c4c18a 100%);
-                color: #141e27;
-                border: none;
-                border-radius: 8px;
-                font-size: 16px;
-                font-weight: bold;
-                cursor: pointer;
-                transition: all 0.3s ease;
-                box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            `;
-            
-            shareBtn.onmouseover = () => {
-                shareBtn.style.transform = 'translateY(-2px)';
-                shareBtn.style.boxShadow = '0 6px 12px rgba(0,0,0,0.15)';
-            };
-            
-            shareBtn.onmouseout = () => {
-                shareBtn.style.transform = 'translateY(0)';
-                shareBtn.style.boxShadow = '0 4px 6px rgba(0,0,0,0.1)';
-            };
-            
-            shareBtn.onclick = () => openShareModal(mode);
-            
-            // Insert after vote buttons
-            const voteSection = document.querySelector('.mode-grid');
-            if (voteSection && voteSection.parentNode) {
-                voteSection.parentNode.insertBefore(shareBtn, voteSection.nextSibling);
-            }
-        }
 
         function updateVotes() {
             console.log('🔄 updateVotes() called');
