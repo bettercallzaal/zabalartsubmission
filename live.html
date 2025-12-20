@@ -2123,8 +2123,8 @@
                 callToAction = 'Your turn! Vote now 👇';
             }
             
-            // Add call to action
-            castText += callToAction;
+            // Add call to action and miniapp link
+            castText += callToAction + '\n\n' + MINIAPP_URL;
             
             try {
                 await window.farcasterSDK.actions.composeCast({
