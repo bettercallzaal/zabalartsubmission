@@ -796,26 +796,115 @@
             color: var(--text-white);
         }
 
-        /* Vote History Section */
-        .vote-history-section {
-            margin-bottom: 40px;
+        /* Vote History Accordion Section */
+        .vote-history-accordion-section {
+            background: linear-gradient(180deg, var(--bg-black) 0%, #0a0a0a 100%);
+            padding: 40px 20px 60px;
+            border-top: 1px solid var(--border-color);
         }
 
-        .vote-history-header {
-            text-align: center;
-            margin-bottom: 30px;
+        .vote-history-accordion {
+            max-width: 1200px;
+            margin: 0 auto;
         }
 
-        .vote-history-header h3 {
-            font-size: 1.8rem;
+        .accordion-header {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 24px 30px;
+            background: var(--primary-blue);
+            border: 2px solid var(--border-color);
+            border-radius: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: inherit;
+            font-family: inherit;
+        }
+
+        .accordion-header:hover {
+            border-color: var(--accent-yellow);
+            background: var(--secondary-blue);
+            transform: translateY(-2px);
+        }
+
+        .accordion-header.active {
+            border-bottom-left-radius: 0;
+            border-bottom-right-radius: 0;
+            border-bottom-color: transparent;
+        }
+
+        .accordion-title {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            text-align: left;
+        }
+
+        .accordion-icon {
+            font-size: 2.5rem;
+            line-height: 1;
+        }
+
+        .accordion-text h3 {
+            font-size: 1.5rem;
             font-weight: 900;
             color: var(--text-white);
-            margin-bottom: 8px;
+            margin: 0 0 4px 0;
         }
 
-        .vote-history-header p {
+        .accordion-text p {
             color: var(--text-gray);
-            font-size: 0.95rem;
+            font-size: 0.9rem;
+            margin: 0;
+        }
+
+        .accordion-toggle {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            background: var(--secondary-blue);
+            border-radius: 50%;
+            transition: all 0.3s ease;
+        }
+
+        .accordion-header:hover .accordion-toggle {
+            background: var(--accent-yellow);
+        }
+
+        .chevron-icon {
+            color: var(--text-white);
+            transition: transform 0.3s ease;
+        }
+
+        .accordion-header:hover .chevron-icon {
+            color: var(--bg-black);
+        }
+
+        .accordion-header.active .chevron-icon {
+            transform: rotate(180deg);
+        }
+
+        .accordion-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            background: var(--primary-blue);
+            border: 2px solid var(--border-color);
+            border-top: none;
+            border-bottom-left-radius: 16px;
+            border-bottom-right-radius: 16px;
+        }
+
+        .accordion-content.expanded {
+            max-height: 5000px;
+        }
+
+        .accordion-inner {
+            padding: 30px;
         }
 
         .vote-history-timeline {
@@ -1007,6 +1096,11 @@
             .vote-day-stats {
                 grid-template-columns: 1fr;
             }
+        }
+
+        /* Smooth scroll behavior */
+        html {
+            scroll-behavior: smooth;
         }
 
         .user-pfp {
@@ -1728,7 +1822,12 @@
             .artifacts-grid {
                 grid-template-columns: 1fr;
             }
-        }
+
+            .vote-day-stats {
+                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+                gap: 12px;
+                margin-bottom: 15px;
+            }
 
         @media (max-width: 480px) {
             header {
@@ -1987,21 +2086,8 @@
         <button class="watch-now-btn" onclick="openLiveShareModal()">📺 Share Stream</button>
     </div>
 
-    <!-- Vote History -->
-    <section class="container" style="padding-top: 70px;">
-        <div class="vote-history-section">
-            <div class="vote-history-header">
-                <h3>📊 Recent Voting Activity</h3>
-                <p>See who voted for what over the past week</p>
-            </div>
-            <div id="voteHistoryTimeline" class="vote-history-timeline">
-                <div class="loading-votes">Loading vote history...</div>
-            </div>
-        </div>
-    </section>
-
     <!-- Personal Stats -->
-    <section class="container" style="padding-top: 20px;">
+    <section class="container" style="padding-top: 70px;">
         <div id="personalStats" class="personal-stats">
             <div class="stats-header">
                 <span class="stats-title">📊 Your Stats</span>
@@ -2291,6 +2377,35 @@
                         <div class="artifact-title">Live Coordination</div>
                         <div class="artifact-meta">Community driven • Battle Mode</div>
                         <a href="https://discord.bettercallzaal.com" target="_blank" class="artifact-link">Join Discord →</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Vote History Accordion -->
+    <section class="vote-history-accordion-section">
+        <div class="container">
+            <div class="vote-history-accordion">
+                <button class="accordion-header" onclick="toggleVoteHistory()">
+                    <div class="accordion-title">
+                        <span class="accordion-icon">📊</span>
+                        <div class="accordion-text">
+                            <h3>Recent Voting Activity</h3>
+                            <p>See who voted for what over the past week</p>
+                        </div>
+                    </div>
+                    <div class="accordion-toggle">
+                        <svg class="chevron-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="6 9 12 15 18 9"></polyline>
+                        </svg>
+                    </div>
+                </button>
+                <div class="accordion-content" id="voteHistoryAccordion">
+                    <div class="accordion-inner">
+                        <div id="voteHistoryTimeline" class="vote-history-timeline">
+                            <div class="loading-votes">Loading vote history...</div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -3592,6 +3707,26 @@
             updateCountdown();
             console.log('✅ Countdown started');
             console.log('🎉 ZABAL Live Hub ready!');
+        }
+        
+        // Toggle vote history accordion
+        window.toggleVoteHistory = function() {
+            const header = document.querySelector('.accordion-header');
+            const content = document.getElementById('voteHistoryAccordion');
+            
+            if (!header || !content) return;
+            
+            const isExpanded = content.classList.contains('expanded');
+            
+            if (isExpanded) {
+                // Collapse
+                header.classList.remove('active');
+                content.classList.remove('expanded');
+            } else {
+                // Expand
+                header.classList.add('active');
+                content.classList.add('expanded');
+            }
         }
         
         // Start the app
