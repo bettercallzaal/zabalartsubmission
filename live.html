@@ -598,6 +598,225 @@
             box-shadow: 0 4px 12px rgba(255, 107, 107, 0.3);
         }
 
+        /* Now Live Banner */
+        .now-live-banner {
+            position: fixed;
+            top: 60px;
+            left: 0;
+            right: 0;
+            background: linear-gradient(135deg, #ff0000 0%, #cc0000 100%);
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            z-index: 99;
+            box-shadow: 0 4px 12px rgba(255, 0, 0, 0.3);
+            animation: slideDown 0.5s ease;
+        }
+
+        .live-pulse {
+            width: 12px;
+            height: 12px;
+            background: white;
+            border-radius: 50%;
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(1.2); }
+        }
+
+        .live-text {
+            color: white;
+            font-weight: 700;
+            font-size: 0.95rem;
+            letter-spacing: 0.5px;
+        }
+
+        .watch-now-btn {
+            padding: 8px 20px;
+            background: white;
+            color: #ff0000;
+            border: none;
+            border-radius: 6px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .watch-now-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 12px rgba(255, 255, 255, 0.3);
+        }
+
+        /* Live Share Modal */
+        .live-share-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.85);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            padding: 20px;
+        }
+
+        .live-share-modal.active {
+            display: flex;
+        }
+
+        .live-share-content {
+            background: var(--primary-blue);
+            border: 2px solid var(--accent-yellow);
+            border-radius: 16px;
+            padding: 30px;
+            max-width: 500px;
+            width: 100%;
+            position: relative;
+        }
+
+        .live-share-header {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .live-share-title {
+            font-size: 1.5rem;
+            font-weight: 900;
+            color: var(--accent-yellow);
+            margin-bottom: 8px;
+        }
+
+        .live-share-subtitle {
+            font-size: 0.9rem;
+            color: var(--text-gray);
+        }
+
+        .platform-links {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .platform-link-card {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px;
+            background: var(--secondary-blue);
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .platform-link-card:hover {
+            border-color: var(--accent-yellow);
+            transform: translateX(4px);
+        }
+
+        .platform-icon {
+            font-size: 2rem;
+        }
+
+        .platform-info {
+            flex: 1;
+        }
+
+        .platform-name {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--text-white);
+            margin-bottom: 4px;
+        }
+
+        .platform-url {
+            font-size: 0.85rem;
+            color: var(--text-gray);
+        }
+
+        .platform-btn {
+            padding: 8px 16px;
+            background: var(--accent-yellow);
+            color: var(--bg-black);
+            border: none;
+            border-radius: 6px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .platform-btn:hover {
+            transform: scale(1.05);
+        }
+
+        .live-share-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .share-live-btn {
+            padding: 15px;
+            background: linear-gradient(135deg, #8a63d2 0%, #7c4dff 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .share-live-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(138, 99, 210, 0.4);
+        }
+
+        .close-live-modal-btn {
+            padding: 12px;
+            background: transparent;
+            color: var(--text-gray);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .close-live-modal-btn:hover {
+            border-color: var(--accent-yellow);
+            color: var(--text-white);
+        }
+
+        @media (max-width: 768px) {
+            .now-live-banner {
+                top: 50px;
+                padding: 10px 15px;
+                gap: 10px;
+            }
+
+            .live-text {
+                font-size: 0.85rem;
+            }
+
+            .watch-now-btn {
+                padding: 6px 15px;
+                font-size: 0.85rem;
+            }
+
+            .live-share-content {
+                padding: 20px;
+            }
+        }
+
         .user-pfp {
             width: 28px;
             height: 28px;
@@ -1569,6 +1788,13 @@
         </div>
     </header>
 
+    <!-- Now Live Banner -->
+    <div id="nowLiveBanner" class="now-live-banner" style="display: none;">
+        <div class="live-pulse"></div>
+        <span class="live-text">🔴 ZABAL IS LIVE NOW!</span>
+        <button class="watch-now-btn" onclick="openLiveShareModal()">📺 Share Stream</button>
+    </div>
+
     <!-- Personal Stats -->
     <section class="container" style="padding-top: 70px;">
         <div id="personalStats" class="personal-stats">
@@ -1676,6 +1902,45 @@
             </div>
         </div>
     </section>
+
+    <!-- Live Share Modal -->
+    <div id="liveShareModal" class="live-share-modal">
+        <div class="live-share-content">
+            <div class="live-share-header">
+                <div class="live-share-title">🔴 ZABAL IS LIVE!</div>
+                <div class="live-share-subtitle">Watch and share the stream</div>
+            </div>
+
+            <div class="platform-links">
+                <div class="platform-link-card">
+                    <div class="platform-icon">📺</div>
+                    <div class="platform-info">
+                        <div class="platform-name">Twitch</div>
+                        <div class="platform-url">twitch.tv/bettercallzaal</div>
+                    </div>
+                    <a href="https://twitch.tv/bettercallzaal" target="_blank" class="platform-btn">Watch</a>
+                </div>
+
+                <div class="platform-link-card">
+                    <div class="platform-icon">🎬</div>
+                    <div class="platform-info">
+                        <div class="platform-name">Retake.tv</div>
+                        <div class="platform-url">retake.tv/zaal</div>
+                    </div>
+                    <a href="https://retake.tv/zaal" target="_blank" class="platform-btn">Watch</a>
+                </div>
+            </div>
+
+            <div class="live-share-actions">
+                <button class="share-live-btn" onclick="shareLiveStream()">
+                    🟣 Share to Farcaster
+                </button>
+                <button class="close-live-modal-btn" onclick="closeLiveShareModal()">
+                    Close
+                </button>
+            </div>
+        </div>
+    </div>
 
     <!-- Share Modal -->
     <div id="shareModal" class="share-modal">
@@ -2216,6 +2481,80 @@
         // Friend data
         let topFriend = null;
         let bestFriends = [];
+        
+        // Live stream status
+        let isLive = false;
+        
+        // Check if stream is live (you can integrate with Twitch API later)
+        function checkLiveStatus() {
+            // For now, manually controlled
+            // TODO: Integrate with Twitch API to auto-detect live status
+            const liveStatus = localStorage.getItem('zabalLiveStatus');
+            if (liveStatus === 'live') {
+                showLiveBanner();
+            }
+        }
+        
+        function showLiveBanner() {
+            const banner = document.getElementById('nowLiveBanner');
+            if (banner) {
+                banner.style.display = 'flex';
+                isLive = true;
+            }
+        }
+        
+        function hideLiveBanner() {
+            const banner = document.getElementById('nowLiveBanner');
+            if (banner) {
+                banner.style.display = 'none';
+                isLive = false;
+            }
+        }
+        
+        // Open live share modal
+        window.openLiveShareModal = function() {
+            const modal = document.getElementById('liveShareModal');
+            if (modal) {
+                modal.classList.add('active');
+            }
+        }
+        
+        // Close live share modal
+        window.closeLiveShareModal = function() {
+            const modal = document.getElementById('liveShareModal');
+            if (modal) {
+                modal.classList.remove('active');
+            }
+        }
+        
+        // Share live stream to Farcaster
+        window.shareLiveStream = async function() {
+            const shareText = `🔴 ZABAL IS LIVE NOW! 🎨\n\nJoin the stream and watch us create in real-time!\n\n📺 Twitch: twitch.tv/bettercallzaal\n🎬 Retake: retake.tv/zaal\n\nCome hang! 👇`;
+            
+            // Add friend tags if available
+            let friendTags = '';
+            if (bestFriends.length > 0) {
+                const friendsToTag = bestFriends.slice(0, 3).map(f => f.username);
+                friendTags = '\n\n' + friendsToTag.map(u => `@${u}`).join(' ') + ' join me!';
+            }
+            
+            const fullText = shareText + friendTags;
+            
+            try {
+                await window.farcasterSDK.actions.composeCast({
+                    text: fullText,
+                    embeds: ['https://twitch.tv/bettercallzaal'],
+                    channelKey: 'zao'
+                });
+                
+                console.log('✅ Live stream shared to Farcaster');
+                showShareSuccess();
+                setTimeout(() => closeLiveShareModal(), 1500);
+            } catch (error) {
+                console.error('❌ Failed to share live stream:', error);
+                alert('Could not share stream. Please try again.');
+            }
+        }
         
         window.openShareModal = function(mode) {
             currentShareMode = mode;
@@ -2814,7 +3153,21 @@
             console.log('✅ Hero state updated');
             
             // Initialize Farcaster authentication
-            await initializeFarcaster();
+            initializeFarcaster();
+            checkLiveStatus();
+            
+            // Check live status every 2 minutes
+            setInterval(checkLiveStatus, 120000);
+            
+            // Manual controls for testing (remove in production)
+            window.setLiveStatus = function(status) {
+                localStorage.setItem('zabalLiveStatus', status);
+                if (status === 'live') {
+                    showLiveBanner();
+                } else {
+                    hideLiveBanner();
+                }
+            }
             
             // Load votes from database
             await loadVotes();
