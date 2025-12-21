@@ -1643,25 +1643,67 @@
             letter-spacing: 0.5px;
         }
 
-        .vote-checkbox-container {
-            margin-top: 0.65rem;
+        .vote-checkbox-hidden {
+            display: none;
+        }
+
+        .selectable-card {
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .selectable-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 24px rgba(224, 221, 170, 0.3);
+        }
+
+        .selectable-card.selected {
+            border-color: var(--accent-yellow);
+            background: linear-gradient(135deg, rgba(224, 221, 170, 0.1) 0%, var(--primary-blue) 100%);
+            box-shadow: 0 0 20px rgba(224, 221, 170, 0.4);
+        }
+
+        .selectable-card.selected::before {
+            content: '';
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            width: 32px;
+            height: 32px;
+            background: var(--accent-yellow);
+            border-radius: 50%;
             display: flex;
             align-items: center;
-            gap: 8px;
-            cursor: pointer;
+            justify-content: center;
         }
 
-        .vote-checkbox {
-            width: 20px;
-            height: 20px;
-            cursor: pointer;
-            accent-color: var(--accent-yellow);
+        .selectable-card.selected::after {
+            content: '✓';
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary-blue);
+            font-size: 1.2rem;
+            font-weight: 900;
+            z-index: 1;
         }
 
-        .vote-checkbox-label {
+        .selection-indicator {
+            display: none;
+            margin-top: 0.5rem;
             font-size: 0.875rem;
             font-weight: 700;
-            color: var(--text-white);
+            color: var(--accent-yellow);
+        }
+
+        .selectable-card.selected .selection-indicator {
+            display: block;
         }
 
         .submit-votes-container {
@@ -2446,7 +2488,8 @@
 
             <div class="wheel-container">
                 <!-- Studio Mode -->
-                <div class="mode-card leading" data-mode="studio">
+                <div class="mode-card leading selectable-card" data-mode="studio" onclick="toggleModeSelection('studio')">
+                    <input type="checkbox" class="vote-checkbox-hidden" data-mode="studio">
                     <div class="mode-icon">🎨</div>
                     <div class="mode-info">
                         <div class="mode-name">Studio Mode</div>
@@ -2455,15 +2498,13 @@
                     <div class="mode-votes">
                         <span class="vote-count" data-votes="studio">42</span>
                         <span class="vote-label">Votes</span>
-                        <label class="vote-checkbox-container">
-                            <input type="checkbox" class="vote-checkbox" data-mode="studio" onchange="toggleModeSelection('studio')">
-                            <span class="vote-checkbox-label">Select</span>
-                        </label>
+                        <div class="selection-indicator">✓ Selected</div>
                     </div>
                 </div>
 
                 <!-- Market Mode -->
-                <div class="mode-card" data-mode="market">
+                <div class="mode-card selectable-card" data-mode="market" onclick="toggleModeSelection('market')">
+                    <input type="checkbox" class="vote-checkbox-hidden" data-mode="market">
                     <div class="mode-icon">📊</div>
                     <div class="mode-info">
                         <div class="mode-name">Market Mode</div>
@@ -2472,15 +2513,13 @@
                     <div class="mode-votes">
                         <span class="vote-count" data-votes="market">28</span>
                         <span class="vote-label">Votes</span>
-                        <label class="vote-checkbox-container">
-                            <input type="checkbox" class="vote-checkbox" data-mode="market" onchange="toggleModeSelection('market')">
-                            <span class="vote-checkbox-label">Select</span>
-                        </label>
+                        <div class="selection-indicator">✓ Selected</div>
                     </div>
                 </div>
 
                 <!-- Social Mode -->
-                <div class="mode-card" data-mode="social">
+                <div class="mode-card selectable-card" data-mode="social" onclick="toggleModeSelection('social')">
+                    <input type="checkbox" class="vote-checkbox-hidden" data-mode="social">
                     <div class="mode-icon">🌐</div>
                     <div class="mode-info">
                         <div class="mode-name">Social Mode</div>
@@ -2489,15 +2528,13 @@
                     <div class="mode-votes">
                         <span class="vote-count" data-votes="social">35</span>
                         <span class="vote-label">Votes</span>
-                        <label class="vote-checkbox-container">
-                            <input type="checkbox" class="vote-checkbox" data-mode="social" onchange="toggleModeSelection('social')">
-                            <span class="vote-checkbox-label">Select</span>
-                        </label>
+                        <div class="selection-indicator">✓ Selected</div>
                     </div>
                 </div>
 
                 <!-- Battle Mode -->
-                <div class="mode-card" data-mode="battle">
+                <div class="mode-card selectable-card" data-mode="battle" onclick="toggleModeSelection('battle')">
+                    <input type="checkbox" class="vote-checkbox-hidden" data-mode="battle">
                     <div class="mode-icon">⚔️</div>
                     <div class="mode-info">
                         <div class="mode-name">Battle Mode</div>
@@ -2506,10 +2543,7 @@
                     <div class="mode-votes">
                         <span class="vote-count" data-votes="battle">31</span>
                         <span class="vote-label">Votes</span>
-                        <label class="vote-checkbox-container">
-                            <input type="checkbox" class="vote-checkbox" data-mode="battle" onchange="toggleModeSelection('battle')">
-                            <span class="vote-checkbox-label">Select</span>
-                        </label>
+                        <div class="selection-indicator">✓ Selected</div>
                     </div>
                 </div>
             </div>
@@ -3948,16 +3982,20 @@
         let selectedModes = [];
 
         window.toggleModeSelection = function(mode) {
-            const checkbox = document.querySelector(`.vote-checkbox[data-mode="${mode}"]`);
+            const card = document.querySelector(`.mode-card[data-mode="${mode}"]`);
+            const checkbox = card.querySelector('.vote-checkbox-hidden');
             
-            if (checkbox.checked) {
-                if (!selectedModes.includes(mode)) {
-                    selectedModes.push(mode);
-                    console.log('✅ Selected mode:', mode);
-                }
-            } else {
+            // Toggle selection
+            if (selectedModes.includes(mode)) {
                 selectedModes = selectedModes.filter(m => m !== mode);
+                card.classList.remove('selected');
+                checkbox.checked = false;
                 console.log('❌ Deselected mode:', mode);
+            } else {
+                selectedModes.push(mode);
+                card.classList.add('selected');
+                checkbox.checked = true;
+                console.log('✅ Selected mode:', mode);
             }
             
             updateSubmitButton();
