@@ -22,8 +22,9 @@ module.exports = async function handler(req, res) {
     const client = new NeynarAPIClient(process.env.NEYNAR_API_KEY);
 
     // Send notification using Neynar Frame API
-    const response = await client.publishFrameNotification({
-      target_fids: targetFids || [], // empty array = all users
+    // Note: targetFids is camelCase, notification uses snake_case
+    const response = await client.publishFrameNotifications({
+      targetFids: targetFids || [], // empty array = all users
       notification: {
         title: title,
         body: body,
