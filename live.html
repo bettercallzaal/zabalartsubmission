@@ -3481,6 +3481,15 @@
                 callToAction = 'Your turn! Vote now 👇';
             }
             
+            // Add @zaal mention with stream suggestion
+            const streamSuggestions = {
+                studio: 'do a Studio session',
+                market: 'do a Market stream',
+                social: 'do a Social hangout',
+                battle: 'do a Battle stream'
+            };
+            const zaalMention = `\n\n@zaal I think you should ${streamSuggestions[mode]} for your next stream! 🎨`;
+            
             // Add friend tags if selected
             let friendTags = '';
             if (selectedFriends.length > 0) {
@@ -3492,7 +3501,7 @@
             const zabalUpdateInfo = `\n\n⏰ ZABAL Update #4 in ${timeRemaining}\n📊 ZABAL Empire Leaderboard\n🎵 ${SONGJAM_URL}`;
             
             // Add call to action and links
-            castText += callToAction + friendTags + zabalUpdateInfo + '\n\n' + MINIAPP_URL;
+            castText += callToAction + zaalMention + friendTags + zabalUpdateInfo + '\n\n' + MINIAPP_URL;
             
             // Clear selected friends after sharing
             selectedFriends = [];
