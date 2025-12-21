@@ -21,9 +21,9 @@ module.exports = async function handler(req, res) {
     // Initialize Neynar client
     const client = new NeynarAPIClient(process.env.NEYNAR_API_KEY);
 
-    // Send notification to all users who added the app (or specific FIDs)
-    const response = await client.publishFrameNotifications({
-      targetFids: targetFids || [], // empty array = all users
+    // Send notification using Neynar Frame API
+    const response = await client.publishFrameNotification({
+      target_fids: targetFids || [], // empty array = all users
       notification: {
         title: title,
         body: body,
@@ -35,8 +35,8 @@ module.exports = async function handler(req, res) {
 
     return res.status(200).json({
       success: true,
-      sent: response.sent || 0,
-      message: 'Notification sent successfully'
+      message: 'Notification sent successfully',
+      response: response
     });
 
   } catch (error) {
