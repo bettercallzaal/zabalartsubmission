@@ -3721,23 +3721,18 @@
             const inviteText = `Hey @${topFriend.username}! 👋\n\nI just voted ${modeEmojis[currentShareMode]} ${modeNames[currentShareMode]} on ZABAL Live Hub!\n\nWhat's your vote? Join me! 🎨\n\n⏰ ZABAL Update #4 in ${timeRemaining}\n📊 ${SONGJAM_URL}\n\n${MINIAPP_URL}`;
             
             try {
-                if (!window.farcasterSDK || !window.farcasterSDK.actions) {
-                    showToast('error', 'SDK Not Available', 'Please open in Warpcast to share');
-                    return;
-                }
-                
                 await window.farcasterSDK.actions.composeCast({
                     text: inviteText,
                     embeds: [MINIAPP_URL],
                     channelKey: 'zao'
                 });
                 
-                showToast('success', 'Invite Sent', 'Cast composer opened!');
+                console.log('✅ Invited top friend:', topFriend.username);
                 showShareSuccess();
                 setTimeout(() => closeShareModal(), 1500);
             } catch (error) {
                 console.error('❌ Failed to invite friend:', error);
-                showToast('error', 'Invite Failed', 'Could not open cast composer. Please try again.');
+                showToast('error', 'Invitation Failed', 'Could not send invitation. Please try again.');
             }
         }
 
@@ -3767,11 +3762,6 @@
             const challengeText = `⚔️ Challenge time!\n\n${friendMentions} I just voted ${modeEmojis[currentShareMode]} ${modeNames[currentShareMode]} on ZABAL!\n\nWhat's YOUR vote? 🎨\n\n${MINIAPP_URL}`;
             
             try {
-                if (!window.farcasterSDK || !window.farcasterSDK.actions) {
-                    showToast('error', 'SDK Not Available', 'Please open in Warpcast to share');
-                    return;
-                }
-                
                 await window.farcasterSDK.actions.composeCast({
                     text: challengeText,
                     embeds: [MINIAPP_URL],
@@ -3803,6 +3793,8 @@
 
         // Share vote to Farcaster - exposed to global scope
         window.shareVote = async function(mode, isAuto = false) {
+            console.log('📤 Starting shareVote:', { mode, isAuto, selectedFriends: selectedFriends.length });
+            
             const modeEmojis = {
                 studio: '🎬',
                 market: '🛒',
@@ -3880,7 +3872,10 @@
             // Add friend tags if selected
             let friendTags = '';
             if (selectedFriends.length > 0) {
+                console.log('👥 Tagging friends:', selectedFriends);
                 friendTags = '\n\n' + selectedFriends.map(u => `@${u}`).join(' ') + ' what\'s your vote?';
+            } else {
+                console.log('👤 No friends tagged');
             }
             
             // Add ZABAL Update countdown
@@ -3890,25 +3885,27 @@
             // Add call to action and links
             castText += callToAction + zaalMention + friendTags + zabalUpdateInfo + '\n\n' + MINIAPP_URL;
             
+            // Log cast details before sending
+            console.log('📝 Cast text length:', castText.length);
+            console.log('🔗 Embeds:', [SONGJAM_URL, MINIAPP_URL]);
+            console.log('📢 Channel:', 'zao');
+            
             // Clear selected friends after sharing
+            const taggedFriends = [...selectedFriends];
             selectedFriends = [];
             
             try {
-                if (!window.farcasterSDK || !window.farcasterSDK.actions) {
-                    showToast('error', 'SDK Not Available', 'Please open in Warpcast to share');
-                    return;
-                }
-                
                 await window.farcasterSDK.actions.composeCast({
                     text: castText,
                     embeds: [SONGJAM_URL, MINIAPP_URL],
                     channelKey: 'zao'
                 });
-                console.log('✅ Vote shared to Farcaster');
-                showToast('success', 'Share Opened', 'Cast composer opened successfully!');
+                console.log('✅ Vote shared to Farcaster successfully');
+                console.log('👥 Tagged friends in cast:', taggedFriends);
                 
                 // Track share for analytics
                 trackShare(mode);
+                console.log('📊 Share tracked for mode:', mode);
                 
                 // Show share success feedback
                 if (!isAuto) {
