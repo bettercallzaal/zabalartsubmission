@@ -3393,37 +3393,36 @@
         }
         
         window.openShareModal = function(mode) {
+            console.log('📂 Opening share modal for mode:', mode);
             currentShareMode = mode;
             const modal = document.getElementById('shareModal');
-            if (modal) {
-                modal.classList.add('active');
-                
-                console.log('🔍 Opening share modal');
-                console.log('👥 Best friends count:', bestFriends.length);
-                console.log('👑 Top friend:', topFriend);
-                console.log('🔐 Authenticated:', isAuthenticated);
-                
-                // Show friend tagging if we have friends
-                if (bestFriends.length > 0) {
-                    console.log('✅ Displaying friend tags');
-                    displayFriendTags();
-                } else {
-                    console.warn('⚠️ No friends to display');
-                }
-                
-                // Show top friend invitation
-                if (topFriend) {
-                    console.log('✅ Displaying top friend invite');
-                    displayTopFriendInvite();
-                } else {
-                    console.warn('⚠️ No top friend to display');
-                }
-                
-                // Show challenge button if authenticated
-                if (isAuthenticated && bestFriends.length > 0) {
-                    console.log('✅ Showing challenge button');
-                    document.querySelector('.challenge-friends-btn').style.display = 'block';
-                }
+            modal.classList.add('active');
+            
+            console.log('🔍 Opening share modal');
+            console.log('👥 Best friends count:', bestFriends.length);
+            console.log('👑 Top friend:', topFriend);
+            console.log('🔐 Authenticated:', isAuthenticated);
+            
+            // Show friend tagging if we have friends
+            if (bestFriends.length > 0) {
+                console.log('✅ Displaying friend tags');
+                displayFriendTags();
+            } else {
+                console.warn('⚠️ No friends to display');
+            }
+            
+            // Show top friend invitation
+            if (topFriend) {
+                console.log('✅ Displaying top friend invite');
+                displayTopFriendInvite();
+            } else {
+                console.warn('⚠️ No top friend to display');
+            }
+            
+            // Show challenge button if authenticated
+            if (isAuthenticated && bestFriends.length > 0) {
+                console.log('✅ Showing challenge button');
+                document.querySelector('.challenge-friends-btn').style.display = 'block';
             }
         }
         
@@ -3550,7 +3549,7 @@
             console.log('📡 Loading best friends for FID:', fid);
             
             try {
-                const data = await callNeynarAPI('user/best_friends', { fid, limit: 10 });
+                const data = await callNeynarAPI('user/best_friends', { fid, limit: 50 });
                 
                 console.log('📥 Neynar response:', data);
                 console.log('📥 Response structure:', JSON.stringify(data, null, 2));
@@ -3597,7 +3596,7 @@
         }
 
         // Display friend tags in share modal
-        let showingAllFriends = false;
+        let friendsDisplayCount = 5; // Start with 5, increment by 5
         function displayFriendTags() {
             const section = document.getElementById('friendTagSection');
             const list = document.getElementById('friendTagList');
@@ -3606,7 +3605,8 @@
             
             section.style.display = 'block';
             
-            const friendsToShow = showingAllFriends ? bestFriends : bestFriends.slice(0, 5);
+            const friendsToShow = bestFriends.slice(0, friendsDisplayCount);
+            console.log('👥 Displaying friends:', friendsToShow.length, 'of', bestFriends.length);
             
             // Create friend tags with event listeners
             list.innerHTML = friendsToShow.map((friend, index) => `
@@ -3616,9 +3616,11 @@
                 </div>
             `).join('');
             
-            // Add show more button if there are more than 5 friends
-            if (bestFriends.length > 5 && !showingAllFriends) {
-                list.innerHTML += `<div class="show-more-friends" onclick="showMoreFriends()">+ Show ${bestFriends.length - 5} more friends</div>`;
+            // Add show more button if there are more friends to display
+            if (bestFriends.length > friendsDisplayCount) {
+                const remaining = bestFriends.length - friendsDisplayCount;
+                const toShow = Math.min(5, remaining);
+                list.innerHTML += `<div class="show-more-friends" onclick="showMoreFriends()">+ Show ${toShow} more friend${toShow !== 1 ? 's' : ''} (${remaining} remaining)</div>`;
             }
             
             // Add click listeners to all friend tags
@@ -3629,56 +3631,51 @@
             });
             
             updateFriendTagCounter();
+            console.log('👥 Friend tags displayed:', friendsToShow.length);
         }
 
-        // Show more friends
+        // Show more friends (5 at a time)
         window.showMoreFriends = function() {
-            showingAllFriends = true;
+            const previousCount = friendsDisplayCount;
+            friendsDisplayCount = Math.min(friendsDisplayCount + 5, bestFriends.length);
+            console.log('👥 Showing more friends:', previousCount, '→', friendsDisplayCount);
             displayFriendTags();
         }
 
         // Update friend tag counter
         function updateFriendTagCounter() {
-            const header = document.querySelector('.friend-tag-header');
-            if (!header) return;
-            
-            let counterEl = header.querySelector('.friend-tag-count');
-            if (!counterEl) {
-                counterEl = document.createElement('span');
-                counterEl.className = 'friend-tag-count';
-                header.appendChild(counterEl);
-            }
-            
-            const remaining = 10 - selectedFriends.length;
-            counterEl.textContent = `${selectedFriends.length}/10 selected`;
-            
-            if (selectedFriends.length >= 10) {
-                counterEl.style.color = '#ff6b6b';
-            } else {
-                counterEl.style.color = 'var(--accent-yellow)';
+            const counter = document.getElementById('friendTagCounter');
+            if (counter) {
+                counter.textContent = `${selectedFriends.length} selected`;
+                counter.style.display = selectedFriends.length > 0 ? 'block' : 'none';
+                console.log('🔢 Friend counter updated:', selectedFriends.length);
             }
         }
 
         // Toggle friend tag selection
         let selectedFriends = [];
-        window.toggleFriendTag = function(username, element) {
-            if (element.classList.contains('selected')) {
+        function toggleFriendTag(username, element) {
+            const index = selectedFriends.indexOf(username);
+            
+            if (index > -1) {
+                // Remove friend
+                selectedFriends.splice(index, 1);
                 element.classList.remove('selected');
-                selectedFriends = selectedFriends.filter(u => u !== username);
-                console.log('❌ Removed friend:', username);
+                console.log('➖ Removed friend:', username, '| Total selected:', selectedFriends.length);
             } else {
-                // Limit to 10 friends
+                // Add friend (max 10)
                 if (selectedFriends.length >= 10) {
-                    showToast('info', 'Maximum Reached', 'You can tag up to 10 friends maximum.');
+                    showToast('info', 'Maximum Reached', 'You can tag up to 10 friends maximum');
+                    console.log('⚠️ Max friends reached (10)');
                     return;
                 }
-                element.classList.add('selected');
                 selectedFriends.push(username);
-                console.log('✅ Added friend:', username);
+                element.classList.add('selected');
+                console.log('➕ Added friend:', username, '| Total selected:', selectedFriends.length);
             }
             
+            console.log('👥 Currently selected friends:', selectedFriends);
             updateFriendTagCounter();
-            console.log('👥 Selected friends:', selectedFriends);
         }
 
         // Display top friend invitation
