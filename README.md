@@ -213,8 +213,12 @@ ZABAL ART WEBSITE/
 - **Stream Wheel** - Vote for today's mode (Studio/Market/Social/Battle)
 - **Real-time Voting** - Supabase-powered voting with FID authentication
 - **Vote Confirmation** - Visual banner showing which mode you voted for
-- **Share Modal** - Copy miniapp link or share to Farcaster with one click
-- **Social Sharing** - Posts to /zabal channel with vote results and miniapp link
+- **Share Modal** - Copy miniapp link or share to Farcaster with friend tagging
+- **Social Sharing** - Posts to /zabal channel with vote results, friend mentions, and miniapp link
+- **Friend Tagging** - Tag up to 5 friends in shares with profile pictures
+- **Top Friend Invitation** - Dedicated card to invite your #1 friend
+- **Challenge Friends** - Competitive sharing with friend mentions
+- **Live Stream Sharing** - Share when ZABAL goes live on Twitch/Retake
 - **Today/Yesterday Display** - Shows current leader and previous winner
 - **Built on Stream Artifacts** - Proof of coordination, not just content
 - **Proof Section** - ∞ streams decided by you, 4 modes, 0 scheduled
@@ -247,10 +251,28 @@ ZABAL ART WEBSITE/
 #### Live Coordination Hub
 - **Stream Wheel Voting System**
   - 4 modes: Studio, Market, Social, Battle
-  - Real-time vote counting
+  - Real-time vote counting via Supabase
   - Visual leader indicator
-  - Persistent voting (localStorage)
+  - FID-based persistent voting
   - Countdown to lock time
+  - Vote changing functionality
+
+- **Viral Social Features**
+  - Friend tagging in vote shares
+  - Top friend invitation system
+  - Challenge friends functionality
+  - Auto-suggest top 3-5 friends
+  - Friend profile pictures and usernames
+  - Click-to-select friend interface
+  - Personalized share messages
+
+- **Live Streaming Integration**
+  - "Now Live" banner with pulse animation
+  - Live share modal with platform cards
+  - Twitch: twitch.tv/bettercallzaal
+  - Retake.tv: retake.tv/zaal
+  - Friend tagging in live shares
+  - Manual live status control
 
 - **Dynamic Hero States**
   - DECIDING: "Today's Stream Is Being Decided"
@@ -325,11 +347,12 @@ ZABAL ART WEBSITE/
 ### Integrations
 - **Farcaster** - Decentralized social protocol for Mini App
 - **Supabase** - PostgreSQL database for vote storage and real-time updates
-- **Neynar API** - Farcaster data access (planned for vote power)
+- **Neynar API** - Farcaster data access for best friends and social graph
 - **Tally.so** - Form builder and submission management
 - **Paragraph.com** - Newsletter hosting (The ZAO Newsletter)
 - **Discord** - Community and submission notifications
 - **Twitch** - Live streaming platform (twitch.tv/bettercallzaal)
+- **Retake.tv** - Alternative streaming platform (retake.tv/zaal)
 - **SongJam** - Leaderboard tracking
 - **Incented** - Campaign management
 
@@ -431,15 +454,42 @@ font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI',
 - Manifest file for app discovery
 - Comprehensive ecosystem research documentation
 
+### ✅ Phase 2.6: Viral Social Features (COMPLETED)
+- **Neynar Best Friends Integration**
+  - Automatic fetching of user's top 10 best friends
+  - Top friend identification and display
+  - Friend data caching for performance
+- **Friend Tagging in Shares**
+  - Tag up to 5 friends in vote shares
+  - Click-to-select friend interface
+  - Auto-mention selected friends in casts
+  - Visual selection with yellow highlights
+- **Top Friend Invitation System**
+  - Dedicated invitation card for #1 friend
+  - Personalized "Invite to Vote" messages
+  - Direct friend mentions in casts
+- **Challenge Friends Feature**
+  - Competitive "Challenge Friends" button
+  - Auto-tag selected or top 3 friends
+  - Challenge-focused messaging
+- **Live Streaming Share System**
+  - "Now Live" banner when streaming
+  - Pulsing red indicator animation
+  - Live share modal with platform links
+  - Twitch and Retake.tv integration
+  - Friend tagging in live stream shares
+
 ### 🚀 Phase 3: Enhanced Mini App Features (NEXT)
 
 **Priority: Mini App Optimization**
 - Create app icon, preview, and splash images
 - Add account association to manifest
 - Implement vote power calculation with Neynar
-- Add social proof (recent voters, friends who voted)
+- Add friend activity feed (who voted today)
 - Implement notifications for engagement
 - Create /zabal channel for community
+- Add voting streaks and leaderboards
+- Friend-based leaderboards
 
 **Additional Backend Features:**
 - Tally webhook → Supabase connection for submissions
@@ -779,6 +829,11 @@ ZABAL ART WEBSITE/
 - Countdown timer to lock time
 - Real-time vote counting across users
 - Leader calculation and display
+- Neynar Best Friends API integration
+- Friend tagging and selection system
+- Top friend identification and display
+- Live streaming status management
+- Friend mention formatting in casts
 
 **States:**
 - **DECIDING** (before 5 PM EST) - "Today's Stream Is Being Decided"
@@ -790,6 +845,10 @@ ZABAL ART WEBSITE/
 - Add new voting modes
 - Update artifact examples
 - Modify proof metrics
+- Update Neynar API key
+- Modify friend tagging limits
+- Change live streaming platforms
+- Update share message templates
 
 ---
 
@@ -1305,6 +1364,12 @@ ZABAL accepts 9 types of creative work:
 
 The ZABAL stream isn't scheduled — it's decided by community vote each day.
 
+**NEW: Social Voting Features**
+- Tag friends in your vote shares
+- Invite your top friend to vote
+- Challenge friends competitively
+- Share when ZABAL goes live
+
 **4 Modes:**
 
 1. **Studio Mode** 🎵
@@ -1348,9 +1413,15 @@ The ZABAL stream isn't scheduled — it's decided by community vote each day.
 
 **Step 4: Cast Your Vote**
 - Click "Vote" button on your chosen mode
-- Vote stored in browser (localStorage)
+- Vote stored in Supabase with your FID
 - UI updates with new totals
-- Button changes to "Voted!"
+- Share modal opens automatically
+
+**Step 4.5: Share Your Vote (NEW)**
+- **Tag Friends**: Click up to 5 friends to tag in your share
+- **Invite Top Friend**: Use dedicated card to invite your #1 friend
+- **Challenge Friends**: Send competitive challenge to friends
+- **Share to Farcaster**: Post to /zao channel with friend mentions
 
 **Step 5: Change Vote (Optional)**
 - Click "Change Vote" on different mode
@@ -1369,9 +1440,17 @@ The ZABAL stream isn't scheduled — it's decided by community vote each day.
 - **Can change vote** until lock time
 - **Votes reset daily** at midnight
 
-#### Future Voting System (Farcaster)
+#### Farcaster Voting System (ACTIVE)
 
-**Vote Power Based on Activity:**
+**Current Features:**
+- **FID-based authentication** - Vote with your Farcaster account
+- **Friend tagging** - Mention friends in vote shares
+- **Top friend invitation** - Dedicated invite for your #1 friend
+- **Challenge system** - Competitive friend challenges
+- **Persistent voting** - Votes saved to database
+- **Vote changing** - Change your vote anytime before lock
+
+**Future Vote Power:**
 - **1 vote:** Any Farcaster user
 - **2 votes:** Following @thezao
 - **3 votes:** Following + active in /zao channel
@@ -1382,6 +1461,61 @@ The ZABAL stream isn't scheduled — it's decided by community vote each day.
 - Rewards community engagement
 - Prevents manipulation
 - Enables notifications
+- Spreads ZABAL culture virally
+
+---
+
+### For Streamers: How to Share Live Status
+
+#### When ZABAL Goes Live
+
+**Step 1: Set Live Status**
+```javascript
+// In browser console or via admin panel
+setLiveStatus('live')
+```
+
+**Step 2: Banner Appears**
+- Red "Now Live" banner shows at top
+- Pulsing white dot animation
+- "Share Stream" button visible to all users
+
+**Step 3: Users Share**
+- Click "Share Stream" button
+- Modal shows both platforms:
+  - 📺 Twitch: twitch.tv/bettercallzaal
+  - 🎬 Retake.tv: retake.tv/zaal
+- "Share to Farcaster" button
+- Auto-tags top 3 friends
+
+**Step 4: Share Message Format**
+```
+🔴 ZABAL IS LIVE NOW! 🎨
+
+Join the stream and watch us create in real-time!
+
+📺 Twitch: twitch.tv/bettercallzaal
+🎬 Retake: retake.tv/zaal
+
+Come hang! 👇
+
+@friend1 @friend2 @friend3 join me!
+```
+
+**Step 5: End Stream**
+```javascript
+setLiveStatus('offline')
+```
+
+#### Platform Links
+- **Twitch**: [twitch.tv/bettercallzaal](https://twitch.tv/bettercallzaal)
+- **Retake.tv**: [retake.tv/zaal](https://retake.tv/zaal)
+
+#### Live Status Management
+- Manual control via `setLiveStatus()`
+- Stored in localStorage
+- Auto-check every 2 minutes
+- Future: Twitch API integration
 
 ---
 
