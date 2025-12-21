@@ -3300,10 +3300,19 @@
                 console.log('📥 Response structure:', JSON.stringify(data, null, 2));
                 
                 // Try different possible response structures
-                bestFriends = data.result?.users || data.users || data || [];
+                const friendsList = data.result?.users || data.users || data || [];
                 
-                if (bestFriends.length > 0) {
+                if (friendsList.length > 0) {
+                    // Get FIDs from best friends list
+                    const friendFids = friendsList.map(f => f.fid).join(',');
+                    
+                    // Fetch full user data to get profile pictures
+                    const userData = await callNeynarAPI('user/bulk', { fids: friendFids });
+                    
+                    // Map full user data
+                    bestFriends = userData.users || [];
                     topFriend = bestFriends[0];
+                    
                     console.log('✅ Loaded best friends:', bestFriends.length);
                     console.log('👑 Top friend:', topFriend.username);
                     console.log('👥 All friends:', bestFriends.map(f => f.username));
