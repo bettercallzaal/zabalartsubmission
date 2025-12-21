@@ -3721,18 +3721,23 @@
             const inviteText = `Hey @${topFriend.username}! 👋\n\nI just voted ${modeEmojis[currentShareMode]} ${modeNames[currentShareMode]} on ZABAL Live Hub!\n\nWhat's your vote? Join me! 🎨\n\n⏰ ZABAL Update #4 in ${timeRemaining}\n📊 ${SONGJAM_URL}\n\n${MINIAPP_URL}`;
             
             try {
+                if (!window.farcasterSDK || !window.farcasterSDK.actions) {
+                    showToast('error', 'SDK Not Available', 'Please open in Warpcast to share');
+                    return;
+                }
+                
                 await window.farcasterSDK.actions.composeCast({
                     text: inviteText,
                     embeds: [MINIAPP_URL],
                     channelKey: 'zao'
                 });
                 
-                console.log('✅ Invited top friend:', topFriend.username);
+                showToast('success', 'Invite Sent', 'Cast composer opened!');
                 showShareSuccess();
                 setTimeout(() => closeShareModal(), 1500);
             } catch (error) {
                 console.error('❌ Failed to invite friend:', error);
-                showToast('error', 'Invitation Failed', 'Could not send invitation. Please try again.');
+                showToast('error', 'Invite Failed', 'Could not open cast composer. Please try again.');
             }
         }
 
@@ -3762,6 +3767,11 @@
             const challengeText = `⚔️ Challenge time!\n\n${friendMentions} I just voted ${modeEmojis[currentShareMode]} ${modeNames[currentShareMode]} on ZABAL!\n\nWhat's YOUR vote? 🎨\n\n${MINIAPP_URL}`;
             
             try {
+                if (!window.farcasterSDK || !window.farcasterSDK.actions) {
+                    showToast('error', 'SDK Not Available', 'Please open in Warpcast to share');
+                    return;
+                }
+                
                 await window.farcasterSDK.actions.composeCast({
                     text: challengeText,
                     embeds: [MINIAPP_URL],
@@ -3884,12 +3894,18 @@
             selectedFriends = [];
             
             try {
+                if (!window.farcasterSDK || !window.farcasterSDK.actions) {
+                    showToast('error', 'SDK Not Available', 'Please open in Warpcast to share');
+                    return;
+                }
+                
                 await window.farcasterSDK.actions.composeCast({
                     text: castText,
                     embeds: [SONGJAM_URL, MINIAPP_URL],
                     channelKey: 'zao'
                 });
                 console.log('✅ Vote shared to Farcaster');
+                showToast('success', 'Share Opened', 'Cast composer opened successfully!');
                 
                 // Track share for analytics
                 trackShare(mode);
