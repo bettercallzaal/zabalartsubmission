@@ -30,6 +30,14 @@
         window.farcasterSDK = sdk;
         window.farcasterSDKLoaded = true;
         console.log('✅ Farcaster SDK loaded');
+        
+        // Immediately call ready() to dismiss splash screen
+        try {
+            await sdk.actions.ready();
+            console.log('✅ Splash screen dismissed immediately');
+        } catch (err) {
+            console.log('⚠️ Immediate ready() failed:', err);
+        }
     </script>
     <script>
         // Fallback: Call ready() after timeout if SDK doesn't load
