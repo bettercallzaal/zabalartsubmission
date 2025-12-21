@@ -2788,10 +2788,22 @@
                         await window.farcasterSDK.actions.ready();
                         console.log('✅ Splash screen hidden (fallback mode)');
                     } else {
-                        console.log('⚠️ SDK not available, cannot call ready()');
+                        console.log('⚠️ SDK not available, manually hiding splash screen');
+                        // Manually hide splash screen when testing outside Farcaster
+                        const splashScreen = document.querySelector('.fc-splash-screen');
+                        if (splashScreen) {
+                            splashScreen.style.display = 'none';
+                        }
+                        document.body.style.overflow = 'auto';
                     }
                 } catch (readyErr) {
                     console.log('ℹ️ Could not call ready() in fallback mode:', readyErr);
+                    // Manually hide splash screen on error
+                    const splashScreen = document.querySelector('.fc-splash-screen');
+                    if (splashScreen) {
+                        splashScreen.style.display = 'none';
+                    }
+                    document.body.style.overflow = 'auto';
                 }
             }
             
