@@ -5,6 +5,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ZABAL Live Hub — Stream Coordination</title>
     
+    <!-- CRITICAL: Call ready() as early as possible -->
+    <script>
+        (function() {
+            // Try to call ready immediately
+            if (window.parent && window.parent.postMessage) {
+                window.parent.postMessage({ type: 'ready' }, '*');
+            }
+            // Also try via any existing SDK
+            if (window.sdk && window.sdk.actions && window.sdk.actions.ready) {
+                window.sdk.actions.ready().catch(function() {});
+            }
+        })();
+    </script>
+    
     <!-- Open Graph Meta Tags -->
     <meta property="og:title" content="ZABAL Live Hub - Vote on Stream Direction">
     <meta property="og:description" content="Vote daily on ZABAL's direction! Choose Studio, Market, Social, or Battle mode to shape the stream.">
