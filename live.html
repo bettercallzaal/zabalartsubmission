@@ -2633,23 +2633,16 @@
             
             try {
                 const fidsParam = uncachedFids.join(',');
-                const response = await fetch(`https://api.neynar.com/v2/farcaster/user/bulk?fids=${fidsParam}`, {
-                    headers: {
-                        'api_key': NEYNAR_API_KEY
-                    }
-                });
+                const data = await callNeynarAPI('user/bulk', { fids: fidsParam });
                 
-                if (response.ok) {
-                    const data = await response.json();
-                    if (data.users) {
-                        data.users.forEach(user => {
-                            userDataCache[user.fid] = {
-                                username: user.username,
-                                display_name: user.display_name,
-                                pfp_url: user.pfp_url
-                            };
-                        });
-                    }
+                if (data.users) {
+                    data.users.forEach(user => {
+                        userDataCache[user.fid] = {
+                            username: user.username,
+                            display_name: user.display_name,
+                            pfp_url: user.pfp_url
+                        };
+                    });
                 }
             } catch (error) {
                 console.error('❌ Error fetching user data:', error);
@@ -2997,8 +2990,17 @@
         // Share modal functions
         let currentShareMode = null;
         const MINIAPP_URL = 'https://zabal.art/live.html';
-        const NEYNAR_API_KEY = '15CC284E-9C7E-44C8-9D32-BC82D3C05320';
         const SONGJAM_URL = 'https://www.songjam.space/zabal';
+        
+        // Neynar API proxy function
+        async function callNeynarAPI(endpoint, params = {}) {
+            const queryString = new URLSearchParams({ endpoint, ...params }).toString();
+            const response = await fetch(`/api/neynar?${queryString}`);
+            if (!response.ok) {
+                throw new Error(`Neynar API error: ${response.status}`);
+            }
+            return response.json();
+        }
         
         // Friend data
         let topFriend = null;
@@ -3253,21 +3255,14 @@
             if (!fid) return;
             
             try {
-                const response = await fetch(`https://api.neynar.com/v2/farcaster/user/best_friends?fid=${fid}&limit=10`, {
-                    headers: {
-                        'api_key': NEYNAR_API_KEY
-                    }
-                });
+                const data = await callNeynarAPI('user/best_friends', { fid, limit: 10 });
                 
-                if (response.ok) {
-                    const data = await response.json();
-                    bestFriends = data.result?.users || [];
-                    
-                    if (bestFriends.length > 0) {
-                        topFriend = bestFriends[0];
-                        console.log('✅ Loaded best friends:', bestFriends.length);
-                        console.log('👑 Top friend:', topFriend.username);
-                    }
+                bestFriends = data.result?.users || [];
+                
+                if (bestFriends.length > 0) {
+                    topFriend = bestFriends[0];
+                    console.log('✅ Loaded best friends:', bestFriends.length);
+                    console.log('👑 Top friend:', topFriend.username);
                 }
             } catch (error) {
                 console.error('❌ Error loading best friends:', error);
