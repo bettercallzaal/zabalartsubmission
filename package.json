@@ -1,0 +1,20 @@
+{
+  "name": "zabal-miniapp",
+  "version": "1.0.0",
+  "description": "ZABAL Live Hub - Community-driven stream voting miniapp",
+  "main": "index.html",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.39.0"
+  },
+  "keywords": [
+    "farcaster",
+    "miniapp",
+    "voting",
+    "streaming"
+  ],
+  "author": "ZABAL",
+  "license": "MIT"
+}
