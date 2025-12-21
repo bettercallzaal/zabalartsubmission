@@ -2992,10 +2992,32 @@
         const MINIAPP_URL = 'https://zabal.art/live.html';
         const SONGJAM_URL = 'https://www.songjam.space/zabal';
         
-        // Neynar API proxy function
+        // Neynar API proxy function with fallback
+        const NEYNAR_API_KEY_FALLBACK = '15CC284E-9C7E-44C8-9D32-BC82D3C05320';
+        
         async function callNeynarAPI(endpoint, params = {}) {
-            const queryString = new URLSearchParams({ endpoint, ...params }).toString();
-            const response = await fetch(`/api/neynar?${queryString}`);
+            // Try serverless function first
+            try {
+                const queryString = new URLSearchParams({ endpoint, ...params }).toString();
+                const response = await fetch(`/api/neynar?${queryString}`);
+                if (response.ok) {
+                    return response.json();
+                }
+                console.warn('⚠️ Serverless function failed, using fallback');
+            } catch (error) {
+                console.warn('⚠️ Serverless function not available, using fallback');
+            }
+            
+            // Fallback to direct API call
+            const queryString = new URLSearchParams(params).toString();
+            const url = `https://api.neynar.com/v2/farcaster/${endpoint}${queryString ? '?' + queryString : ''}`;
+            const response = await fetch(url, {
+                headers: {
+                    'api_key': NEYNAR_API_KEY_FALLBACK,
+                    'accept': 'application/json'
+                }
+            });
+            
             if (!response.ok) {
                 throw new Error(`Neynar API error: ${response.status}`);
             }
