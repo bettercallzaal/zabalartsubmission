@@ -46,7 +46,7 @@
         
         setTimeout(() => {
             if (!window.splashDismissed) {
-                console.log('🚨 FORCING splash screen removal after timeout');
+                console.log('🚨 FORCING splash screen removal after 1s timeout');
                 
                 // Try multiple methods to hide splash screen
                 const splashSelectors = [
@@ -74,7 +74,7 @@
                 window.splashDismissed = true;
                 console.log('✅ Splash screen forcefully removed');
             }
-        }, 3000);
+        }, 1000);
     </script>
     <style>
         * {
