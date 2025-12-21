@@ -5,18 +5,26 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ZABAL Live Hub — Stream Coordination</title>
     
-    <!-- CRITICAL: Call ready() as early as possible -->
+    <!-- CRITICAL: Call ready() when DOM is loaded -->
     <script>
-        (function() {
-            // Try to call ready immediately
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🎯 DOM loaded, attempting to dismiss splash...');
+            
+            // Method 1: Direct postMessage
             if (window.parent && window.parent.postMessage) {
                 window.parent.postMessage({ type: 'ready' }, '*');
+                console.log('📤 Sent ready postMessage to parent');
             }
-            // Also try via any existing SDK
+            
+            // Method 2: Try SDK if available
             if (window.sdk && window.sdk.actions && window.sdk.actions.ready) {
-                window.sdk.actions.ready().catch(function() {});
+                window.sdk.actions.ready().then(function() {
+                    console.log('✅ SDK ready() succeeded');
+                }).catch(function(err) {
+                    console.log('⚠️ SDK ready() failed:', err);
+                });
             }
-        })();
+        });
     </script>
     
     <!-- Open Graph Meta Tags -->
