@@ -3142,18 +3142,30 @@
             if (modal) {
                 modal.classList.add('active');
                 
+                console.log('🔍 Opening share modal');
+                console.log('👥 Best friends count:', bestFriends.length);
+                console.log('👑 Top friend:', topFriend);
+                console.log('🔐 Authenticated:', isAuthenticated);
+                
                 // Show friend tagging if we have friends
                 if (bestFriends.length > 0) {
+                    console.log('✅ Displaying friend tags');
                     displayFriendTags();
+                } else {
+                    console.warn('⚠️ No friends to display');
                 }
                 
                 // Show top friend invitation
                 if (topFriend) {
+                    console.log('✅ Displaying top friend invite');
                     displayTopFriendInvite();
+                } else {
+                    console.warn('⚠️ No top friend to display');
                 }
                 
                 // Show challenge button if authenticated
                 if (isAuthenticated && bestFriends.length > 0) {
+                    console.log('✅ Showing challenge button');
                     document.querySelector('.challenge-friends-btn').style.display = 'block';
                 }
             }
@@ -3274,10 +3286,17 @@
 
         // Load best friends from Neynar
         async function loadBestFriends(fid) {
-            if (!fid) return;
+            if (!fid) {
+                console.warn('⚠️ No FID provided to loadBestFriends');
+                return;
+            }
+            
+            console.log('📡 Loading best friends for FID:', fid);
             
             try {
                 const data = await callNeynarAPI('user/best_friends', { fid, limit: 10 });
+                
+                console.log('📥 Neynar response:', data);
                 
                 bestFriends = data.result?.users || [];
                 
@@ -3285,9 +3304,13 @@
                     topFriend = bestFriends[0];
                     console.log('✅ Loaded best friends:', bestFriends.length);
                     console.log('👑 Top friend:', topFriend.username);
+                    console.log('👥 All friends:', bestFriends.map(f => f.username));
+                } else {
+                    console.warn('⚠️ No best friends returned from API');
                 }
             } catch (error) {
                 console.error('❌ Error loading best friends:', error);
+                console.error('Error details:', error.message);
             }
         }
 
