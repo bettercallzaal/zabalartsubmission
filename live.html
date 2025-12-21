@@ -2998,10 +2998,45 @@
         let currentShareMode = null;
         const MINIAPP_URL = 'https://zabal.art/live.html';
         const NEYNAR_API_KEY = '15CC284E-9C7E-44C8-9D32-BC82D3C05320';
+        const SONGJAM_URL = 'https://www.songjam.space/zabal';
         
         // Friend data
         let topFriend = null;
         let bestFriends = [];
+
+        // Get time until next Monday 5 PM EST
+        function getTimeUntilZabalUpdate() {
+            const now = new Date();
+            
+            // Convert to EST (UTC-5)
+            const estOffset = -5 * 60; // EST offset in minutes
+            const nowEST = new Date(now.getTime() + (now.getTimezoneOffset() + estOffset) * 60000);
+            
+            // Get next Monday 5 PM EST
+            const nextMonday = new Date(nowEST);
+            const daysUntilMonday = (1 - nowEST.getDay() + 7) % 7 || 7; // Days until next Monday
+            nextMonday.setDate(nowEST.getDate() + daysUntilMonday);
+            nextMonday.setHours(17, 0, 0, 0); // 5 PM
+            
+            // If it's already past Monday 5 PM this week, go to next week
+            if (nowEST.getDay() === 1 && nowEST.getHours() >= 17) {
+                nextMonday.setDate(nextMonday.getDate() + 7);
+            }
+            
+            const diff = nextMonday - nowEST;
+            
+            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+            
+            if (days > 0) {
+                return `${days}d ${hours}h`;
+            } else if (hours > 0) {
+                return `${hours}h ${minutes}m`;
+            } else {
+                return `${minutes}m`;
+            }
+        }
         
         // Live stream status
         let isLive = false;
@@ -3305,7 +3340,8 @@
                 battle: 'BATTLE'
             };
             
-            const inviteText = `Hey @${topFriend.username}! 👋\n\nI just voted ${modeEmojis[currentShareMode]} ${modeNames[currentShareMode]} on ZABAL Live Hub!\n\nWhat's your vote? Join me! 🎨\n\n${MINIAPP_URL}`;
+            const timeRemaining = getTimeUntilZabalUpdate();
+            const inviteText = `Hey @${topFriend.username}! 👋\n\nI just voted ${modeEmojis[currentShareMode]} ${modeNames[currentShareMode]} on ZABAL Live Hub!\n\nWhat's your vote? Join me! 🎨\n\n⏰ ZABAL Update #4 in ${timeRemaining}\n📊 ${SONGJAM_URL}\n\n${MINIAPP_URL}`;
             
             try {
                 await window.farcasterSDK.actions.composeCast({
@@ -3451,8 +3487,12 @@
                 friendTags = '\n\n' + selectedFriends.map(u => `@${u}`).join(' ') + ' what\'s your vote?';
             }
             
-            // Add call to action and miniapp link
-            castText += callToAction + friendTags + '\n\n' + MINIAPP_URL;
+            // Add ZABAL Update countdown
+            const timeRemaining = getTimeUntilZabalUpdate();
+            const zabalUpdateInfo = `\n\n⏰ ZABAL Update #4 in ${timeRemaining}\n📊 ZABAL Empire Leaderboard\n🎵 ${SONGJAM_URL}`;
+            
+            // Add call to action and links
+            castText += callToAction + friendTags + zabalUpdateInfo + '\n\n' + MINIAPP_URL;
             
             // Clear selected friends after sharing
             selectedFriends = [];
@@ -3460,7 +3500,7 @@
             try {
                 await window.farcasterSDK.actions.composeCast({
                     text: castText,
-                    embeds: [MINIAPP_URL],
+                    embeds: [SONGJAM_URL, MINIAPP_URL],
                     channelKey: 'zao'
                 });
                 console.log('✅ Vote shared to Farcaster');
