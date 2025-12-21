@@ -485,6 +485,33 @@
             font-weight: 700;
             color: var(--text-white);
             margin-bottom: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .friend-tag-count {
+            font-size: 0.8rem;
+            color: var(--accent-yellow);
+            font-weight: 600;
+        }
+
+        .show-more-friends {
+            margin-top: 8px;
+            padding: 6px 12px;
+            background: var(--secondary-blue);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            color: var(--text-white);
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .show-more-friends:hover {
+            border-color: var(--accent-yellow);
+            background: rgba(224, 221, 170, 0.1);
         }
 
         .friend-tag-list {
@@ -514,6 +541,11 @@
             background: var(--accent-yellow);
             color: var(--bg-black);
             border-color: var(--accent-yellow);
+            transform: scale(1.05);
+        }
+
+        .friend-tag-item.selected .friend-tag-username {
+            color: var(--bg-black);
         }
 
         .friend-tag-pfp {
@@ -3346,6 +3378,7 @@
         }
 
         // Display friend tags in share modal
+        let showingAllFriends = false;
         function displayFriendTags() {
             const section = document.getElementById('friendTagSection');
             const list = document.getElementById('friendTagList');
@@ -3354,13 +3387,57 @@
             
             section.style.display = 'block';
             
-            // Show top 5 friends
-            list.innerHTML = bestFriends.slice(0, 5).map(friend => `
-                <div class="friend-tag-item" onclick="toggleFriendTag('${friend.username}', this)">
+            const friendsToShow = showingAllFriends ? bestFriends : bestFriends.slice(0, 5);
+            
+            // Create friend tags with event listeners
+            list.innerHTML = friendsToShow.map((friend, index) => `
+                <div class="friend-tag-item" data-username="${friend.username}" data-index="${index}">
                     <img src="${friend.pfp_url}" class="friend-tag-pfp" alt="${friend.username}">
                     <span class="friend-tag-username">@${friend.username}</span>
                 </div>
             `).join('');
+            
+            // Add show more button if there are more than 5 friends
+            if (bestFriends.length > 5 && !showingAllFriends) {
+                list.innerHTML += `<div class="show-more-friends" onclick="showMoreFriends()">+ Show ${bestFriends.length - 5} more friends</div>`;
+            }
+            
+            // Add click listeners to all friend tags
+            document.querySelectorAll('.friend-tag-item').forEach(item => {
+                item.addEventListener('click', function() {
+                    toggleFriendTag(this.dataset.username, this);
+                });
+            });
+            
+            updateFriendTagCounter();
+        }
+
+        // Show more friends
+        window.showMoreFriends = function() {
+            showingAllFriends = true;
+            displayFriendTags();
+        }
+
+        // Update friend tag counter
+        function updateFriendTagCounter() {
+            const header = document.querySelector('.friend-tag-header');
+            if (!header) return;
+            
+            let counterEl = header.querySelector('.friend-tag-count');
+            if (!counterEl) {
+                counterEl = document.createElement('span');
+                counterEl.className = 'friend-tag-count';
+                header.appendChild(counterEl);
+            }
+            
+            const remaining = 10 - selectedFriends.length;
+            counterEl.textContent = `${selectedFriends.length}/10 selected`;
+            
+            if (selectedFriends.length >= 10) {
+                counterEl.style.color = '#ff6b6b';
+            } else {
+                counterEl.style.color = 'var(--accent-yellow)';
+            }
         }
 
         // Toggle friend tag selection
@@ -3369,10 +3446,20 @@
             if (element.classList.contains('selected')) {
                 element.classList.remove('selected');
                 selectedFriends = selectedFriends.filter(u => u !== username);
+                console.log('❌ Removed friend:', username);
             } else {
+                // Limit to 10 friends
+                if (selectedFriends.length >= 10) {
+                    alert('You can tag up to 10 friends maximum!');
+                    return;
+                }
                 element.classList.add('selected');
                 selectedFriends.push(username);
+                console.log('✅ Added friend:', username);
             }
+            
+            updateFriendTagCounter();
+            console.log('👥 Selected friends:', selectedFriends);
         }
 
         // Display top friend invitation
