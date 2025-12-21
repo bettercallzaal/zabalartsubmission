@@ -1643,29 +1643,56 @@
             letter-spacing: 0.5px;
         }
 
-        .vote-button {
+        .vote-checkbox-container {
             margin-top: 0.65rem;
-            padding: 8px 20px;
-            background: var(--accent-yellow);
-            color: var(--bg-black);
-            border: none;
-            border-radius: 6px;
-            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 8px;
             cursor: pointer;
-            transition: all 0.3s ease;
+        }
+
+        .vote-checkbox {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+            accent-color: var(--accent-yellow);
+        }
+
+        .vote-checkbox-label {
             font-size: 0.875rem;
+            font-weight: 700;
+            color: var(--text-white);
         }
 
-        .vote-button:hover {
-            background: var(--text-white);
+        .submit-votes-container {
+            margin-top: 32px;
+            text-align: center;
+        }
+
+        .submit-votes-btn {
+            padding: 16px 48px;
+            background: linear-gradient(135deg, var(--accent-yellow) 0%, #c9b961 100%);
+            color: var(--primary-blue);
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(224, 221, 170, 0.3);
+        }
+
+        .submit-votes-btn:hover:not(:disabled) {
             transform: scale(1.05);
+            box-shadow: 0 6px 20px rgba(224, 221, 170, 0.5);
         }
 
-        .vote-button:disabled {
+        .submit-votes-btn:disabled {
             background: var(--border-color);
             color: var(--text-gray);
             cursor: not-allowed;
-            transform: none;
+            opacity: 0.5;
+            box-shadow: none;
         }
 
         /* Today/Yesterday Section */
@@ -2428,7 +2455,10 @@
                     <div class="mode-votes">
                         <span class="vote-count" data-votes="studio">42</span>
                         <span class="vote-label">Votes</span>
-                        <button class="vote-button" onclick="vote('studio')">Vote</button>
+                        <label class="vote-checkbox-container">
+                            <input type="checkbox" class="vote-checkbox" data-mode="studio" onchange="toggleModeSelection('studio')">
+                            <span class="vote-checkbox-label">Select</span>
+                        </label>
                     </div>
                 </div>
 
@@ -2442,7 +2472,10 @@
                     <div class="mode-votes">
                         <span class="vote-count" data-votes="market">28</span>
                         <span class="vote-label">Votes</span>
-                        <button class="vote-button" onclick="vote('market')">Vote</button>
+                        <label class="vote-checkbox-container">
+                            <input type="checkbox" class="vote-checkbox" data-mode="market" onchange="toggleModeSelection('market')">
+                            <span class="vote-checkbox-label">Select</span>
+                        </label>
                     </div>
                 </div>
 
@@ -2456,7 +2489,10 @@
                     <div class="mode-votes">
                         <span class="vote-count" data-votes="social">35</span>
                         <span class="vote-label">Votes</span>
-                        <button class="vote-button" onclick="vote('social')">Vote</button>
+                        <label class="vote-checkbox-container">
+                            <input type="checkbox" class="vote-checkbox" data-mode="social" onchange="toggleModeSelection('social')">
+                            <span class="vote-checkbox-label">Select</span>
+                        </label>
                     </div>
                 </div>
 
@@ -2470,9 +2506,19 @@
                     <div class="mode-votes">
                         <span class="vote-count" data-votes="battle">31</span>
                         <span class="vote-label">Votes</span>
-                        <button class="vote-button" onclick="vote('battle')">Vote</button>
+                        <label class="vote-checkbox-container">
+                            <input type="checkbox" class="vote-checkbox" data-mode="battle" onchange="toggleModeSelection('battle')">
+                            <span class="vote-checkbox-label">Select</span>
+                        </label>
                     </div>
                 </div>
+            </div>
+
+            <!-- Submit Votes Button -->
+            <div class="submit-votes-container">
+                <button class="submit-votes-btn" id="submitVotesBtn" onclick="submitVotes()" disabled>
+                    Submit Votes (<span id="selectedCount">0</span> selected)
+                </button>
             </div>
         </div>
     </section>
@@ -3895,6 +3941,78 @@
                 btn.textContent = '✓ Enabled';
                 btn.classList.add('enabled');
                 btn.disabled = true;
+            }
+        }
+
+        // Multi-select voting system
+        let selectedModes = [];
+
+        window.toggleModeSelection = function(mode) {
+            const checkbox = document.querySelector(`.vote-checkbox[data-mode="${mode}"]`);
+            
+            if (checkbox.checked) {
+                if (!selectedModes.includes(mode)) {
+                    selectedModes.push(mode);
+                    console.log('✅ Selected mode:', mode);
+                }
+            } else {
+                selectedModes = selectedModes.filter(m => m !== mode);
+                console.log('❌ Deselected mode:', mode);
+            }
+            
+            updateSubmitButton();
+        }
+
+        function updateSubmitButton() {
+            const btn = document.getElementById('submitVotesBtn');
+            const countSpan = document.getElementById('selectedCount');
+            
+            if (countSpan) {
+                countSpan.textContent = selectedModes.length;
+            }
+            
+            if (btn) {
+                btn.disabled = selectedModes.length === 0;
+            }
+            
+            console.log('📊 Selected modes:', selectedModes);
+        }
+
+        window.submitVotes = async function() {
+            console.log('🗳️ Submitting votes for modes:', selectedModes);
+            
+            if (selectedModes.length === 0) {
+                showToast('info', 'No Selection', 'Please select at least one mode to vote for');
+                return;
+            }
+            
+            // Check authentication
+            if (!isAuthenticated) {
+                showToast('error', 'Authentication Required', 'Please open in Warpcast to vote');
+                return;
+            }
+            
+            if (currentState !== StreamState.DECIDING) {
+                showToast('info', 'Voting Closed', 'Stream is currently locked or live');
+                return;
+            }
+            
+            try {
+                // Submit each vote
+                for (const mode of selectedModes) {
+                    await vote(mode);
+                }
+                
+                showToast('success', 'Votes Submitted!', `Voted for ${selectedModes.length} mode${selectedModes.length > 1 ? 's' : ''}`);
+                
+                // Clear selections
+                selectedModes = [];
+                document.querySelectorAll('.vote-checkbox').forEach(cb => cb.checked = false);
+                updateSubmitButton();
+                
+            } catch (error) {
+                console.error('❌ Error submitting votes:', error);
+                showToast('error', 'Submission Failed', 'Could not submit votes. Please try again.');
             }
         }
 
