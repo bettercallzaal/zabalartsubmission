@@ -13,7 +13,7 @@
     "buttonTitle": "🎨 Vote Now",
     "splashImageUrl": "https://zabal.art/assets/splash.png",
     "splashBackgroundColor": "#141e27",
-    "webhookUrl": "https://zabal.art/api/webhook",
+    "webhookUrl": "https://api.neynar.com/f/app/a5903c93-eeac-4486-b7f6-4114b1370ebb/event",
     "subtitle": "Vote on stream direction",
     "description": "Vote daily on ZABAL's direction! Choose Studio, Market, Social, or Battle mode to shape the stream. Community-driven art coordination.",
     "primaryCategory": "art-creativity",
