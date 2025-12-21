@@ -644,6 +644,64 @@
             opacity: 0.7;
         }
 
+        .settings-dropdown-divider {
+            height: 1px;
+            background: rgba(255, 255, 255, 0.1);
+            margin: 8px 0;
+        }
+
+        .enable-notifications-btn {
+            background: linear-gradient(135deg, var(--accent-yellow) 0%, #c9b961 100%);
+            color: var(--primary-blue);
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .enable-notifications-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 12px rgba(224, 221, 170, 0.3);
+        }
+
+        .enable-notifications-btn.enabled {
+            background: rgba(74, 222, 128, 0.2);
+            color: #4ade80;
+            border: 1px solid #4ade80;
+        }
+
+        .settings-dropdown-divider {
+            height: 1px;
+            background: rgba(255, 255, 255, 0.1);
+            margin: 8px 0;
+        }
+
+        .enable-notifications-btn {
+            background: linear-gradient(135deg, var(--accent-yellow) 0%, #c9b961 100%);
+            color: var(--primary-blue);
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .enable-notifications-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 12px rgba(224, 221, 170, 0.3);
+        }
+
+        .enable-notifications-btn.enabled {
+            background: rgba(74, 222, 128, 0.2);
+            color: #4ade80;
+            border: 1px solid #4ade80;
+        }
+
         /* Friend Tagging Section */
         .friend-tag-section {
             margin: 20px 0;
@@ -2286,6 +2344,18 @@
                         <div class="toggle-switch" id="shareMilestonesToggleProfile" onclick="toggleSetting('shareMilestones')">
                             <div class="toggle-slider"></div>
                         </div>
+                    </div>
+
+                    <div class="settings-dropdown-divider"></div>
+
+                    <div class="settings-dropdown-item">
+                        <div class="settings-dropdown-label">
+                            <span>🔔 Daily Reminders</span>
+                            <span class="settings-dropdown-description">Get notified at 11 AM EST to vote</span>
+                        </div>
+                        <button class="enable-notifications-btn" id="enableNotificationsBtn" onclick="enableNotifications()">
+                            Enable
+                        </button>
                     </div>
                 </div>
             </div>

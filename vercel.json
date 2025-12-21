@@ -2,5 +2,11 @@
   "buildCommand": null,
   "outputDirectory": ".",
   "cleanUrls": true,
-  "trailingSlash": false
+  "trailingSlash": false,
+  "crons": [
+    {
+      "path": "/api/cron/daily-reminder",
+      "schedule": "0 16 * * *"
+    }
+  ]
 }
