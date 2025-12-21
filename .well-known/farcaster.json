@@ -7,11 +7,11 @@
   "frame": {
     "version": "1",
     "name": "ZABAL Live Hub",
-    "iconUrl": "https://zabal.art/logo.png",
+    "iconUrl": "https://zabal.art/assets/logo.png",
     "homeUrl": "https://zabal.art",
-    "imageUrl": "https://zabal.art/preview.png",
+    "imageUrl": "https://zabal.art/assets/preview.png",
     "buttonTitle": "🎨 Vote Now",
-    "splashImageUrl": "https://zabal.art/splash.png",
+    "splashImageUrl": "https://zabal.art/assets/splash.png",
     "splashBackgroundColor": "#141e27",
     "webhookUrl": "https://zabal.art/api/webhook",
     "subtitle": "Vote on stream direction",
@@ -20,6 +20,6 @@
     "tags": ["art", "voting", "community", "streaming", "creative"],
     "ogTitle": "ZABAL - Vote on Stream",
     "ogDescription": "Vote daily on ZABAL's direction! Choose Studio, Market, Social, or Battle mode to shape the stream.",
-    "ogImageUrl": "https://zabal.art/preview.png"
+    "ogImageUrl": "https://zabal.art/assets/preview.png"
   }
 }
