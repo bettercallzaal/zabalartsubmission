@@ -3903,12 +3903,9 @@
             // Load vote history
             await loadVoteHistory();
             
-            // Refresh votes every 10 seconds
-            setInterval(loadVotes, 10000);
-            
-            // Refresh vote history every 30 seconds
-            setInterval(loadVoteHistory, 30000);
-            console.log('✅ Vote refresh interval set (10s)');
+            // Refresh votes every 30 seconds
+            setInterval(loadVotes, 30000);
+            console.log('✅ Vote refresh interval set (30s)');
             
             setInterval(updateCountdown, 1000);
             updateCountdown();
