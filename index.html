@@ -263,6 +263,124 @@
             transform: translateX(20px);
         }
 
+        /* Toast Notifications */
+        .toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 10000;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            max-width: 400px;
+            pointer-events: none;
+        }
+
+        .toast {
+            background: var(--secondary-blue);
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            padding: 16px 20px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            pointer-events: auto;
+            animation: slideIn 0.3s ease-out;
+            min-width: 300px;
+        }
+
+        .toast.success {
+            border-color: #4ade80;
+            background: linear-gradient(135deg, rgba(74, 222, 128, 0.1) 0%, var(--secondary-blue) 100%);
+        }
+
+        .toast.error {
+            border-color: #f87171;
+            background: linear-gradient(135deg, rgba(248, 113, 113, 0.1) 0%, var(--secondary-blue) 100%);
+        }
+
+        .toast.info {
+            border-color: var(--accent-yellow);
+            background: linear-gradient(135deg, rgba(224, 221, 170, 0.1) 0%, var(--secondary-blue) 100%);
+        }
+
+        .toast-icon {
+            font-size: 1.5rem;
+            flex-shrink: 0;
+        }
+
+        .toast-content {
+            flex: 1;
+        }
+
+        .toast-title {
+            font-weight: 700;
+            font-size: 0.95rem;
+            color: var(--text-white);
+            margin-bottom: 4px;
+        }
+
+        .toast-message {
+            font-size: 0.85rem;
+            color: var(--text-gray);
+            line-height: 1.4;
+        }
+
+        .toast-close {
+            background: none;
+            border: none;
+            color: var(--text-gray);
+            font-size: 1.2rem;
+            cursor: pointer;
+            padding: 4px;
+            line-height: 1;
+            transition: color 0.2s;
+        }
+
+        .toast-close:hover {
+            color: var(--text-white);
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideOut {
+            from {
+                transform: translateX(0);
+                opacity: 1;
+            }
+            to {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+        }
+
+        .toast.removing {
+            animation: slideOut 0.3s ease-in forwards;
+        }
+
+        @media (max-width: 768px) {
+            .toast-container {
+                top: 10px;
+                right: 10px;
+                left: 10px;
+                max-width: none;
+            }
+
+            .toast {
+                min-width: auto;
+            }
+        }
+
         /* Share Modal */
         .share-modal {
             display: none;
@@ -2056,6 +2174,9 @@
     </style>
 </head>
 <body>
+    <!-- Toast Notification Container -->
+    <div class="toast-container" id="toastContainer"></div>
+
     <!-- Header -->
     <header>
         <div class="header-content">
@@ -2532,6 +2653,37 @@
             countdownTime.textContent = `${hours}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
         }
 
+        // Toast Notification System
+        function showToast(type, title, message, duration = 4000) {
+            const container = document.getElementById('toastContainer');
+            if (!container) return;
+
+            const icons = {
+                success: '✅',
+                error: '❌',
+                info: '💡'
+            };
+
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.innerHTML = `
+                <div class="toast-icon">${icons[type] || '💡'}</div>
+                <div class="toast-content">
+                    <div class="toast-title">${title}</div>
+                    ${message ? `<div class="toast-message">${message}</div>` : ''}
+                </div>
+                <button class="toast-close" onclick="this.parentElement.remove()">×</button>
+            `;
+
+            container.appendChild(toast);
+
+            // Auto-remove after duration
+            setTimeout(() => {
+                toast.classList.add('removing');
+                setTimeout(() => toast.remove(), 300);
+            }, duration);
+        }
+
         // Initialize Supabase
         console.log('🎡 ZABAL Live Hub - Initializing Supabase...');
         const SUPABASE_URL = 'https://cbtvnuklqwdkpyeioafb.supabase.co';
@@ -2541,7 +2693,7 @@
         try {
             if (typeof window.supabase === 'undefined') {
                 console.error('❌ Supabase library not loaded');
-                alert('Error: Database connection failed. Please refresh the page.');
+                showToast('error', 'Database Error', 'Connection failed. Please refresh the page.');
             } else {
                 supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
                 console.log('✅ Supabase client initialized');
@@ -2914,19 +3066,19 @@
             // Check if user is authenticated with Farcaster
             if (!isAuthenticated) {
                 console.warn('⚠️ User not authenticated with Farcaster');
-                alert('🔐 Please open this page in Warpcast or another Farcaster client to vote!\n\nThis is a Farcaster Mini App that requires authentication.');
+                showToast('error', 'Authentication Required', 'Please open this page in Warpcast or another Farcaster client to vote.');
                 return;
             }
             
             if (!supabase) {
                 console.error('❌ Supabase not initialized');
-                alert('Database connection not ready. Please refresh the page.');
+                showToast('error', 'Database Error', 'Connection not ready. Please refresh the page.');
                 return;
             }
             
             if (currentState !== StreamState.DECIDING) {
                 console.warn('⚠️ Voting blocked - state is not DECIDING');
-                alert('Voting is closed. Stream is locked or live.');
+                showToast('info', 'Voting Closed', 'Stream is currently locked or live.');
                 return;
             }
 
@@ -2969,7 +3121,7 @@
                 if (error) {
                     console.error('❌ Error voting:', error);
                     console.error('❌ Error details:', JSON.stringify(error, null, 2));
-                    alert('Error voting. Please try again.');
+                    showToast('error', 'Vote Failed', 'Could not record your vote. Please try again.');
                     return;
                 }
                 
@@ -3169,7 +3321,7 @@
                 setTimeout(() => closeLiveShareModal(), 1500);
             } catch (error) {
                 console.error('❌ Failed to share live stream:', error);
-                alert('Could not share stream. Please try again.');
+                showToast('error', 'Share Failed', 'Could not share stream. Please try again.');
             }
         }
         
@@ -3450,7 +3602,7 @@
             } else {
                 // Limit to 10 friends
                 if (selectedFriends.length >= 10) {
-                    alert('You can tag up to 10 friends maximum!');
+                    showToast('info', 'Maximum Reached', 'You can tag up to 10 friends maximum.');
                     return;
                 }
                 element.classList.add('selected');
@@ -3513,7 +3665,7 @@
                 setTimeout(() => closeShareModal(), 1500);
             } catch (error) {
                 console.error('❌ Failed to invite friend:', error);
-                alert('Could not send invitation. Please try again.');
+                showToast('error', 'Invitation Failed', 'Could not send invitation. Please try again.');
             }
         }
 
@@ -3554,7 +3706,7 @@
                 setTimeout(() => closeShareModal(), 1500);
             } catch (error) {
                 console.error('❌ Failed to challenge friends:', error);
-                alert('Could not send challenge. Please try again.');
+                showToast('error', 'Challenge Failed', 'Could not send challenge. Please try again.');
             }
         }
 
@@ -3682,7 +3834,7 @@
                 }
             } catch (error) {
                 console.error('❌ Failed to share vote:', error);
-                alert('Could not share to Farcaster. Please try again.');
+                showToast('error', 'Share Failed', 'Could not share to Farcaster. Please try again.');
             }
         }
 
