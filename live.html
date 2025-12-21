@@ -796,6 +796,165 @@
             color: var(--text-white);
         }
 
+        /* Vote History Section */
+        .vote-history-section {
+            margin-bottom: 40px;
+        }
+
+        .vote-history-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .vote-history-header h3 {
+            font-size: 1.8rem;
+            font-weight: 900;
+            color: var(--text-white);
+            margin-bottom: 8px;
+        }
+
+        .vote-history-header p {
+            color: var(--text-gray);
+            font-size: 0.95rem;
+        }
+
+        .vote-history-timeline {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .vote-day-card {
+            background: var(--primary-blue);
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            padding: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .vote-day-card:hover {
+            border-color: var(--accent-yellow);
+            transform: translateY(-2px);
+        }
+
+        .vote-day-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .vote-day-date {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--accent-yellow);
+        }
+
+        .vote-day-winner {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+            color: var(--text-white);
+        }
+
+        .winner-badge {
+            padding: 4px 12px;
+            background: var(--accent-yellow);
+            color: var(--bg-black);
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 0.85rem;
+        }
+
+        .vote-day-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 12px;
+            margin-bottom: 15px;
+        }
+
+        .mode-stat {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px;
+            background: var(--secondary-blue);
+            border-radius: 8px;
+        }
+
+        .mode-stat-icon {
+            font-size: 1.5rem;
+        }
+
+        .mode-stat-info {
+            flex: 1;
+        }
+
+        .mode-stat-name {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--text-white);
+            margin-bottom: 2px;
+        }
+
+        .mode-stat-votes {
+            font-size: 0.75rem;
+            color: var(--text-gray);
+        }
+
+        .vote-day-voters {
+            margin-top: 15px;
+        }
+
+        .voters-header {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--text-gray);
+            margin-bottom: 10px;
+        }
+
+        .voters-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .voter-tag {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            background: var(--secondary-blue);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            font-size: 0.8rem;
+        }
+
+        .voter-mode-icon {
+            font-size: 1rem;
+        }
+
+        .voter-username {
+            color: var(--text-white);
+            font-weight: 600;
+        }
+
+        .loading-votes {
+            text-align: center;
+            padding: 40px;
+            color: var(--text-gray);
+            font-size: 0.95rem;
+        }
+
+        .no-history {
+            text-align: center;
+            padding: 40px;
+            color: var(--text-gray);
+        }
+
         @media (max-width: 768px) {
             .now-live-banner {
                 top: 50px;
@@ -814,6 +973,16 @@
 
             .live-share-content {
                 padding: 20px;
+            }
+
+            .vote-day-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 8px;
+            }
+
+            .vote-day-stats {
+                grid-template-columns: 1fr;
             }
         }
 
@@ -1795,8 +1964,21 @@
         <button class="watch-now-btn" onclick="openLiveShareModal()">📺 Share Stream</button>
     </div>
 
-    <!-- Personal Stats -->
+    <!-- Vote History -->
     <section class="container" style="padding-top: 70px;">
+        <div class="vote-history-section">
+            <div class="vote-history-header">
+                <h3>📊 Recent Voting Activity</h3>
+                <p>See who voted for what over the past week</p>
+            </div>
+            <div id="voteHistoryTimeline" class="vote-history-timeline">
+                <div class="loading-votes">Loading vote history...</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Personal Stats -->
+    <section class="container" style="padding-top: 20px;">
         <div id="personalStats" class="personal-stats">
             <div class="stats-header">
                 <span class="stats-title">📊 Your Stats</span>
@@ -2296,6 +2478,149 @@
             social: 0,
             battle: 0
         };
+
+        // Load vote history for past 7 days
+        async function loadVoteHistory() {
+            console.log('📜 Loading vote history...');
+            
+            if (!supabase) {
+                console.warn('⚠️ Supabase not initialized');
+                return;
+            }
+            
+            try {
+                // Get votes from past 7 days
+                const sevenDaysAgo = new Date();
+                sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+                
+                const { data: votes, error } = await supabase
+                    .from('votes')
+                    .select('fid, username, mode, vote_power, vote_date')
+                    .gte('vote_date', sevenDaysAgo.toISOString().split('T')[0])
+                    .order('vote_date', { ascending: false });
+                
+                if (error) {
+                    console.error('❌ Error loading vote history:', error);
+                    return;
+                }
+                
+                console.log('📥 Vote history loaded:', votes);
+                displayVoteHistory(votes);
+                
+            } catch (err) {
+                console.error('❌ Exception loading vote history:', err);
+            }
+        }
+
+        // Display vote history timeline
+        function displayVoteHistory(votes) {
+            const timeline = document.getElementById('voteHistoryTimeline');
+            if (!timeline) return;
+            
+            if (!votes || votes.length === 0) {
+                timeline.innerHTML = '<div class="no-history">No voting history yet. Be the first to vote!</div>';
+                return;
+            }
+            
+            // Group votes by date
+            const votesByDate = {};
+            votes.forEach(vote => {
+                const date = vote.vote_date;
+                if (!votesByDate[date]) {
+                    votesByDate[date] = [];
+                }
+                votesByDate[date].push(vote);
+            });
+            
+            const modeEmojis = {
+                studio: '🎬',
+                market: '🛒',
+                social: '🌐',
+                battle: '⚔️'
+            };
+            
+            const modeNames = {
+                studio: 'Studio',
+                market: 'Market',
+                social: 'Social',
+                battle: 'Battle'
+            };
+            
+            // Build timeline HTML
+            let html = '';
+            Object.keys(votesByDate).sort().reverse().forEach(date => {
+                const dayVotes = votesByDate[date];
+                
+                // Calculate totals per mode
+                const modeTotals = {
+                    studio: 0,
+                    market: 0,
+                    social: 0,
+                    battle: 0
+                };
+                
+                dayVotes.forEach(vote => {
+                    modeTotals[vote.mode] += vote.vote_power || 1;
+                });
+                
+                // Find winner
+                const winner = Object.keys(modeTotals).reduce((a, b) => 
+                    modeTotals[a] > modeTotals[b] ? a : b
+                );
+                
+                // Format date
+                const dateObj = new Date(date + 'T00:00:00');
+                const isToday = dateObj.toDateString() === new Date().toDateString();
+                const isYesterday = dateObj.toDateString() === new Date(Date.now() - 86400000).toDateString();
+                
+                let dateLabel = dateObj.toLocaleDateString('en-US', { 
+                    weekday: 'long', 
+                    month: 'short', 
+                    day: 'numeric' 
+                });
+                
+                if (isToday) dateLabel = '🔴 Today - ' + dateLabel;
+                else if (isYesterday) dateLabel = 'Yesterday - ' + dateLabel;
+                
+                html += `
+                    <div class="vote-day-card">
+                        <div class="vote-day-header">
+                            <div class="vote-day-date">${dateLabel}</div>
+                            <div class="vote-day-winner">
+                                <span>Winner:</span>
+                                <span class="winner-badge">${modeEmojis[winner]} ${modeNames[winner]}</span>
+                            </div>
+                        </div>
+                        
+                        <div class="vote-day-stats">
+                            ${Object.keys(modeTotals).map(mode => `
+                                <div class="mode-stat">
+                                    <div class="mode-stat-icon">${modeEmojis[mode]}</div>
+                                    <div class="mode-stat-info">
+                                        <div class="mode-stat-name">${modeNames[mode]}</div>
+                                        <div class="mode-stat-votes">${modeTotals[mode]} vote${modeTotals[mode] !== 1 ? 's' : ''}</div>
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                        
+                        <div class="vote-day-voters">
+                            <div class="voters-header">👥 ${dayVotes.length} voter${dayVotes.length !== 1 ? 's' : ''}</div>
+                            <div class="voters-list">
+                                ${dayVotes.map(vote => `
+                                    <div class="voter-tag">
+                                        <span class="voter-mode-icon">${modeEmojis[vote.mode]}</span>
+                                        <span class="voter-username">@${vote.username || 'fid:' + vote.fid}</span>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            timeline.innerHTML = html;
+        }
 
         // Load votes from database
         async function loadVotes() {
@@ -3172,8 +3497,14 @@
             // Load votes from database
             await loadVotes();
             
+            // Load vote history
+            await loadVoteHistory();
+            
             // Refresh votes every 10 seconds
             setInterval(loadVotes, 10000);
+            
+            // Refresh vote history every 30 seconds
+            setInterval(loadVoteHistory, 30000);
             console.log('✅ Vote refresh interval set (10s)');
             
             setInterval(updateCountdown, 1000);
