@@ -1,12 +1,12 @@
 // Webhook handler for Farcaster miniapp events
 // Receives notification tokens when users enable notifications
 
-import { createClient } from '@supabase/supabase-js';
+const { createClient } = require('@supabase/supabase-js');
 
 const supabaseUrl = process.env.SUPABASE_URL;
 const supabaseKey = process.env.SUPABASE_SERVICE_KEY; // Use service key for admin operations
 
-export default async function handler(req, res) {
+module.exports = async function handler(req, res) {
   // Only accept POST requests
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });

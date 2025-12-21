@@ -1,7 +1,7 @@
 // Scheduled function to send daily voting reminders at 11 AM EST
 // Vercel Cron: Configure in vercel.json
 
-export default async function handler(req, res) {
+module.exports = async function handler(req, res) {
   // Verify this is a cron request (Vercel sets this header)
   const authHeader = req.headers.authorization;
   if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
