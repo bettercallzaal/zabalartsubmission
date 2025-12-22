@@ -3778,7 +3778,7 @@
                 if (powerData.neynarScore >= 0.9) qualityBadge = ' • Elite';
                 else if (powerData.neynarScore >= 0.7) qualityBadge = ' • Quality';
                 
-                detailEl.textContent = `${badge}${qualityBadge} • ${powerData.zaoCasts} /zao posts`;
+                detailEl.innerHTML = `${badge}${qualityBadge}<br>${powerData.zaoCasts} /zao posts`;
             }
             
             // Update breakdown section
