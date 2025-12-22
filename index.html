@@ -707,18 +707,37 @@
             margin: 20px 0;
             padding: 16px;
             background: rgba(20, 30, 39, 0.5);
+            border-radius: 12px;
             border: 1px solid var(--border-color);
-            border-radius: 8px;
         }
 
         .friend-tag-header {
-            font-size: 0.9rem;
+            font-size: 0.875rem;
             font-weight: 700;
             color: var(--text-white);
             margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
             display: flex;
-            justify-content: space-between;
             align-items: center;
+            justify-content: space-between;
+        }
+
+        .reconnect-btn {
+            background: rgba(224, 221, 170, 0.1);
+            border: 1px solid var(--accent-yellow);
+            color: var(--accent-yellow);
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .reconnect-btn:hover {
+            background: rgba(224, 221, 170, 0.2);
+            transform: scale(1.05);
         }
 
         .friend-tag-count {
@@ -2611,7 +2630,12 @@
             
             <!-- Friend Tagging Section -->
             <div id="friendTagSection" class="friend-tag-section" style="display: none;">
-                <div class="friend-tag-header">👥 Tag Friends</div>
+                <div class="friend-tag-header">
+                    👥 Tag Friends
+                    <button class="reconnect-btn" onclick="showInactiveContacts()" title="Reach out to people you haven't talked to in a while">
+                        💤 Reconnect
+                    </button>
+                </div>
                 <div id="friendTagList" class="friend-tag-list"></div>
             </div>
 
@@ -3699,6 +3723,9 @@
             console.log('📡 Loading best friends for FID:', fid);
             
             try {
+                // Load inactive contacts in parallel
+                loadInactiveContacts();
+                
                 const data = await callNeynarAPI('user/best_friends', { fid, limit: 50 });
                 
                 console.log('📥 Neynar response:', data);
@@ -3759,12 +3786,15 @@
             console.log('👥 Displaying friends:', friendsToShow.length, 'of', bestFriends.length);
             
             // Create friend tags with event listeners
-            list.innerHTML = friendsToShow.map((friend, index) => `
-                <div class="friend-tag-item" data-username="${friend.username}" data-index="${index}">
-                    <img src="${friend.pfp_url}" class="friend-tag-pfp" alt="${friend.username}">
-                    <span class="friend-tag-username">@${friend.username}</span>
-                </div>
-            `).join('');
+            list.innerHTML = friendsToShow.map((friend, index) => {
+                const isSelected = selectedFriends.includes(friend.username);
+                return `
+                    <div class="friend-tag-item ${isSelected ? 'selected' : ''}" data-username="${friend.username}" data-index="${index}">
+                        <img src="${friend.pfp_url}" class="friend-tag-pfp" alt="${friend.username}">
+                        <span class="friend-tag-username">@${friend.username}</span>
+                    </div>
+                `;
+            }).join('');
             
             // Add show more button if there are more friends to display
             if (bestFriends.length > friendsDisplayCount) {
@@ -3781,7 +3811,7 @@
             });
             
             updateFriendTagCounter();
-            console.log('👥 Friend tags displayed:', friendsToShow.length);
+            console.log('👥 Friend tags displayed:', friendsToShow.length, '| Selected:', selectedFriends.length);
         }
 
         // Show more friends (5 at a time)
@@ -3826,6 +3856,107 @@
             
             console.log('👥 Currently selected friends:', selectedFriends);
             updateFriendTagCounter();
+        }
+
+        // Get random inactive contacts (people not interacted with in 30+ days)
+        let inactiveContacts = [];
+        async function loadInactiveContacts() {
+            if (!isAuthenticated || !userFid) return;
+            
+            try {
+                console.log('🔍 Loading inactive contacts...');
+                
+                // Get user's following list
+                const followingData = await callNeynarAPI('user/following', { fid: userFid, limit: 100 });
+                const following = followingData.users || [];
+                
+                // Get recent interactions (last 30 days)
+                const thirtyDaysAgo = Math.floor(Date.now() / 1000) - (30 * 24 * 60 * 60);
+                const recentCasts = await callNeynarAPI('feed/user/casts', { 
+                    fid: userFid, 
+                    limit: 50,
+                    cursor: null
+                });
+                
+                // Extract FIDs of people user has interacted with recently
+                const recentInteractions = new Set();
+                if (recentCasts.casts) {
+                    recentCasts.casts.forEach(cast => {
+                        // Add mentioned users
+                        if (cast.mentioned_profiles) {
+                            cast.mentioned_profiles.forEach(p => recentInteractions.add(p.fid));
+                        }
+                        // Add replied-to users
+                        if (cast.parent_author && cast.parent_author.fid) {
+                            recentInteractions.add(cast.parent_author.fid);
+                        }
+                    });
+                }
+                
+                // Filter for inactive contacts (following but not recently interacted)
+                inactiveContacts = following.filter(user => 
+                    !recentInteractions.has(user.fid) && user.fid !== userFid
+                );
+                
+                console.log('💤 Found inactive contacts:', inactiveContacts.length);
+                
+            } catch (error) {
+                console.error('❌ Error loading inactive contacts:', error);
+                inactiveContacts = [];
+            }
+        }
+        
+        // Get random inactive contacts to suggest
+        function getRandomInactiveContacts(count = 3) {
+            if (inactiveContacts.length === 0) return [];
+            
+            // Shuffle and take random contacts
+            const shuffled = [...inactiveContacts].sort(() => Math.random() - 0.5);
+            return shuffled.slice(0, Math.min(count, shuffled.length));
+        }
+        
+        // Show random inactive contacts in friend list
+        window.showInactiveContacts = function() {
+            if (inactiveContacts.length === 0) {
+                showToast('info', 'No Inactive Contacts', 'You\'re staying connected with everyone! 🎉');
+                return;
+            }
+            
+            const randomInactive = getRandomInactiveContacts(5);
+            
+            if (randomInactive.length === 0) {
+                showToast('info', 'No Inactive Contacts', 'You\'re staying connected with everyone! 🎉');
+                return;
+            }
+            
+            console.log('💤 Showing random inactive contacts:', randomInactive.map(u => u.username));
+            
+            // Temporarily replace friend list with inactive contacts
+            const list = document.getElementById('friendTagList');
+            if (!list) return;
+            
+            list.innerHTML = randomInactive.map((friend, index) => {
+                const isSelected = selectedFriends.includes(friend.username);
+                return `
+                    <div class="friend-tag-item ${isSelected ? 'selected' : ''}" data-username="${friend.username}" data-index="${index}">
+                        <img src="${friend.pfp_url}" class="friend-tag-pfp" alt="${friend.username}">
+                        <span class="friend-tag-username">@${friend.username}</span>
+                        <span class="inactive-badge">💤</span>
+                    </div>
+                `;
+            }).join('');
+            
+            // Add back to normal friends button
+            list.innerHTML += `<div class="show-more-friends" onclick="displayFriendTags()">← Back to Best Friends</div>`;
+            
+            // Add click listeners
+            document.querySelectorAll('.friend-tag-item').forEach(item => {
+                item.addEventListener('click', function() {
+                    toggleFriendTag(this.dataset.username, this);
+                });
+            });
+            
+            showToast('success', 'Reconnect Time! 💤', `Found ${randomInactive.length} friend${randomInactive.length > 1 ? 's' : ''} you haven\'t talked to in a while`);
         }
 
         // Display top friend invitation
