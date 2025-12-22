@@ -2981,19 +2981,29 @@
             }, duration);
         }
 
-        // Initialize database using DatabaseManager
-        console.log('🎪 ZABAL Live Hub - Initializing Database...');
+        // Initialize Supabase using config
+        console.log('🎪 ZABAL Live Hub - Initializing Supabase...');
         
         let supabase;
-        (async () => {
-            try {
-                supabase = await window.databaseManager.initialize();
-                console.log('✅ Database initialized via DatabaseManager');
-            } catch (err) {
-                console.error('❌ Database initialization failed:', err);
-                showToast('error', 'Database Error', 'Could not connect to database.');
+        try {
+            if (!window.supabase) {
+                console.error('❌ Supabase library not loaded');
+                showToast('error', 'Database Error', 'Connection failed. Please refresh the page.');
+            } else if (!window.appConfig) {
+                console.error('❌ App configuration not loaded');
+                showToast('error', 'Configuration Error', 'App not configured. Please refresh the page.');
+            } else {
+                supabase = window.supabase.createClient(
+                    window.appConfig.SUPABASE_URL,
+                    window.appConfig.SUPABASE_ANON_KEY
+                );
+                console.log('✅ Supabase client initialized');
             }
-        })();
+        } catch (err) {
+            console.error('❌ Error initializing Supabase:', err);
+            window.errorHandler?.handleError(err, { type: 'database_error', context: 'initialization' });
+            showToast('error', 'Database Error', 'Could not connect to database.');
+        }
 
         // Get Farcaster user context
         let userFID = null;
@@ -3308,62 +3318,58 @@
         async function loadVotes() {
             console.log('📊 Loading votes from database...');
             
-            // Use API throttle to prevent excessive calls
-            return await window.throttledAPI('loadVotes', async () => {
-                try {
-                    if (!supabase) {
-                        console.warn('⚠️ Supabase not initialized, skipping vote load');
-                        return;
-                    }
-                    
-                    // Get today's vote totals
-                    const { data, error } = await supabase
-                        .rpc('get_todays_votes');
-                    
-                    if (error) {
-                        console.error('❌ Error loading votes:', error);
-                        return;
-                    }
-                    
-                    console.log('📥 Received vote data:', data);
-                    
-                    // Reset votes
-                    votes.studio = 0;
-                    votes.market = 0;
-                    votes.social = 0;
-                    votes.battle = 0;
-                    
-                    // Update with database values
-                    if (data) {
-                        data.forEach(row => {
-                            votes[row.mode] = parseInt(row.total_votes) || 0;
-                        });
-                    }
-                    
-                    console.log('✅ Votes loaded:', votes);
-                    
-                    // Check if user has voted today
-                    const { data: userVoteData, error: voteError } = await supabase
-                        .rpc('has_voted_today', { user_fid: parseInt(userFID) });
-                    
-                    if (voteError) {
-                        console.error('❌ Error checking user vote:', voteError);
-                    } else if (userVoteData && userVoteData.length > 0) {
-                        const result = userVoteData[0];
-                        if (result.has_voted) {
-                            userVote = result.voted_mode;
-                            console.log('✅ User has already voted for:', userVote);
-                        }
-                    }
-                    
-                    updateVotes();
-                    updateLeader();
-                    
-                } catch (err) {
-                    console.error('❌ Exception loading votes:', err);
-                    throw err;
+            if (!supabase) {
+                console.warn('⚠️ Supabase not initialized, skipping vote load');
+                return;
+            }
+            
+            try {
+                // Get today's vote totals
+                const { data, error } = await supabase
+                    .rpc('get_todays_votes');
+                
+                if (error) {
+                    console.error('❌ Error loading votes:', error);
+                    return;
                 }
-            }, { minInterval: 5000 }); // Minimum 5 seconds between calls
+                
+                console.log('📥 Received vote data:', data);
+                
+                // Reset votes
+                votes.studio = 0;
+                votes.market = 0;
+                votes.social = 0;
+                votes.battle = 0;
+                
+                // Update with database values
+                if (data) {
+                    data.forEach(row => {
+                        votes[row.mode] = parseInt(row.total_votes) || 0;
+                    });
+                }
+                
+                console.log('✅ Votes loaded:', votes);
+                
+                // Check if user has voted today
+                const { data: userVoteData, error: voteError } = await supabase
+                    .rpc('has_voted_today', { user_fid: parseInt(userFID) });
+                
+                if (voteError) {
+                    console.error('❌ Error checking user vote:', voteError);
+                } else if (userVoteData && userVoteData.length > 0) {
+                    const result = userVoteData[0];
+                    if (result.has_voted) {
+                        userVote = result.voted_mode;
+                        console.log('✅ User has already voted for:', userVote);
+                    }
+                }
+                
+                updateVotes();
+                updateLeader();
+                
+            } catch (err) {
+                console.error('❌ Exception loading votes:', err);
+            }
         }
 
         // Vote function with database - exposed to global scope for onclick handlers
@@ -3402,11 +3408,10 @@
                 return;
             }
             
-            // Ensure database is initialized
-            if (!window.databaseManager.isHealthy()) {
-                console.error('❌ Database not healthy');
+            if (!supabase) {
+                console.error('❌ Supabase not initialized');
                 showToast('error', 'Database Error', 'Database not connected. Please refresh the page.');
-                window.analytics?.trackUserAction('vote_failed', { reason: 'no_database', mode });
+                window.analytics?.trackUserAction('vote_failed', { reason: 'no_supabase', mode });
                 return;
             }
             
