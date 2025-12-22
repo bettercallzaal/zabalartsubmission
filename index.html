@@ -2685,7 +2685,7 @@
             </div>
             
             <div class="share-buttons">
-                <button class="share-action-btn share-farcaster-btn" onclick="shareVote(currentShareMode)">
+                <button class="share-action-btn share-farcaster-btn" onclick="shareVote(currentVotedModes)">
                     🟣 Share to Farcaster
                 </button>
                 <button class="share-action-btn challenge-friends-btn" onclick="challengeFriends()" style="display: none;">
@@ -3487,9 +3487,13 @@
                     setTimeout(() => confirmBanner.remove(), 300);
                 }, 3000);
                 
-                // Reload votes from database
+                // Reload votes from database to update counts
                 await loadVotes();
-                console.log('✅ Vote complete!');
+                console.log('✅ Vote complete and counts updated!');
+                
+                // Force update the UI
+                updateVotes();
+                updateLeader();
                 
                 // Share modal will open from above logic
                 
@@ -3508,6 +3512,7 @@
 
         // Share modal functions
         let currentShareMode = null;
+        let currentVotedModes = []; // Store all voted modes for sharing
         const MINIAPP_URL = 'https://zabal.art';
         const SONGJAM_URL = 'https://www.songjam.space/zabal';
         
@@ -3656,8 +3661,15 @@
         }
         
         window.openShareModal = function(votedModes) {
-            // Store current share mode for modal (use first mode if multiple)
-            currentShareMode = votedModes[0];
+            // Handle both single mode (string) and multiple modes (array)
+            const modesArray = Array.isArray(votedModes) ? votedModes : [votedModes];
+            
+            // Store all voted modes for sharing
+            currentVotedModes = modesArray;
+            currentShareMode = modesArray[0]; // Keep for backwards compatibility
+            
+            console.log('📤 Opening share modal with modes:', currentVotedModes);
+            
             const modal = document.getElementById('shareModal');
             modal.classList.add('active');
             
