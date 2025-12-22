@@ -3773,6 +3773,7 @@
             
             // Update breakdown section
             const breakdownSection = document.getElementById('votePowerBreakdown');
+            console.log('🔍 Breakdown section found:', breakdownSection ? 'YES' : 'NO');
             if (breakdownSection) {
                 // Update breakdown values
                 document.getElementById('breakdownZaoPosts').textContent = powerData.zaoCasts;
@@ -3788,6 +3789,10 @@
                 document.getElementById('breakdownMultiplier').textContent = `${powerData.multiplier}x`;
                 document.getElementById('breakdownFinalPower').textContent = `${powerData.power}x`;
                 document.getElementById('breakdownFormula').textContent = `${basePower} × ${powerData.multiplier} = ${powerData.power}`;
+                
+                console.log('✅ Breakdown updated:', { zaoCasts: powerData.zaoCasts, neynarScore: powerData.neynarScore, basePower, multiplier: powerData.multiplier, finalPower: powerData.power });
+            } else {
+                console.error('❌ Breakdown section not found in DOM!');
             }
         }
         
