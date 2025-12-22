@@ -4520,9 +4520,13 @@
                 const votedCard = document.querySelector(`[data-mode="${userVote}"]`);
                 if (votedCard) {
                     const btn = votedCard.querySelector('.vote-button');
-                    btn.disabled = true;
-                    btn.textContent = 'Voted';
-                    console.log('✅ Marked', userVote, 'button as "Voted"');
+                    if (btn) {
+                        btn.disabled = true;
+                        btn.textContent = 'Voted';
+                        console.log('✅ Marked', userVote, 'button as "Voted"');
+                    } else {
+                        console.warn('⚠️ Vote button not found for:', userVote);
+                    }
                 } else {
                     console.warn('⚠️ Could not find card for mode:', userVote);
                 }
