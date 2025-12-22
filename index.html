@@ -2527,41 +2527,41 @@
                 <div class="stat-item">
                     <span class="stat-value" id="statVotePower">1x</span>
                     <span class="stat-label">Vote Power</span>
-                    <span class="stat-detail" id="statVotePowerDetail" style="font-size: 0.75rem; color: var(--text-secondary); margin-top: 4px;">Based on /zao activity</span>
+                    <span class="stat-detail" id="statVotePowerDetail" style="font-size: 0.65rem; color: var(--text-secondary); margin-top: 4px; opacity: 0.7;"></span>
                 </div>
             </div>
             
             <!-- Vote Power Breakdown -->
             <div id="votePowerBreakdown" style="margin-top: 20px; background: rgba(224, 221, 170, 0.05); border: 1px solid rgba(224, 221, 170, 0.2); border-radius: 12px;">
-                <button onclick="toggleBreakdown()" style="width: 100%; padding: 16px; background: transparent; border: none; cursor: pointer; display: flex; justify-content: space-between; align-items: center; color: var(--accent-yellow); font-size: 0.9rem; font-weight: 600;">
-                    <span>💎 Vote Power Breakdown</span>
+                <button onclick="toggleBreakdown()" style="width: 100%; padding: 12px 16px; background: transparent; border: none; cursor: pointer; display: flex; justify-content: space-between; align-items: center; color: var(--accent-yellow); font-size: 0.85rem; font-weight: 600;">
+                    <span>Vote Power Breakdown</span>
                     <span id="breakdownToggleIcon" style="transition: transform 0.3s ease;">▼</span>
                 </button>
-                <div id="breakdownContent" style="display: none; padding: 0 16px 16px 16px;">
-                <div style="display: grid; gap: 8px; font-size: 0.85rem;">
+                <div id="breakdownContent" style="display: none; padding: 0 16px 12px 16px;">
+                <div style="display: grid; gap: 6px; font-size: 0.8rem;">
                     <div style="display: flex; justify-content: space-between; align-items: center;">
-                        <span style="color: var(--text-secondary);">📝 /zao Channel Posts:</span>
+                        <span style="color: var(--text-secondary);">/zao Channel Posts:</span>
                         <span id="breakdownZaoPosts" style="color: var(--text-primary); font-weight: 600;">—</span>
                     </div>
                     <div style="display: flex; justify-content: space-between; align-items: center;">
-                        <span style="color: var(--text-secondary);">⭐ Neynar Score:</span>
+                        <span style="color: var(--text-secondary);">Neynar Score:</span>
                         <span id="breakdownNeynarScore" style="color: var(--text-primary); font-weight: 600;">—</span>
                     </div>
                     <div style="height: 1px; background: rgba(224, 221, 170, 0.2); margin: 8px 0;"></div>
                     <div style="display: flex; justify-content: space-between; align-items: center;">
-                        <span style="color: var(--text-secondary);">🎯 Base Power:</span>
+                        <span style="color: var(--text-secondary);">Base Power:</span>
                         <span id="breakdownBasePower" style="color: var(--text-primary); font-weight: 600;">—</span>
                     </div>
                     <div style="display: flex; justify-content: space-between; align-items: center;">
-                        <span style="color: var(--text-secondary);">✨ Quality Multiplier:</span>
+                        <span style="color: var(--text-secondary);">Quality Multiplier:</span>
                         <span id="breakdownMultiplier" style="color: var(--text-primary); font-weight: 600;">—</span>
                     </div>
                     <div style="height: 1px; background: rgba(224, 221, 170, 0.2); margin: 8px 0;"></div>
                     <div style="display: flex; justify-content: space-between; align-items: center;">
-                        <span style="color: var(--accent-yellow); font-weight: 600;">🔥 Final Power:</span>
+                        <span style="color: var(--accent-yellow); font-weight: 600;">Final Power:</span>
                         <span id="breakdownFinalPower" style="color: var(--accent-yellow); font-weight: 700; font-size: 1.1rem;">—</span>
                     </div>
-                    <div style="font-size: 0.75rem; color: var(--text-secondary); margin-top: 8px; text-align: center;" id="breakdownFormula">
+                    <div style="font-size: 0.7rem; color: var(--text-secondary); margin-top: 6px; text-align: center; opacity: 0.8;" id="breakdownFormula">
                         Formula: Base × Multiplier = Final
                     </div>
                 </div>
@@ -3768,14 +3768,14 @@
             
             if (detailEl) {
                 let badge = '';
-                if (powerData.zaoCasts >= 50) badge = '🔥 Super Active';
-                else if (powerData.zaoCasts >= 20) badge = '⭐ Very Active';
-                else if (powerData.zaoCasts >= 5) badge = '✨ Active';
-                else badge = '👤 Member';
+                if (powerData.zaoCasts >= 50) badge = 'Super Active';
+                else if (powerData.zaoCasts >= 20) badge = 'Very Active';
+                else if (powerData.zaoCasts >= 5) badge = 'Active';
+                else badge = 'Member';
                 
                 let qualityBadge = '';
-                if (powerData.neynarScore >= 0.9) qualityBadge = ' • 💎 Elite';
-                else if (powerData.neynarScore >= 0.7) qualityBadge = ' • ⭐ Quality';
+                if (powerData.neynarScore >= 0.9) qualityBadge = ' • Elite';
+                else if (powerData.neynarScore >= 0.7) qualityBadge = ' • Quality';
                 
                 detailEl.textContent = `${badge}${qualityBadge} • ${powerData.zaoCasts} /zao posts`;
             }
