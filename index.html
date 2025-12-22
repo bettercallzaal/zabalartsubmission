@@ -3468,8 +3468,6 @@
                 window.dataPersistence?.saveVoteHistory(mode);
                 
                 // Show vote confirmation animation
-                window.showVoteConfirmation?.(mode);
-                
                 // Hide loading state
                 window.loadingManager?.hide('vote');
                 
@@ -3481,31 +3479,6 @@
                     // Open share modal directly after vote
                     setTimeout(() => openShareModal(mode), 500);
                 }
-                
-                // Show vote confirmation
-                const modeNames = {
-                    studio: 'Studio Mode 🎬',
-                    market: 'Market Mode 🛒',
-                    social: 'Social Mode 🌐',
-                    battle: 'Battle Mode ⚔️'
-                };
-                
-                // Create confirmation banner
-                const confirmBanner = document.createElement('div');
-                confirmBanner.style.cssText = 'position: fixed; top: 80px; left: 50%; transform: translateX(-50%); background: linear-gradient(135deg, #141e27 0%, #1a2a37 100%); border: 2px solid var(--accent-yellow); border-radius: 12px; padding: 16px 24px; z-index: 1000; box-shadow: 0 10px 30px rgba(0,0,0,0.5); animation: slideDown 0.3s ease;';
-                confirmBanner.innerHTML = `
-                    <div style="text-align: center;">
-                        <div style="font-size: 1.2rem; font-weight: 700; color: var(--accent-yellow); margin-bottom: 4px;">✅ Vote Recorded!</div>
-                        <div style="font-size: 0.9rem; color: var(--text-white);">You voted for ${modeNames[mode]}</div>
-                    </div>
-                `;
-                document.body.appendChild(confirmBanner);
-                
-                // Remove banner after 3 seconds
-                setTimeout(() => {
-                    confirmBanner.style.animation = 'slideUp 0.3s ease';
-                    setTimeout(() => confirmBanner.remove(), 300);
-                }, 3000);
                 
                 // Reload votes from database to update counts
                 await loadVotes();
