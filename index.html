@@ -2401,6 +2401,11 @@
     
     <!-- Production Enhancement Styles -->
     <link rel="stylesheet" href="css/production-styles.css">
+    
+    <!-- Core Modules (Load First) -->
+    <script src="js/config.js"></script>
+    <script src="js/validation.js"></script>
+    <script src="js/error-handler.js"></script>
 </head>
 <body>
     <!-- Skip to content link for accessibility -->
@@ -2972,23 +2977,28 @@
             }, duration);
         }
 
-        // Initialize Supabase
-        console.log('🎡 ZABAL Live Hub - Initializing Supabase...');
-        const SUPABASE_URL = 'https://cbtvnuklqwdkpyeioafb.supabase.co';
-        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNidHZudWtscXdka3B5ZWlvYWZiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjYwMDUwODcsImV4cCI6MjA4MTU4MTA4N30.0-6wezGo6keB4b7CURNitfyEYKQdI99nYOyolVyfqis';
+        // Initialize Supabase using config
+        console.log('🎪 ZABAL Live Hub - Initializing Supabase...');
         
         let supabase;
         try {
-            if (typeof window.supabase === 'undefined') {
+            if (!window.supabase) {
                 console.error('❌ Supabase library not loaded');
                 showToast('error', 'Database Error', 'Connection failed. Please refresh the page.');
+            } else if (!window.appConfig) {
+                console.error('❌ App configuration not loaded');
+                showToast('error', 'Configuration Error', 'App not configured. Please refresh the page.');
             } else {
-                supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+                supabase = window.supabase.createClient(
+                    window.appConfig.SUPABASE_URL,
+                    window.appConfig.SUPABASE_ANON_KEY
+                );
                 console.log('✅ Supabase client initialized');
             }
         } catch (err) {
             console.error('❌ Error initializing Supabase:', err);
-            alert('Error: Database connection failed. Please refresh the page.');
+            window.errorHandler?.handleError(err, { type: 'database_error', context: 'initialization' });
+            showToast('error', 'Database Error', 'Could not connect to database.');
         }
 
         // Get Farcaster user context
@@ -3362,6 +3372,25 @@
         window.vote = async function(mode) {
             console.log('🗳️ Vote button clicked for mode:', mode);
             
+            // Validate input
+            try {
+                mode = window.Validator.validateMode(mode);
+            } catch (error) {
+                console.error('❌ Invalid mode:', error.message);
+                showToast('error', 'Invalid Vote', error.message);
+                window.errorHandler?.handleError(error, { type: 'validation_error', context: 'vote' });
+                return;
+            }
+            
+            // Check rate limiting
+            try {
+                window.rateLimiter.canPerform(`vote_${userFID}`, window.appConfig?.VOTE_COOLDOWN_MS || 1000);
+            } catch (error) {
+                console.error('❌ Rate limit:', error.message);
+                showToast('warning', 'Too Fast', error.message);
+                return;
+            }
+            
             // Check online status
             if (!window.isOnline) {
                 showToast('warning', 'Offline', 'You need to be online to vote');
@@ -3414,13 +3443,16 @@
                     console.log('ℹ️ No existing vote to delete (first vote today)');
                 }
                 
+                // Validate FID before database operation
+                const validatedFID = window.Validator.validateFID(userFID);
+                
                 // Insert new vote (trigger will update daily totals)
-                console.log('➕ Inserting new vote:', { fid: userFID, mode, vote_power: 1 });
+                console.log('➕ Inserting new vote:', { fid: validatedFID, mode, vote_power: 1 });
                 const { data, error } = await supabase
                     .from('votes')
                     .insert([
                         {
-                            fid: parseInt(userFID),
+                            fid: validatedFID,
                             mode: mode,
                             vote_power: 1,
                             source: 'web'
@@ -3513,11 +3545,8 @@
         // Share modal functions
         let currentShareMode = null;
         let currentVotedModes = []; // Store all voted modes for sharing
-        const MINIAPP_URL = 'https://zabal.art';
-        const SONGJAM_URL = 'https://www.songjam.space/zabal';
-        
-        // Neynar API proxy function with fallback
-        const NEYNAR_API_KEY_FALLBACK = '15CC284E-9C7E-44C8-9D32-BC82D3C05320';
+        const MINIAPP_URL = window.appConfig?.MINIAPP_URL || 'https://zabal.art';
+        const SONGJAM_URL = window.appConfig?.SONGJAM_URL || 'https://www.songjam.space/zabal';
         
         async function callNeynarAPI(endpoint, params = {}) {
             // Try serverless function first
@@ -3537,7 +3566,7 @@
             const url = `https://api.neynar.com/v2/farcaster/${endpoint}${queryString ? '?' + queryString : ''}`;
             const response = await fetch(url, {
                 headers: {
-                    'api_key': NEYNAR_API_KEY_FALLBACK,
+                    'api_key': window.appConfig?.NEYNAR_API_KEY || '',
                     'accept': 'application/json'
                 }
             });
@@ -3936,6 +3965,15 @@
         // Toggle friend tag selection
         let selectedFriends = [];
         function toggleFriendTag(username, element) {
+            // Validate username
+            try {
+                username = window.Validator.validateUsername(username);
+            } catch (error) {
+                console.error('❌ Invalid username:', error.message);
+                showToast('error', 'Invalid Username', error.message);
+                return;
+            }
+            
             const index = selectedFriends.indexOf(username);
             
             if (index > -1) {
@@ -4245,7 +4283,18 @@
         window.submitVotes = async function() {
             console.log('🗳️ Submitting votes for modes:', selectedModes);
             
-            if (selectedModes.length === 0) {
+            // Validate modes
+            let validatedModes;
+            try {
+                validatedModes = window.Validator.validateModes(selectedModes);
+            } catch (error) {
+                console.error('❌ Invalid modes:', error.message);
+                showToast('error', 'Invalid Selection', error.message);
+                window.errorHandler?.handleError(error, { type: 'validation_error', context: 'submitVotes' });
+                return;
+            }
+            
+            if (validatedModes.length === 0) {
                 showToast('info', 'No Selection', 'Please select at least one mode to vote for');
                 return;
             }
@@ -4263,14 +4312,14 @@
             
             try {
                 // Submit each vote
-                for (const mode of selectedModes) {
+                for (const mode of validatedModes) {
                     await vote(mode);
                 }
                 
-                showToast('success', 'Votes Submitted!', `Voted for ${selectedModes.length} mode${selectedModes.length > 1 ? 's' : ''}`);
+                showToast('success', 'Votes Submitted!', `Voted for ${validatedModes.length} mode${validatedModes.length > 1 ? 's' : ''}`);
                 
                 // Store voted modes for sharing
-                const votedModes = [...selectedModes];
+                const votedModes = [...validatedModes];
                 
                 // Clear selections
                 selectedModes = [];
