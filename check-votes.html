@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Database Check - ZABAL Votes</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        body {
+            font-family: 'Courier New', monospace;
+            background: #0a0e27;
+            color: #e0ddaa;
+            padding: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        h1 { color: #e0ddaa; }
+        h2 { color: #4a9eff; margin-top: 2rem; }
+        .section {
+            background: #141e27;
+            border: 1px solid #2a3a47;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        .success { color: #4ade80; }
+        .error { color: #f87171; }
+        .warning { color: #fbbf24; }
+        pre {
+            background: #0a0e27;
+            padding: 1rem;
+            border-radius: 4px;
+            overflow-x: auto;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+        th, td {
+            padding: 0.75rem;
+            text-align: left;
+            border-bottom: 1px solid #2a3a47;
+        }
+        th {
+            background: #1a2a37;
+            color: #4a9eff;
+        }
+        button {
+            background: #4a9eff;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1rem;
+            margin-top: 1rem;
+        }
+        button:hover {
+            background: #3a8eef;
+        }
+        .stat {
+            display: inline-block;
+            background: #1a2a37;
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            margin: 0.5rem;
+        }
+        .stat-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #e0ddaa;
+        }
+        .stat-label {
+            font-size: 0.875rem;
+            color: #8a9ba8;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔍 ZABAL Database Check</h1>
+    
+    <button onclick="checkDatabase()">🔄 Refresh Data</button>
+    
+    <div id="results"></div>
+
+    <script>
+        const SUPABASE_URL = 'https://cbtvnuklqwdkpyeioafb.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNidHZudWtscXdka3B5ZWlvYWZiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjYwMDUwODcsImV4cCI6MjA4MTU4MTA4N30.0-6wezGo6keB4b7CURNitfyEYKQdI99nYOyolVyfqis';
+
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        async function checkDatabase() {
+            const results = document.getElementById('results');
+            results.innerHTML = '<p class="warning">⏳ Loading data...</p>';
+            
+            let html = '';
+            
+            try {
+                const today = new Date().toISOString().split('T')[0];
+                
+                // 1. Get all votes
+                html += '<div class="section">';
+                html += '<h2>📊 All Votes</h2>';
+                const { data: allVotes, error: allError } = await supabase
+                    .from('votes')
+                    .select('*')
+                    .order('created_at', { ascending: false });
+                
+                if (allError) {
+                    html += `<p class="error">❌ Error: ${allError.message}</p>`;
+                } else {
+                    html += `<p class="success">✅ Total votes in database: ${allVotes.length}</p>`;
+                }
+                html += '</div>';
+                
+                // 2. Today's votes
+                html += '<div class="section">';
+                html += `<h2>📅 Today's Votes (${today})</h2>`;
+                const { data: todayVotes, error: todayError } = await supabase
+                    .from('votes')
+                    .select('*')
+                    .eq('vote_date', today);
+                
+                if (todayError) {
+                    html += `<p class="error">❌ Error: ${todayError.message}</p>`;
+                } else {
+                    html += `<p class="success">✅ Votes today: ${todayVotes.length}</p>`;
+                    
+                    // Count by mode
+                    const counts = {
+                        studio: 0,
+                        market: 0,
+                        social: 0,
+                        battle: 0
+                    };
+                    
+                    todayVotes.forEach(vote => {
+                        counts[vote.mode] = (counts[vote.mode] || 0) + 1;
+                    });
+                    
+                    html += '<div>';
+                    html += `<div class="stat"><div class="stat-value">${counts.studio}</div><div class="stat-label">🎨 Studio</div></div>`;
+                    html += `<div class="stat"><div class="stat-value">${counts.market}</div><div class="stat-label">📊 Market</div></div>`;
+                    html += `<div class="stat"><div class="stat-value">${counts.social}</div><div class="stat-label">🌐 Social</div></div>`;
+                    html += `<div class="stat"><div class="stat-value">${counts.battle}</div><div class="stat-label">⚔️ Battle</div></div>`;
+                    html += '</div>';
+                    
+                    // Show recent votes
+                    if (todayVotes.length > 0) {
+                        html += '<h3>Recent Votes:</h3>';
+                        html += '<table>';
+                        html += '<tr><th>FID</th><th>Mode</th><th>Power</th><th>Source</th><th>Time</th></tr>';
+                        todayVotes.slice(0, 10).forEach(vote => {
+                            html += `<tr>
+                                <td>${vote.fid}</td>
+                                <td>${vote.mode}</td>
+                                <td>${vote.vote_power}</td>
+                                <td>${vote.source}</td>
+                                <td>${new Date(vote.created_at).toLocaleTimeString()}</td>
+                            </tr>`;
+                        });
+                        html += '</table>';
+                    }
+                }
+                html += '</div>';
+                
+                // 3. Daily totals table
+                html += '<div class="section">';
+                html += '<h2>📈 Daily Vote Totals Table</h2>';
+                const { data: totals, error: totalsError } = await supabase
+                    .from('daily_vote_totals')
+                    .select('*')
+                    .eq('vote_date', today);
+                
+                if (totalsError) {
+                    html += `<p class="error">❌ Error: ${totalsError.message}</p>`;
+                } else if (totals.length === 0) {
+                    html += `<p class="warning">⚠️ No entries in daily_vote_totals for today</p>`;
+                } else {
+                    html += '<table>';
+                    html += '<tr><th>Mode</th><th>Total Votes</th><th>Updated</th></tr>';
+                    totals.forEach(total => {
+                        html += `<tr>
+                            <td>${total.mode}</td>
+                            <td>${total.total_votes}</td>
+                            <td>${new Date(total.updated_at).toLocaleString()}</td>
+                        </tr>`;
+                    });
+                    html += '</table>';
+                }
+                html += '</div>';
+                
+                // 4. RPC function test
+                html += '<div class="section">';
+                html += '<h2>🔧 RPC Function Test</h2>';
+                const { data: rpcData, error: rpcError } = await supabase
+                    .rpc('get_todays_votes');
+                
+                if (rpcError) {
+                    html += `<p class="error">❌ RPC Error: ${rpcError.message}</p>`;
+                    html += `<pre>${JSON.stringify(rpcError, null, 2)}</pre>`;
+                } else {
+                    html += '<p class="success">✅ RPC function working</p>';
+                    html += '<pre>' + JSON.stringify(rpcData, null, 2) + '</pre>';
+                }
+                html += '</div>';
+                
+                // 5. Check for issues
+                html += '<div class="section">';
+                html += '<h2>🔍 Diagnostics</h2>';
+                
+                // Check for duplicates
+                const duplicates = {};
+                todayVotes.forEach(vote => {
+                    const key = `${vote.fid}_${vote.mode}`;
+                    duplicates[key] = (duplicates[key] || 0) + 1;
+                });
+                
+                const dupes = Object.entries(duplicates).filter(([_, count]) => count > 1);
+                if (dupes.length > 0) {
+                    html += `<p class="warning">⚠️ Found ${dupes.length} duplicate votes:</p>`;
+                    html += '<pre>' + JSON.stringify(dupes, null, 2) + '</pre>';
+                } else {
+                    html += '<p class="success">✅ No duplicate votes found</p>';
+                }
+                
+                // Check if totals match
+                if (totals.length > 0) {
+                    const counts = {
+                        studio: 0,
+                        market: 0,
+                        social: 0,
+                        battle: 0
+                    };
+                    todayVotes.forEach(vote => {
+                        counts[vote.mode] = (counts[vote.mode] || 0) + 1;
+                    });
+                    
+                    let mismatch = false;
+                    totals.forEach(total => {
+                        if (counts[total.mode] !== total.total_votes) {
+                            mismatch = true;
+                            html += `<p class="error">❌ Mismatch for ${total.mode}: votes table has ${counts[total.mode]}, totals table has ${total.total_votes}</p>`;
+                        }
+                    });
+                    
+                    if (!mismatch) {
+                        html += '<p class="success">✅ Vote counts match between tables</p>';
+                    }
+                }
+                
+                html += '</div>';
+                
+            } catch (err) {
+                html += `<div class="section"><p class="error">❌ Unexpected error: ${err.message}</p></div>`;
+                console.error(err);
+            }
+            
+            results.innerHTML = html;
+        }
+
+        // Auto-run on load
+        checkDatabase();
+    </script>
+</body>
+</html>
