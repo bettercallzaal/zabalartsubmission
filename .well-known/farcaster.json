@@ -6,6 +6,7 @@
   },
   "frame": {
     "version": "1",
+    "appId": "zabal-live-hub",
     "name": "ZABAL Live Hub",
     "iconUrl": "https://zabal.art/assets/logo.png",
     "homeUrl": "https://zabal.art",
