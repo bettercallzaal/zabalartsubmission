@@ -2529,7 +2529,7 @@
             </div>
             
             <!-- Vote Power Breakdown -->
-            <div id="votePowerBreakdown" style="margin-top: 20px; padding: 16px; background: rgba(224, 221, 170, 0.05); border: 1px solid rgba(224, 221, 170, 0.2); border-radius: 12px; display: none;">
+            <div id="votePowerBreakdown" style="margin-top: 20px; padding: 16px; background: rgba(224, 221, 170, 0.05); border: 1px solid rgba(224, 221, 170, 0.2); border-radius: 12px;">
                 <div style="font-size: 0.9rem; font-weight: 600; color: var(--accent-yellow); margin-bottom: 12px;">💎 Vote Power Breakdown</div>
                 <div style="display: grid; gap: 8px; font-size: 0.85rem;">
                     <div style="display: flex; justify-content: space-between; align-items: center;">
@@ -3771,8 +3771,6 @@
             // Update breakdown section
             const breakdownSection = document.getElementById('votePowerBreakdown');
             if (breakdownSection) {
-                breakdownSection.style.display = 'block';
-                
                 // Update breakdown values
                 document.getElementById('breakdownZaoPosts').textContent = powerData.zaoCasts;
                 document.getElementById('breakdownNeynarScore').textContent = powerData.neynarScore.toFixed(2);
@@ -4383,9 +4381,9 @@
 
             try {
                 // Call addMiniApp to prompt user to add the app and enable notifications
-                await window.farcasterSDK.actions.addMiniApp();
+                const result = await window.farcasterSDK.actions.addMiniApp();
                 
-                console.log('✅ Miniapp add prompt shown');
+                console.log('✅ Miniapp add result:', result);
                 showToast('success', 'Notifications Enabled!', 'You\'ll receive daily reminders at 11 AM EST');
                 
                 // Update button state
@@ -4393,7 +4391,6 @@
                 if (btn) {
                     btn.textContent = '✓ Enabled';
                     btn.classList.add('enabled');
-                    btn.disabled = true;
                 }
                 
                 // Store in localStorage
@@ -4401,7 +4398,8 @@
                 
             } catch (error) {
                 console.error('❌ Failed to enable notifications:', error);
-                showToast('error', 'Enable Failed', 'Could not enable notifications. Please try again.');
+                console.error('❌ Error details:', error.message, error.stack);
+                showToast('error', 'Enable Failed', error.message || 'Could not enable notifications. Please try again.');
             }
         }
 
@@ -4413,7 +4411,7 @@
             if (enabled && btn) {
                 btn.textContent = '✓ Enabled';
                 btn.classList.add('enabled');
-                btn.disabled = true;
+                // Don't disable - allow user to click again if needed
             }
         }
 
