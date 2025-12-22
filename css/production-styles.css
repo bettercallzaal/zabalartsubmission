@@ -1,0 +1,444 @@
+/* Production-Ready Styles for ZABAL Live Hub */
+
+/* ============================================
+   LOADING STATES
+   ============================================ */
+
+.loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(20, 30, 39, 0.95);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+    animation: fadeIn 0.3s ease;
+}
+
+.loading-spinner {
+    text-align: center;
+}
+
+.spinner {
+    width: 50px;
+    height: 50px;
+    border: 4px solid rgba(224, 221, 170, 0.2);
+    border-top-color: var(--accent-yellow);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 20px;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+.loading-message {
+    color: var(--text-white);
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+/* Skeleton Loading States */
+.skeleton {
+    background: linear-gradient(
+        90deg,
+        rgba(224, 221, 170, 0.05) 25%,
+        rgba(224, 221, 170, 0.15) 50%,
+        rgba(224, 221, 170, 0.05) 75%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+    border-radius: 8px;
+}
+
+@keyframes shimmer {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+}
+
+.skeleton-text {
+    height: 1rem;
+    margin-bottom: 0.5rem;
+}
+
+.skeleton-card {
+    height: 120px;
+    margin-bottom: 1rem;
+}
+
+/* ============================================
+   VOTE CONFIRMATION ANIMATION
+   ============================================ */
+
+.vote-confirmation {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0);
+    z-index: 9999;
+    opacity: 0;
+    transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+.vote-confirmation.show {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 1;
+}
+
+.vote-confirmation-content {
+    background: linear-gradient(135deg, var(--accent-yellow) 0%, #f0e68c 100%);
+    padding: 30px 50px;
+    border-radius: 20px;
+    box-shadow: 0 10px 40px rgba(224, 221, 170, 0.4);
+    text-align: center;
+}
+
+.vote-confirmation-emoji {
+    font-size: 4rem;
+    margin-bottom: 10px;
+    animation: bounce 0.6s ease;
+}
+
+@keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-20px); }
+}
+
+.vote-confirmation-text {
+    color: var(--primary-blue);
+    font-size: 1.5rem;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+/* ============================================
+   ACCESSIBILITY IMPROVEMENTS
+   ============================================ */
+
+/* Focus indicators */
+*:focus {
+    outline: 2px solid var(--accent-yellow);
+    outline-offset: 2px;
+}
+
+button:focus,
+a:focus,
+input:focus,
+.mode-card:focus {
+    outline: 3px solid var(--accent-yellow);
+    outline-offset: 3px;
+}
+
+/* Skip to content link */
+.skip-to-content {
+    position: absolute;
+    top: -40px;
+    left: 0;
+    background: var(--accent-yellow);
+    color: var(--primary-blue);
+    padding: 8px 16px;
+    text-decoration: none;
+    font-weight: 700;
+    z-index: 10001;
+    border-radius: 0 0 8px 0;
+}
+
+.skip-to-content:focus {
+    top: 0;
+}
+
+/* Screen reader only text */
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+}
+
+/* ============================================
+   MOBILE OPTIMIZATIONS
+   ============================================ */
+
+/* Ensure touch targets are at least 44px */
+@media (max-width: 768px) {
+    button,
+    a,
+    .mode-card,
+    .friend-tag-item {
+        min-height: 44px;
+        min-width: 44px;
+    }
+
+    /* Better tap highlighting */
+    button,
+    a,
+    .mode-card {
+        -webkit-tap-highlight-color: rgba(224, 221, 170, 0.3);
+    }
+
+    /* Prevent text selection on interactive elements */
+    button,
+    .mode-card,
+    .friend-tag-item {
+        -webkit-user-select: none;
+        user-select: none;
+    }
+}
+
+/* ============================================
+   OFFLINE INDICATOR
+   ============================================ */
+
+.offline-banner {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    background: #ef4444;
+    color: white;
+    padding: 12px;
+    text-align: center;
+    font-weight: 700;
+    z-index: 9998;
+    transform: translateY(-100%);
+    transition: transform 0.3s ease;
+}
+
+.offline-banner.show {
+    transform: translateY(0);
+}
+
+/* ============================================
+   STREAK BADGE
+   ============================================ */
+
+.streak-badge {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
+    color: white;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-weight: 700;
+    font-size: 0.9rem;
+    box-shadow: 0 4px 12px rgba(255, 107, 107, 0.3);
+    z-index: 100;
+    animation: slideInRight 0.5s ease;
+}
+
+@keyframes slideInRight {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+.streak-badge .fire-emoji {
+    font-size: 1.2rem;
+    margin-right: 4px;
+}
+
+/* ============================================
+   PROGRESS INDICATORS
+   ============================================ */
+
+.progress-bar {
+    width: 100%;
+    height: 4px;
+    background: rgba(224, 221, 170, 0.2);
+    border-radius: 2px;
+    overflow: hidden;
+    margin: 10px 0;
+}
+
+.progress-bar-fill {
+    height: 100%;
+    background: var(--accent-yellow);
+    transition: width 0.3s ease;
+    animation: progressShine 2s infinite;
+}
+
+@keyframes progressShine {
+    0% { opacity: 0.8; }
+    50% { opacity: 1; }
+    100% { opacity: 0.8; }
+}
+
+/* ============================================
+   KEYBOARD SHORTCUT HINTS
+   ============================================ */
+
+.keyboard-hint {
+    display: inline-block;
+    background: rgba(224, 221, 170, 0.1);
+    border: 1px solid var(--accent-yellow);
+    color: var(--accent-yellow);
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    margin-left: 8px;
+    font-family: monospace;
+}
+
+/* ============================================
+   ANIMATIONS
+   ============================================ */
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes slideUp {
+    from {
+        transform: translateY(20px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+@keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+}
+
+/* Apply animations to elements */
+.animate-in {
+    animation: slideUp 0.5s ease;
+}
+
+.pulse-animation {
+    animation: pulse 2s infinite;
+}
+
+/* ============================================
+   ERROR STATES
+   ============================================ */
+
+.error-message {
+    background: rgba(239, 68, 68, 0.1);
+    border: 1px solid #ef4444;
+    color: #fca5a5;
+    padding: 12px 16px;
+    border-radius: 8px;
+    margin: 10px 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.error-message::before {
+    content: '⚠️';
+    font-size: 1.2rem;
+}
+
+.retry-button {
+    background: #ef4444;
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.retry-button:hover {
+    background: #dc2626;
+    transform: scale(1.05);
+}
+
+/* ============================================
+   RESPONSIVE IMPROVEMENTS
+   ============================================ */
+
+@media (max-width: 768px) {
+    .loading-spinner {
+        transform: scale(0.8);
+    }
+
+    .vote-confirmation-content {
+        padding: 20px 30px;
+    }
+
+    .vote-confirmation-emoji {
+        font-size: 3rem;
+    }
+
+    .vote-confirmation-text {
+        font-size: 1.2rem;
+    }
+
+    .streak-badge {
+        top: 10px;
+        right: 10px;
+        font-size: 0.8rem;
+        padding: 6px 12px;
+    }
+}
+
+/* ============================================
+   UTILITY CLASSES
+   ============================================ */
+
+.hidden {
+    display: none !important;
+}
+
+.visible {
+    display: block !important;
+}
+
+.fade-in {
+    animation: fadeIn 0.3s ease;
+}
+
+.slide-up {
+    animation: slideUp 0.5s ease;
+}
+
+.no-scroll {
+    overflow: hidden;
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+    .loading-overlay {
+        background: rgba(0, 0, 0, 0.98);
+    }
+
+    button,
+    .mode-card {
+        border-width: 2px;
+    }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}

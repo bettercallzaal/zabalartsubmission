@@ -2398,8 +2398,19 @@
             }
         }
     </style>
+    
+    <!-- Production Enhancement Styles -->
+    <link rel="stylesheet" href="css/production-styles.css">
 </head>
 <body>
+    <!-- Skip to content link for accessibility -->
+    <a href="#votingSection" class="skip-to-content">Skip to voting</a>
+    
+    <!-- Offline Banner -->
+    <div id="offlineBanner" class="offline-banner">
+        ⚠️ You're offline. Some features may not work.
+    </div>
+    
     <!-- Toast Notification Container -->
     <div class="toast-container" id="toastContainer"></div>
 
@@ -3326,29 +3337,39 @@
 
         // Vote function with database - exposed to global scope for onclick handlers
         window.vote = async function(mode) {
-            console.log('🎯 Vote function called with mode:', mode);
-            console.log('⏰ Current state:', currentState);
+            console.log('🗳️ Vote button clicked for mode:', mode);
             
-            // Check if user is authenticated with Farcaster
+            // Check online status
+            if (!window.isOnline) {
+                showToast('warning', 'Offline', 'You need to be online to vote');
+                return;
+            }
+            
             if (!isAuthenticated) {
-                console.warn('⚠️ User not authenticated with Farcaster');
-                showToast('error', 'Authentication Required', 'Please open this page in Warpcast or another Farcaster client to vote.');
+                console.error('❌ Not authenticated');
+                showToast('error', 'Authentication Required', 'Please open in Warpcast to vote');
+                window.analytics?.trackUserAction('vote_failed', { reason: 'not_authenticated', mode });
                 return;
             }
             
             if (!supabase) {
                 console.error('❌ Supabase not initialized');
                 showToast('error', 'Database Error', 'Connection not ready. Please refresh the page.');
+                window.analytics?.trackUserAction('vote_failed', { reason: 'supabase_not_ready', mode });
                 return;
             }
             
             if (currentState !== StreamState.DECIDING) {
                 console.warn('⚠️ Voting blocked - state is not DECIDING');
                 showToast('info', 'Voting Closed', 'Stream is currently locked or live.');
+                window.analytics?.trackUserAction('vote_failed', { reason: 'voting_closed', mode });
                 return;
             }
 
             console.log('✅ Voting allowed - state is DECIDING');
+            
+            // Show loading state
+            window.loadingManager?.show('vote', 'Submitting your vote...');
             
             try {
                 // First, delete any existing vote for today
@@ -3388,6 +3409,7 @@
                     console.error('❌ Error voting:', error);
                     console.error('❌ Error details:', JSON.stringify(error, null, 2));
                     showToast('error', 'Vote Failed', 'Could not record your vote. Please try again.');
+                    window.analytics?.trackError(error, { context: 'vote', mode });
                     return;
                 }
                 
@@ -3395,6 +3417,18 @@
                 
                 userVote = mode;
                 console.log('💾 User vote saved:', mode);
+                
+                // Track vote in analytics
+                window.analytics?.trackVote(mode);
+                
+                // Save to vote history
+                window.dataPersistence?.saveVoteHistory(mode);
+                
+                // Show vote confirmation animation
+                window.showVoteConfirmation?.(mode);
+                
+                // Hide loading state
+                window.loadingManager?.hide('vote');
                 
                 // Check if should auto-share
                 if (shouldAutoShare(mode)) {
@@ -3437,8 +3471,15 @@
                 // Share modal will open from above logic
                 
             } catch (err) {
-                console.error('❌ Exception during voting:', err);
-                alert('Error voting. Please try again.');
+                console.error('❌ Error in vote function:', err);
+                
+                // Hide loading state
+                window.loadingManager?.hide('vote');
+                
+                // Track error
+                window.analytics?.trackError(err, { context: 'vote', mode });
+                
+                showToast('error', 'Vote Failed', 'An error occurred. Please try again.');
             }
         }
 
@@ -3591,9 +3632,9 @@
             }
         }
         
-        window.openShareModal = function(mode) {
-            console.log('📂 Opening share modal for mode:', mode);
-            currentShareMode = mode;
+        window.openShareModal = function(votedModes) {
+            // Store current share mode for modal (use first mode if multiple)
+            currentShareMode = votedModes[0];
             const modal = document.getElementById('shareModal');
             modal.classList.add('active');
             
@@ -4212,8 +4253,10 @@
 
 
         // Share vote to Farcaster - exposed to global scope
-        window.shareVote = async function(mode, isAuto = false) {
-            console.log('📤 Starting shareVote:', { mode, isAuto, selectedFriends: selectedFriends.length });
+        window.shareVote = async function(modes, isAuto = false) {
+            // Handle both single mode (string) and multiple modes (array)
+            const votedModes = Array.isArray(modes) ? modes : [modes];
+            console.log('📤 Starting shareVote:', { modes: votedModes, isAuto, selectedFriends: selectedFriends.length });
             
             const modeEmojis = {
                 studio: '🎬',
@@ -4242,7 +4285,6 @@
             
             // Find leader
             const leader = getLeader();
-            const isLeading = mode === leader;
             
             // Create vote standings with visual bars and leader indicator
             const createBar = (count, isLeader) => {
@@ -4263,31 +4305,29 @@
             // Check for milestone
             const isMilestone = checkMilestone(totalVotes);
             
-            // Create engaging personalized message
+            // Create engaging personalized message based on voted modes
             let castText;
             let callToAction;
             
+            // Create voted modes text
+            const votedModesText = votedModes.map(m => `${modeEmojis[m]} ${modeNames[m]}`).join(' + ');
+            const isMultiVote = votedModes.length > 1;
+            
             if (isMilestone) {
-                castText = `🎉 WE HIT ${totalVotes} VOTES!\n\nJust voted ${modeEmojis[mode]} ${modeNames[mode]} - ${modeDescriptions[mode]}\n\n${standings}\n\nJoin the celebration! 🎊`;
+                castText = `🎉 WE HIT ${totalVotes} VOTES!\n\nJust voted ${votedModesText}${isMultiVote ? ' (multi-vote!)' : ''}\n\n${standings}\n\nJoin the celebration! 🎊`;
                 callToAction = 'Vote & celebrate with us! 👇';
-            } else if (isLeading) {
-                const gap = votes[mode] - Math.max(...Object.entries(votes).filter(([k]) => k !== mode).map(([, v]) => v));
-                castText = `${modeEmojis[mode]} ${modeNames[mode]} IS WINNING! 👑\n\nLeading by ${gap} vote${gap !== 1 ? 's' : ''}!\n\n${standings}\n\n`;
+            } else if (votedModes.includes(leader)) {
+                castText = `${modeEmojis[leader]} ${modeNames[leader]} IS WINNING! 👑\n\nI voted: ${votedModesText}${isMultiVote ? ' 🎯' : ''}\n\n${standings}\n\n`;
                 callToAction = 'Help us dominate! Vote now 👇';
             } else {
-                const urgency = getPercentage(votes[mode]) < 20 ? `\n\n🚨 ${modeNames[mode]} needs your support!` : '';
-                castText = `Voted ${modeEmojis[mode]} ${modeNames[mode]} on ZABAL! 🎨\n\n${standings}${urgency}\n\n`;
+                castText = `Voted ${votedModesText} on ZABAL!${isMultiVote ? ' 🎯' : ''} 🎨\n\n${standings}\n\n`;
                 callToAction = 'Your turn! Vote now 👇';
             }
             
             // Add @zaal mention with stream suggestion
-            const streamSuggestions = {
-                studio: 'do a Studio session',
-                market: 'do a Market stream',
-                social: 'do a Social hangout',
-                battle: 'do a Battle stream'
-            };
-            const zaalMention = `\n\n@zaal I think you should ${streamSuggestions[mode]} for your next stream! 🎨`;
+            const zaalMention = isMultiVote 
+                ? `\n\n@zaal I think you should do a ${votedModes.map(m => modeNames[m]).join(' + ')} combo stream! 🎨`
+                : `\n\n@zaal I think you should do a ${modeNames[votedModes[0]]} stream for your next stream! 🎨`;
             
             // Add friend tags if selected
             let friendTags = '';
@@ -4587,6 +4627,56 @@
         
         // Start the app
         initialize();
+    </script>
+    
+    <!-- Production Enhancements -->
+    <script src="js/production-enhancements.js"></script>
+    
+    <script>
+        // Integrate production enhancements with existing code
+        document.addEventListener('DOMContentLoaded', () => {
+            // Show offline banner when offline
+            const offlineBanner = document.getElementById('offlineBanner');
+            window.addEventListener('offline', () => {
+                if (offlineBanner) offlineBanner.classList.add('show');
+            });
+            window.addEventListener('online', () => {
+                if (offlineBanner) offlineBanner.classList.remove('show');
+            });
+            
+            // Add ARIA labels to mode cards
+            document.querySelectorAll('.mode-card').forEach((card, index) => {
+                const mode = card.dataset.mode;
+                card.setAttribute('role', 'button');
+                card.setAttribute('tabindex', '0');
+                card.setAttribute('aria-label', `Vote for ${mode} mode`);
+                
+                // Add keyboard support for mode cards
+                card.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        card.click();
+                    }
+                });
+            });
+            
+            // Add ARIA labels to buttons
+            const submitBtn = document.getElementById('submitVotesBtn');
+            if (submitBtn) {
+                submitBtn.setAttribute('aria-label', 'Submit your votes');
+            }
+            
+            // Show voting streak badge if exists
+            const streak = window.dataPersistence.getVotingStreak();
+            if (streak > 0) {
+                const badge = document.createElement('div');
+                badge.className = 'streak-badge';
+                badge.innerHTML = `<span class="fire-emoji">🔥</span>${streak} day streak!`;
+                badge.setAttribute('role', 'status');
+                badge.setAttribute('aria-live', 'polite');
+                document.body.appendChild(badge);
+            }
+        });
     </script>
 </body>
 </html>
