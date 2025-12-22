@@ -4623,30 +4623,39 @@
 
         function updateLeader() {
             console.log('🔄 updateLeader() called');
+            console.log('📊 Current votes:', votes);
+            
             const leader = getLeader();
             
-            console.log('🏆 Highlighting leader:', leader);
+            console.log('🏆 Highlighting leader:', leader, 'with', votes[leader], 'votes');
+            
+            // Remove leading class from all cards
             document.querySelectorAll('.mode-card').forEach(card => {
                 card.classList.remove('leading');
+                console.log('🗑️ Removed leading from:', card.dataset.mode);
             });
 
+            // Add leading class to winner
             const leaderCard = document.querySelector(`[data-mode="${leader}"]`);
             if (leaderCard) {
                 leaderCard.classList.add('leading');
                 console.log('✅ Added "leading" class to', leader);
+                console.log('🎯 Leader card classes:', leaderCard.className);
             } else {
-                console.warn('⚠️ Could not find leader card for:', leader);
+                console.error('❌ Could not find leader card for:', leader);
+                console.log('🔍 Available cards:', 
+                    Array.from(document.querySelectorAll('.mode-card')).map(c => c.dataset.mode)
+                );
             }
 
+            // Update today section if it exists
             const todayMode = document.getElementById('todayMode');
             const todayDesc = document.getElementById('todayDesc');
-            if (todayMode && todayDesc) {
+            if (todayMode && todayDesc && leaderCard) {
                 const modeName = leaderCard.querySelector('.mode-name').textContent;
                 todayMode.textContent = modeName;
                 todayDesc.textContent = `Leading with ${votes[leader]} votes`;
                 console.log('✅ Updated today section:', modeName);
-            } else {
-                console.warn('⚠️ Today section elements not found');
             }
         }
 
@@ -4675,6 +4684,10 @@
             
             // Load votes from database
             await loadVotes();
+            
+            // Update leader display after votes loaded
+            updateLeader();
+            console.log('✅ Initial leader update complete');
             
             // Load vote history
             await loadVoteHistory();
