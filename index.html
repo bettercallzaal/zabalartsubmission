@@ -3423,17 +3423,39 @@
             window.loadingManager?.show('vote', 'Submitting your vote...');
             
             try {
-                // First, delete any existing vote for today
-                const today = new Date().toISOString().split('T')[0];
+                // Validate FID before database operation
+                const validatedFID = window.Validator.validateFID(userFID);
+                
+                // Delete any existing vote for today
                 console.log('🗑️ Checking for existing vote to delete...');
-                const deleteResult = await window.dbQuery(async (client) => {
-                    return await client
-                        .from('votes')
-                        .delete()
-                        .eq('fid', parseInt(userFID))
-                        .eq('vote_date', new Date().toISOString().split('T')[0])
-                        .select();
-                }, { context: 'deleteVote' });
+                const { data: deleteData, error: deleteError } = await supabase
+                    .from('votes')
+                    .delete()
+                    .eq('fid', validatedFID)
+                    .eq('vote_date', new Date().toISOString().split('T')[0])
+                    .select();
+                
+                if (deleteError) {
+                    console.error('❌ Error deleting old vote:', deleteError);
+                } else if (deleteData && deleteData.length > 0) {
+                    console.log('✅ Deleted old vote:', deleteData);
+                } else {
+                    console.log('ℹ️ No existing vote to delete (first vote today)');
+                }
+                
+                // Insert new vote (trigger will update daily totals)
+                console.log('➕ Inserting new vote:', { fid: validatedFID, mode, vote_power: 1 });
+                const { data, error } = await supabase
+                    .from('votes')
+                    .insert([
+                        {
+                            fid: validatedFID,
+                            mode: mode,
+                            vote_power: 1,
+                            source: 'web'
+                        }
+                    ])
+                    .select();
                 
                 if (error) {
                     console.error('❌ Error voting:', error);
