@@ -20,7 +20,7 @@ class Config {
         
         // Neynar Configuration
         // This should be moved to serverless function in production
-        this.NEYNAR_API_KEY = this.getEnvVar('NEYNAR_API_KEY', '15CC284E-9C7E-44C8-9D32-BC82D3C05320');
+        this.NEYNAR_API_KEY = this.getEnvVar('NEYNAR_API_KEY', 'FE60D90E-8F00-4400-9C39-F67E6C46E3EA');
         
         // App URLs
         this.MINIAPP_URL = 'https://zabal.art';
