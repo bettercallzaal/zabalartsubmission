@@ -2524,6 +2524,7 @@
                 <div class="stat-item">
                     <span class="stat-value" id="statVotePower">1x</span>
                     <span class="stat-label">Vote Power</span>
+                    <span class="stat-detail" id="statVotePowerDetail" style="font-size: 0.75rem; color: var(--text-secondary); margin-top: 4px;">Based on /zao activity</span>
                 </div>
             </div>
         </div>
@@ -3009,6 +3010,7 @@
         let userFID = null;
         let username = null;
         let isAuthenticated = false;
+        let userVotePower = 1; // Cache user's vote power
 
         async function initializeFarcaster() {
             console.log('🔐 Initializing Farcaster authentication...');
@@ -3435,15 +3437,18 @@
                     console.log('ℹ️ No existing vote to delete (first vote today)');
                 }
                 
-                // Insert new vote (trigger will update daily totals)
-                console.log('➕ Inserting new vote:', { fid: validatedFID, mode, vote_power: 1 });
+                // Calculate vote power for this user
+                const votePowerData = await calculateVotePower(validatedFID);
+                const votePower = votePowerData.power;
+                
+                console.log('➕ Inserting new vote:', { fid: validatedFID, mode, vote_power: votePower });
                 const { data, error } = await supabase
                     .from('votes')
                     .insert([
                         {
                             fid: validatedFID,
                             mode: mode,
-                            vote_power: 1,
+                            vote_power: votePower,
                             source: 'web'
                         }
                     ])
@@ -3574,6 +3579,155 @@
                 return `${hours}h ${minutes}m`;
             } else {
                 return `${minutes}m`;
+            }
+        }
+        
+        // Fetch user's /zao channel casts count
+        async function getZaoChannelCasts(fid) {
+            try {
+                console.log('📊 Fetching /zao channel casts for FID:', fid);
+                const response = await fetch(
+                    `https://api.neynar.com/v2/farcaster/feed/user/casts?fid=${fid}&limit=100`,
+                    {
+                        headers: {
+                            'api_key': window.appConfig.NEYNAR_API_KEY,
+                            'accept': 'application/json'
+                        }
+                    }
+                );
+                
+                if (!response.ok) {
+                    console.error('❌ Neynar API error:', response.status);
+                    return 0;
+                }
+                
+                const data = await response.json();
+                
+                // Filter for casts in /zao channel
+                const zaoCasts = data.casts?.filter(cast => 
+                    cast.channel?.id === 'zao' || cast.parent_url?.includes('/zao')
+                ) || [];
+                
+                console.log('✅ Found', zaoCasts.length, '/zao channel casts');
+                return zaoCasts.length;
+            } catch (error) {
+                console.error('❌ Error fetching /zao casts:', error);
+                return 0;
+            }
+        }
+        
+        // Fetch Neynar user score
+        async function getNeynarScore(fid) {
+            try {
+                console.log('📊 Fetching Neynar score for FID:', fid);
+                const response = await fetch(
+                    `https://api.neynar.com/v2/farcaster/user/bulk?fids=${fid}`,
+                    {
+                        headers: {
+                            'api_key': window.appConfig.NEYNAR_API_KEY,
+                            'accept': 'application/json'
+                        }
+                    }
+                );
+                
+                if (!response.ok) {
+                    console.error('❌ Neynar API error:', response.status);
+                    return 0.5; // Default middle score
+                }
+                
+                const data = await response.json();
+                const score = data.users?.[0]?.experimental?.neynar_user_score || 0.5;
+                
+                console.log('✅ Neynar score:', score);
+                return score;
+            } catch (error) {
+                console.error('❌ Error fetching Neynar score:', error);
+                return 0.5; // Default on error
+            }
+        }
+        
+        // Calculate vote power based on /zao activity and Neynar score
+        async function calculateVotePower(fid) {
+            try {
+                console.log('🎯 Calculating vote power for FID:', fid);
+                
+                // Base power
+                let power = 1;
+                
+                // Get /zao channel activity
+                const zaoCasts = await getZaoChannelCasts(fid);
+                
+                // Tiered bonuses based on /zao posts
+                if (zaoCasts >= 50) {
+                    power += 3; // Super active: 4x base
+                    console.log('🔥 Super Active: +3 (50+ /zao posts)');
+                } else if (zaoCasts >= 20) {
+                    power += 2; // Very active: 3x base
+                    console.log('⭐ Very Active: +2 (20+ /zao posts)');
+                } else if (zaoCasts >= 5) {
+                    power += 1; // Active: 2x base
+                    console.log('✨ Active: +1 (5+ /zao posts)');
+                } else {
+                    console.log('👤 Member: base power (0-4 /zao posts)');
+                }
+                
+                // Get Neynar score for quality multiplier
+                const neynarScore = await getNeynarScore(fid);
+                
+                // Apply Neynar score multiplier
+                let multiplier = 1.0;
+                if (neynarScore >= 0.9) {
+                    multiplier = 1.5; // 50% bonus for top-tier users
+                    console.log('💎 Elite Quality: 1.5x multiplier (Neynar 0.9+)');
+                } else if (neynarScore >= 0.7) {
+                    multiplier = 1.25; // 25% bonus for quality users
+                    console.log('⭐ Quality User: 1.25x multiplier (Neynar 0.7+)');
+                } else if (neynarScore < 0.5) {
+                    multiplier = 0.5; // Penalty for low-quality/spam accounts
+                    console.log('⚠️ Low Quality: 0.5x multiplier (Neynar <0.5)');
+                }
+                
+                // Calculate final power (round to 1 decimal)
+                const finalPower = Math.round(power * multiplier * 10) / 10;
+                
+                // Cap at 6x
+                const cappedPower = Math.min(finalPower, 6);
+                
+                console.log('✅ Final vote power:', cappedPower, '(base:', power, 'x multiplier:', multiplier + ')');
+                
+                return {
+                    power: cappedPower,
+                    zaoCasts: zaoCasts,
+                    neynarScore: neynarScore,
+                    multiplier: multiplier
+                };
+            } catch (error) {
+                console.error('❌ Error calculating vote power:', error);
+                return { power: 1, zaoCasts: 0, neynarScore: 0.5, multiplier: 1.0 };
+            }
+        }
+        
+        // Update vote power display
+        function updateVotePowerDisplay(powerData) {
+            const powerEl = document.getElementById('statVotePower');
+            const detailEl = document.getElementById('statVotePowerDetail');
+            
+            if (powerEl) {
+                powerEl.textContent = `${powerData.power}x`;
+            }
+            
+            if (detailEl) {
+                let badge = '';
+                if (powerData.zaoCasts >= 50) badge = '🔥 Super Active';
+                else if (powerData.zaoCasts >= 20) badge = '⭐ Very Active';
+                else if (powerData.zaoCasts >= 5) badge = '✨ Active';
+                else badge = '👤 Member';
+                
+                let qualityBadge = '';
+                if (powerData.neynarScore >= 0.9) qualityBadge = ' • 💎 Elite';
+                else if (powerData.neynarScore >= 0.7) qualityBadge = ' • ⭐ Quality';
+                
+                detailEl.textContent = `${badge}${qualityBadge} • ${powerData.zaoCasts} /zao posts`;
             }
         }
         
@@ -4569,17 +4723,16 @@
                 if (votedToday) streak = 1;
                 if (votedToday && votedYesterday) streak = 2; // Simplified - could be extended
                 
-                // Calculate vote power (base 1x, +1 for streak, etc.)
-                let votePower = 1;
-                if (streak >= 5) votePower += 1;
-                if (userFID === 19640) votePower += 1; // @thezao bonus
+                // Calculate vote power based on /zao activity and Neynar score
+                const powerData = await calculateVotePower(userFID);
+                userVotePower = powerData.power; // Cache for later use
                 
                 // Update UI
                 document.getElementById('statTotalVotes').textContent = totalVotes;
                 document.getElementById('statStreak').textContent = streak;
                 document.getElementById('statFavoriteMode').textContent = 
                     favoriteMode !== '—' ? modeEmojis[favoriteMode] : '—';
-                document.getElementById('statVotePower').textContent = `${votePower}x`;
+                updateVotePowerDisplay(powerData);
                 
                 console.log('✅ Personal stats loaded:', { totalVotes, streak, favoriteMode, votePower });
             } catch (err) {
