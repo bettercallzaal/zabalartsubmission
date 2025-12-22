@@ -2527,6 +2527,38 @@
                     <span class="stat-detail" id="statVotePowerDetail" style="font-size: 0.75rem; color: var(--text-secondary); margin-top: 4px;">Based on /zao activity</span>
                 </div>
             </div>
+            
+            <!-- Vote Power Breakdown -->
+            <div id="votePowerBreakdown" style="margin-top: 20px; padding: 16px; background: rgba(224, 221, 170, 0.05); border: 1px solid rgba(224, 221, 170, 0.2); border-radius: 12px; display: none;">
+                <div style="font-size: 0.9rem; font-weight: 600; color: var(--accent-yellow); margin-bottom: 12px;">💎 Vote Power Breakdown</div>
+                <div style="display: grid; gap: 8px; font-size: 0.85rem;">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <span style="color: var(--text-secondary);">📝 /zao Channel Posts:</span>
+                        <span id="breakdownZaoPosts" style="color: var(--text-primary); font-weight: 600;">—</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <span style="color: var(--text-secondary);">⭐ Neynar Score:</span>
+                        <span id="breakdownNeynarScore" style="color: var(--text-primary); font-weight: 600;">—</span>
+                    </div>
+                    <div style="height: 1px; background: rgba(224, 221, 170, 0.2); margin: 8px 0;"></div>
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <span style="color: var(--text-secondary);">🎯 Base Power:</span>
+                        <span id="breakdownBasePower" style="color: var(--text-primary); font-weight: 600;">—</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <span style="color: var(--text-secondary);">✨ Quality Multiplier:</span>
+                        <span id="breakdownMultiplier" style="color: var(--text-primary); font-weight: 600;">—</span>
+                    </div>
+                    <div style="height: 1px; background: rgba(224, 221, 170, 0.2); margin: 8px 0;"></div>
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <span style="color: var(--accent-yellow); font-weight: 600;">🔥 Final Power:</span>
+                        <span id="breakdownFinalPower" style="color: var(--accent-yellow); font-weight: 700; font-size: 1.1rem;">—</span>
+                    </div>
+                    <div style="font-size: 0.75rem; color: var(--text-secondary); margin-top: 8px; text-align: center;" id="breakdownFormula">
+                        Formula: Base × Multiplier = Final
+                    </div>
+                </div>
+            </div>
         </div>
     </section>
 
@@ -3734,6 +3766,27 @@
                 else if (powerData.neynarScore >= 0.7) qualityBadge = ' • ⭐ Quality';
                 
                 detailEl.textContent = `${badge}${qualityBadge} • ${powerData.zaoCasts} /zao posts`;
+            }
+            
+            // Update breakdown section
+            const breakdownSection = document.getElementById('votePowerBreakdown');
+            if (breakdownSection) {
+                breakdownSection.style.display = 'block';
+                
+                // Update breakdown values
+                document.getElementById('breakdownZaoPosts').textContent = powerData.zaoCasts;
+                document.getElementById('breakdownNeynarScore').textContent = powerData.neynarScore.toFixed(2);
+                
+                // Calculate base power from zaoCasts
+                let basePower = 1;
+                if (powerData.zaoCasts >= 50) basePower = 4;
+                else if (powerData.zaoCasts >= 20) basePower = 3;
+                else if (powerData.zaoCasts >= 5) basePower = 2;
+                
+                document.getElementById('breakdownBasePower').textContent = `${basePower}x`;
+                document.getElementById('breakdownMultiplier').textContent = `${powerData.multiplier}x`;
+                document.getElementById('breakdownFinalPower').textContent = `${powerData.power}x`;
+                document.getElementById('breakdownFormula').textContent = `${basePower} × ${powerData.multiplier} = ${powerData.power}`;
             }
         }
         
