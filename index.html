@@ -2406,6 +2406,10 @@
     <script src="js/config.js"></script>
     <script src="js/validation.js"></script>
     <script src="js/error-handler.js"></script>
+    <script src="js/lifecycle.js"></script>
+    <script src="js/state-manager.js"></script>
+    <script src="js/database.js"></script>
+    <script src="js/api-throttle.js"></script>
 </head>
 <body>
     <!-- Skip to content link for accessibility -->
@@ -2977,29 +2981,19 @@
             }, duration);
         }
 
-        // Initialize Supabase using config
-        console.log('🎪 ZABAL Live Hub - Initializing Supabase...');
+        // Initialize database using DatabaseManager
+        console.log('🎪 ZABAL Live Hub - Initializing Database...');
         
         let supabase;
-        try {
-            if (!window.supabase) {
-                console.error('❌ Supabase library not loaded');
-                showToast('error', 'Database Error', 'Connection failed. Please refresh the page.');
-            } else if (!window.appConfig) {
-                console.error('❌ App configuration not loaded');
-                showToast('error', 'Configuration Error', 'App not configured. Please refresh the page.');
-            } else {
-                supabase = window.supabase.createClient(
-                    window.appConfig.SUPABASE_URL,
-                    window.appConfig.SUPABASE_ANON_KEY
-                );
-                console.log('✅ Supabase client initialized');
+        (async () => {
+            try {
+                supabase = await window.databaseManager.initialize();
+                console.log('✅ Database initialized via DatabaseManager');
+            } catch (err) {
+                console.error('❌ Database initialization failed:', err);
+                showToast('error', 'Database Error', 'Could not connect to database.');
             }
-        } catch (err) {
-            console.error('❌ Error initializing Supabase:', err);
-            window.errorHandler?.handleError(err, { type: 'database_error', context: 'initialization' });
-            showToast('error', 'Database Error', 'Could not connect to database.');
-        }
+        })();
 
         // Get Farcaster user context
         let userFID = null;
@@ -3363,9 +3357,11 @@
                 updateVotes();
                 updateLeader();
                 
-            } catch (err) {
-                console.error('❌ Exception loading votes:', err);
-            }
+                } catch (err) {
+                    console.error('❌ Exception loading votes:', err);
+                    throw err;
+                }
+            }, { minInterval: 5000 }); // Minimum 5 seconds between calls
         }
 
         // Vote function with database - exposed to global scope for onclick handlers
@@ -3404,10 +3400,11 @@
                 return;
             }
             
-            if (!supabase) {
-                console.error('❌ Supabase not initialized');
-                showToast('error', 'Database Error', 'Connection not ready. Please refresh the page.');
-                window.analytics?.trackUserAction('vote_failed', { reason: 'supabase_not_ready', mode });
+            // Ensure database is initialized
+            if (!window.databaseManager.isHealthy()) {
+                console.error('❌ Database not healthy');
+                showToast('error', 'Database Error', 'Database not connected. Please refresh the page.');
+                window.analytics?.trackUserAction('vote_failed', { reason: 'no_database', mode });
                 return;
             }
             
@@ -3426,14 +3423,17 @@
             try {
                 // First, delete any existing vote for today
                 const today = new Date().toISOString().split('T')[0];
-                console.log('🗑️ Attempting to delete existing vote for FID:', userFID, 'Date:', today);
+                console.log('🗑️ Checking for existing vote to delete...');
+                const deleteResult = await window.dbQuery(async (client) => {
+                    return await client
+                        .from('votes')
+                        .delete()
+                        .eq('fid', parseInt(userFID))
+                        .eq('vote_date', new Date().toISOString().split('T')[0])
+                        .select();
+                }, { context: 'deleteVote' });
                 
-                const { data: deleteData, error: deleteError } = await supabase
-                    .from('votes')
-                    .delete()
-                    .eq('fid', parseInt(userFID))
-                    .eq('vote_date', today)
-                    .select();
+                const { data: deleteData, error: deleteError } = deleteResult;
                 
                 if (deleteError) {
                     console.error('❌ Error deleting old vote:', deleteError);
@@ -3446,19 +3446,23 @@
                 // Validate FID before database operation
                 const validatedFID = window.Validator.validateFID(userFID);
                 
-                // Insert new vote (trigger will update daily totals)
+                // Insert new vote (trigger will update daily totals) - using DatabaseManager
                 console.log('➕ Inserting new vote:', { fid: validatedFID, mode, vote_power: 1 });
-                const { data, error } = await supabase
-                    .from('votes')
-                    .insert([
-                        {
-                            fid: validatedFID,
-                            mode: mode,
-                            vote_power: 1,
-                            source: 'web'
-                        }
-                    ])
-                    .select();
+                const insertResult = await window.dbQuery(async (client) => {
+                    return await client
+                        .from('votes')
+                        .insert([
+                            {
+                                fid: validatedFID,
+                                mode: mode,
+                                vote_power: 1,
+                                source: 'web'
+                            }
+                        ])
+                        .select();
+                }, { context: 'insertVote' });
+                
+                const { data, error } = insertResult;
                 
                 if (error) {
                     console.error('❌ Error voting:', error);
@@ -3549,17 +3553,19 @@
         const SONGJAM_URL = window.appConfig?.SONGJAM_URL || 'https://www.songjam.space/zabal';
         
         async function callNeynarAPI(endpoint, params = {}) {
-            // Try serverless function first
-            try {
-                const queryString = new URLSearchParams({ endpoint, ...params }).toString();
-                const response = await fetch(`/api/neynar?${queryString}`);
-                if (response.ok) {
-                    return response.json();
+            // Use API throttle to prevent rate limiting
+            return await window.throttledAPI(`neynar_${endpoint}`, async () => {
+                // Try serverless function first
+                try {
+                    const queryString = new URLSearchParams({ endpoint, ...params }).toString();
+                    const response = await fetch(`/api/neynar?${queryString}`);
+                    if (response.ok) {
+                        return response.json();
+                    }
+                    console.warn('⚠️ Serverless function failed, using fallback');
+                } catch (error) {
+                    console.warn('⚠️ Serverless function not available, using fallback');
                 }
-                console.warn('⚠️ Serverless function failed, using fallback');
-            } catch (error) {
-                console.warn('⚠️ Serverless function not available, using fallback');
-            }
             
             // Fallback to direct API call
             const queryString = new URLSearchParams(params).toString();
@@ -3571,10 +3577,11 @@
                 }
             });
             
-            if (!response.ok) {
-                throw new Error(`Neynar API error: ${response.status}`);
-            }
-            return response.json();
+                if (!response.ok) {
+                    throw new Error(`Neynar API error: ${response.status}`);
+                }
+                return response.json();
+            }, { minInterval: 2000 }); // Minimum 2 seconds between Neynar calls
         }
         
         // Friend data
@@ -4660,8 +4667,8 @@
             initializeFarcaster();
             checkLiveStatus();
             
-            // Check live status every 2 minutes
-            setInterval(checkLiveStatus, 120000);
+            // Check live status every 2 minutes (using lifecycle manager)
+            window.appLifecycle.addInterval(checkLiveStatus, 120000, 'live-status-check');
             
             // Manual controls for testing (remove in production)
             window.setLiveStatus = function(status) {
@@ -4679,11 +4686,11 @@
             // Load vote history
             await loadVoteHistory();
             
-            // Refresh votes every 30 seconds
-            setInterval(loadVotes, 30000);
+            // Refresh votes every 30 seconds (using lifecycle manager)
+            window.appLifecycle.addInterval(loadVotes, 30000, 'vote-refresh');
             console.log('✅ Vote refresh interval set (30s)');
             
-            setInterval(updateCountdown, 1000);
+            window.appLifecycle.addInterval(updateCountdown, 1000, 'countdown');
             updateCountdown();
             console.log('✅ Countdown started');
             console.log('🎉 ZABAL Live Hub ready!');
