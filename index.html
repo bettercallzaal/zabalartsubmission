@@ -4185,7 +4185,7 @@
                 // Filter out self and best friends (to show different people)
                 const bestFriendFids = new Set(bestFriends.map(f => f.fid));
                 reconnectContacts = following.filter(user => 
-                    user.fid !== userFid && !bestFriendFids.has(user.fid)
+                    user.fid !== userFID && !bestFriendFids.has(user.fid)
                 );
                 
                 console.log('💤 Found reconnect contacts:', reconnectContacts.length);
