@@ -2857,8 +2857,31 @@
         };
 
         let currentState = StreamState.DECIDING;
-        let lockTime = new Date();
-        lockTime.setHours(lockTime.getHours() + 2, 34, 12);
+        
+        // Calculate lock time: Next Monday 5 PM EST (ZABAL AMA #4)
+        function calculateLockTime() {
+            const now = new Date();
+            
+            // Convert to EST (UTC-5)
+            const estOffset = -5 * 60; // EST offset in minutes
+            const nowEST = new Date(now.getTime() + (now.getTimezoneOffset() + estOffset) * 60000);
+            
+            // Get next Monday 5 PM EST
+            const nextMonday = new Date(nowEST);
+            const daysUntilMonday = (1 - nowEST.getDay() + 7) % 7 || 7; // Days until next Monday
+            nextMonday.setDate(nowEST.getDate() + daysUntilMonday);
+            nextMonday.setHours(17, 0, 0, 0); // 5 PM EST
+            
+            // If it's already past Monday 5 PM this week, go to next week
+            if (nowEST.getDay() === 1 && nowEST.getHours() >= 17) {
+                nextMonday.setDate(nextMonday.getDate() + 7);
+            }
+            
+            // Convert back to local time
+            return new Date(nextMonday.getTime() - (now.getTimezoneOffset() + estOffset) * 60000);
+        }
+        
+        let lockTime = calculateLockTime();
 
         // Update hero based on state
         function updateHeroState() {
