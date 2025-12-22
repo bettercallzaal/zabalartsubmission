@@ -3477,13 +3477,16 @@
                 // Hide loading state
                 window.loadingManager?.hide('vote');
                 
-                // Check if should auto-share
-                if (shouldAutoShare(mode)) {
-                    console.log('🔄 Auto-sharing vote...');
-                    setTimeout(() => shareVote(mode, true), 1000);
-                } else {
-                    // Open share modal directly after vote
-                    setTimeout(() => openShareModal(mode), 500);
+                // Only open share modal if not skipped (i.e., not called from submitVotes)
+                if (!skipModal) {
+                    // Check if should auto-share
+                    if (shouldAutoShare(mode)) {
+                        console.log('🔄 Auto-sharing vote...');
+                        setTimeout(() => shareVote(mode, true), 1000);
+                    } else {
+                        // Open share modal directly after vote
+                        setTimeout(() => openShareModal(mode), 500);
+                    }
                 }
                 
                 // Reload votes from database to update counts
@@ -4426,11 +4429,17 @@
                 return;
             }
             
+            // Show loading state for batch submission
+            window.loadingManager?.show('submitVotes', 'Submitting your votes...');
+            
             try {
-                // Submit each vote
+                // Submit each vote (skipModal = true to prevent individual modals)
                 for (const mode of validatedModes) {
-                    await vote(mode);
+                    await vote(mode, true);
                 }
+                
+                // Hide loading state
+                window.loadingManager?.hide('submitVotes');
                 
                 showToast('success', 'Votes Submitted!', `Voted for ${validatedModes.length} mode${validatedModes.length > 1 ? 's' : ''}`);
                 
@@ -4447,6 +4456,7 @@
                 
             } catch (error) {
                 console.error('❌ Error submitting votes:', error);
+                window.loadingManager?.hide('submitVotes');
                 showToast('error', 'Submission Failed', 'Could not submit votes. Please try again.');
             }
         }
