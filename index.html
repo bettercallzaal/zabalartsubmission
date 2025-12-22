@@ -3375,7 +3375,8 @@
         }
 
         // Vote function with database - exposed to global scope for onclick handlers
-        window.vote = async function(mode) {
+        // skipModal parameter prevents opening share modal (used when called from submitVotes)
+        window.vote = async function(mode, skipModal = false) {
             console.log('🗳️ Vote button clicked for mode:', mode);
             
             // Validate input
@@ -3489,13 +3490,15 @@
                     }
                 }
                 
-                // Reload votes from database to update counts
-                await loadVotes();
-                console.log('✅ Vote complete and counts updated!');
-                
-                // Force update the UI
-                updateVotes();
-                updateLeader();
+                // Only reload votes if not in batch mode (submitVotes will reload once at the end)
+                if (!skipModal) {
+                    await loadVotes();
+                    console.log('✅ Vote complete and counts updated!');
+                    
+                    // Force update the UI
+                    updateVotes();
+                    updateLeader();
+                }
                 
                 // Share modal will open from above logic
                 
@@ -4437,6 +4440,9 @@
                 for (const mode of validatedModes) {
                     await vote(mode, true);
                 }
+                
+                // Reload votes once after all votes submitted
+                await loadVotes();
                 
                 // Hide loading state
                 window.loadingManager?.hide('submitVotes');
