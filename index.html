@@ -739,6 +739,19 @@
             background: rgba(224, 221, 170, 0.2);
             transform: scale(1.05);
         }
+        
+        .selected-friends-indicator {
+            width: 100%;
+            padding: 8px 12px;
+            background: rgba(224, 221, 170, 0.15);
+            border: 1px solid var(--accent-yellow);
+            border-radius: 8px;
+            color: var(--accent-yellow);
+            font-size: 0.85rem;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 12px;
+        }
 
         .friend-tag-count {
             font-size: 0.8rem;
@@ -796,6 +809,18 @@
 
         .friend-tag-item.selected .friend-tag-username {
             color: var(--bg-black);
+            font-weight: 700;
+        }
+        
+        .friend-tag-item.selected::before {
+            content: '✓';
+            margin-right: 4px;
+            font-weight: 900;
+        }
+        
+        .inactive-badge {
+            margin-left: 4px;
+            opacity: 0.7;
         }
 
         .friend-tag-pfp {
@@ -3930,12 +3955,19 @@
             }
             
             console.log('💤 Showing random inactive contacts:', randomInactive.map(u => u.username));
+            console.log('✅ Currently selected friends:', selectedFriends);
             
             // Temporarily replace friend list with inactive contacts
             const list = document.getElementById('friendTagList');
             if (!list) return;
             
-            list.innerHTML = randomInactive.map((friend, index) => {
+            // Show selected count at top if any are selected
+            let headerHtml = '';
+            if (selectedFriends.length > 0) {
+                headerHtml = `<div class="selected-friends-indicator">✓ ${selectedFriends.length} friend${selectedFriends.length > 1 ? 's' : ''} selected</div>`;
+            }
+            
+            list.innerHTML = headerHtml + randomInactive.map((friend, index) => {
                 const isSelected = selectedFriends.includes(friend.username);
                 return `
                     <div class="friend-tag-item ${isSelected ? 'selected' : ''}" data-username="${friend.username}" data-index="${index}">
@@ -3956,6 +3988,7 @@
                 });
             });
             
+            updateFriendTagCounter();
             showToast('success', 'Reconnect Time! 💤', `Found ${randomInactive.length} friend${randomInactive.length > 1 ? 's' : ''} you haven\'t talked to in a while`);
         }
 
