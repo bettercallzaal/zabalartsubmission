@@ -3308,55 +3308,57 @@
         async function loadVotes() {
             console.log('📊 Loading votes from database...');
             
-            if (!supabase) {
-                console.warn('⚠️ Supabase not initialized, skipping vote load');
-                return;
-            }
-            
-            try {
-                // Get today's vote totals
-                const { data, error } = await supabase
-                    .rpc('get_todays_votes');
-                
-                if (error) {
-                    console.error('❌ Error loading votes:', error);
-                    return;
-                }
-                
-                console.log('📥 Received vote data:', data);
-                
-                // Reset votes
-                votes.studio = 0;
-                votes.market = 0;
-                votes.social = 0;
-                votes.battle = 0;
-                
-                // Update with database values
-                if (data) {
-                    data.forEach(row => {
-                        votes[row.mode] = parseInt(row.total_votes) || 0;
-                    });
-                }
-                
-                console.log('✅ Votes loaded:', votes);
-                
-                // Check if user has voted today
-                const { data: userVoteData, error: voteError } = await supabase
-                    .rpc('has_voted_today', { user_fid: parseInt(userFID) });
-                
-                if (voteError) {
-                    console.error('❌ Error checking user vote:', voteError);
-                } else if (userVoteData && userVoteData.length > 0) {
-                    const result = userVoteData[0];
-                    if (result.has_voted) {
-                        userVote = result.voted_mode;
-                        console.log('✅ User has already voted for:', userVote);
+            // Use API throttle to prevent excessive calls
+            return await window.throttledAPI('loadVotes', async () => {
+                try {
+                    if (!supabase) {
+                        console.warn('⚠️ Supabase not initialized, skipping vote load');
+                        return;
                     }
-                }
-                
-                updateVotes();
-                updateLeader();
-                
+                    
+                    // Get today's vote totals
+                    const { data, error } = await supabase
+                        .rpc('get_todays_votes');
+                    
+                    if (error) {
+                        console.error('❌ Error loading votes:', error);
+                        return;
+                    }
+                    
+                    console.log('📥 Received vote data:', data);
+                    
+                    // Reset votes
+                    votes.studio = 0;
+                    votes.market = 0;
+                    votes.social = 0;
+                    votes.battle = 0;
+                    
+                    // Update with database values
+                    if (data) {
+                        data.forEach(row => {
+                            votes[row.mode] = parseInt(row.total_votes) || 0;
+                        });
+                    }
+                    
+                    console.log('✅ Votes loaded:', votes);
+                    
+                    // Check if user has voted today
+                    const { data: userVoteData, error: voteError } = await supabase
+                        .rpc('has_voted_today', { user_fid: parseInt(userFID) });
+                    
+                    if (voteError) {
+                        console.error('❌ Error checking user vote:', voteError);
+                    } else if (userVoteData && userVoteData.length > 0) {
+                        const result = userVoteData[0];
+                        if (result.has_voted) {
+                            userVote = result.voted_mode;
+                            console.log('✅ User has already voted for:', userVote);
+                        }
+                    }
+                    
+                    updateVotes();
+                    updateLeader();
+                    
                 } catch (err) {
                     console.error('❌ Exception loading votes:', err);
                     throw err;
@@ -3432,37 +3434,6 @@
                         .eq('vote_date', new Date().toISOString().split('T')[0])
                         .select();
                 }, { context: 'deleteVote' });
-                
-                const { data: deleteData, error: deleteError } = deleteResult;
-                
-                if (deleteError) {
-                    console.error('❌ Error deleting old vote:', deleteError);
-                } else if (deleteData && deleteData.length > 0) {
-                    console.log('✅ Deleted old vote:', deleteData);
-                } else {
-                    console.log('ℹ️ No existing vote to delete (first vote today)');
-                }
-                
-                // Validate FID before database operation
-                const validatedFID = window.Validator.validateFID(userFID);
-                
-                // Insert new vote (trigger will update daily totals) - using DatabaseManager
-                console.log('➕ Inserting new vote:', { fid: validatedFID, mode, vote_power: 1 });
-                const insertResult = await window.dbQuery(async (client) => {
-                    return await client
-                        .from('votes')
-                        .insert([
-                            {
-                                fid: validatedFID,
-                                mode: mode,
-                                vote_power: 1,
-                                source: 'web'
-                            }
-                        ])
-                        .select();
-                }, { context: 'insertVote' });
-                
-                const { data, error } = insertResult;
                 
                 if (error) {
                     console.error('❌ Error voting:', error);
