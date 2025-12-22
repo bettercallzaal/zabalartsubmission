@@ -3417,12 +3417,13 @@
                 // Validate FID before database operation
                 const validatedFID = window.Validator.validateFID(userFID);
                 
-                // Delete any existing vote for today
-                console.log('🗑️ Checking for existing vote to delete...');
+                // Delete any existing vote for this specific mode today
+                console.log('🗑️ Checking for existing vote to delete for mode:', mode);
                 const { data: deleteData, error: deleteError } = await supabase
                     .from('votes')
                     .delete()
                     .eq('fid', validatedFID)
+                    .eq('mode', mode)
                     .eq('vote_date', new Date().toISOString().split('T')[0])
                     .select();
                 
