@@ -1,20 +1,54 @@
 {
-  "name": "zabal-miniapp",
-  "version": "1.0.0",
-  "description": "ZABAL Live Hub - Community-driven stream voting miniapp",
+  "name": "zabal-live-hub",
+  "version": "2.0.0",
+  "description": "ZABAL Live Hub - Community-driven stream voting miniapp for Farcaster",
   "main": "index.html",
+  "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "npx http-server -p 3000 -c-1",
+    "start": "npm run dev",
+    "preview": "npx http-server -p 8080",
+    "lint": "eslint js/**/*.js",
+    "format": "prettier --write \"**/*.{js,json,md,html,css}\"",
+    "validate": "npm run lint && npm run format",
+    "deploy": "vercel --prod",
+    "deploy:preview": "vercel"
   },
   "dependencies": {
-    "@neynar/nodejs-sdk": "^1.0.0"
+    "@neynar/nodejs-sdk": "^1.0.0",
+    "@supabase/supabase-js": "^2.39.0"
+  },
+  "devDependencies": {
+    "eslint": "^8.56.0",
+    "http-server": "^14.1.1",
+    "prettier": "^3.1.1",
+    "vercel": "^33.0.1"
   },
   "keywords": [
     "farcaster",
     "miniapp",
     "voting",
-    "streaming"
+    "streaming",
+    "web3",
+    "community",
+    "nft",
+    "art"
   ],
-  "author": "ZABAL",
-  "license": "MIT"
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/bettercallzaal/zabalartsubmission.git"
+  },
+  "bugs": {
+    "url": "https://github.com/bettercallzaal/zabalartsubmission/issues"
+  },
+  "homepage": "https://zabal.art",
+  "author": {
+    "name": "ZABAL",
+    "url": "https://zabal.art"
+  },
+  "license": "MIT",
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
+  }
 }
