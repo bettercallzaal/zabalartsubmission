@@ -4193,10 +4193,16 @@
                 
                 showToast('success', 'Votes Submitted!', `Voted for ${selectedModes.length} mode${selectedModes.length > 1 ? 's' : ''}`);
                 
+                // Store voted modes for sharing
+                const votedModes = [...selectedModes];
+                
                 // Clear selections
                 selectedModes = [];
                 document.querySelectorAll('.vote-checkbox').forEach(cb => cb.checked = false);
                 updateSubmitButton();
+                
+                // Open share modal with all voted modes
+                setTimeout(() => openShareModal(votedModes), 500);
                 
             } catch (error) {
                 console.error('❌ Error submitting votes:', error);
