@@ -4179,7 +4179,7 @@
                 console.log('🔍 Loading reconnect contacts...');
                 
                 // Get user's following list (people they might want to reconnect with)
-                const followingData = await callNeynarAPI('user/following', { fid: userFid, limit: 100 });
+                const followingData = await callNeynarAPI('user/following', { fid: userFID, limit: 100 });
                 const following = followingData.users || [];
                 
                 // Filter out self and best friends (to show different people)
