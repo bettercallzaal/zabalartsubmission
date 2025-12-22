@@ -3386,20 +3386,6 @@
                 return;
             }
             
-            // Check rate limiting
-            try {
-                window.rateLimiter.canPerform(`vote_${userFID}`, window.appConfig?.VOTE_COOLDOWN_MS || 1000);
-            } catch (error) {
-                console.error('❌ Rate limit:', error.message);
-                showToast('warning', 'Too Fast', error.message);
-                return;
-            }
-            
-            // Check online status
-            if (!window.isOnline) {
-                showToast('warning', 'Offline', 'You need to be online to vote');
-                return;
-            }
             
             if (!isAuthenticated) {
                 console.error('❌ Not authenticated');
