@@ -4173,7 +4173,7 @@
         // Get contacts to reconnect with (people you haven't reached out to recently)
         let reconnectContacts = [];
         async function loadInactiveContacts() {
-            if (!isAuthenticated || !userFid) return;
+            if (!isAuthenticated || !userFID) return;
             
             try {
                 console.log('🔍 Loading reconnect contacts...');
@@ -4801,7 +4801,7 @@
                     favoriteMode !== '—' ? modeEmojis[favoriteMode] : '—';
                 updateVotePowerDisplay(powerData);
                 
-                console.log('✅ Personal stats loaded:', { totalVotes, streak, favoriteMode, votePower });
+                console.log('✅ Personal stats loaded:', { totalVotes, streak, favoriteMode, votePower: powerData.power });
             } catch (err) {
                 console.error('Error loading personal stats:', err);
             }
