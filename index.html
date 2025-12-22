@@ -1314,10 +1314,11 @@
         }
 
         .voters-header {
-            font-size: 0.85rem;
-            font-weight: 700;
+            font-size: 0.75rem;
+            font-weight: 600;
             color: var(--text-gray);
-            margin-bottom: 10px;
+            margin-bottom: 8px;
+            opacity: 0.8;
         }
 
         .voters-list {
@@ -1329,12 +1330,12 @@
         .voter-tag {
             display: flex;
             align-items: center;
-            gap: 8px;
-            padding: 6px 12px;
-            background: var(--secondary-blue);
-            border: 1px solid var(--border-color);
-            border-radius: 20px;
-            font-size: 0.8rem;
+            gap: 6px;
+            padding: 4px 10px;
+            background: rgba(26, 42, 55, 0.4);
+            border: 1px solid rgba(224, 221, 170, 0.15);
+            border-radius: 16px;
+            font-size: 0.75rem;
             cursor: pointer;
             transition: all 0.2s ease;
             text-decoration: none;
@@ -1347,20 +1348,22 @@
         }
 
         .voter-pfp {
-            width: 24px;
-            height: 24px;
+            width: 20px;
+            height: 20px;
             border-radius: 50%;
-            border: 2px solid var(--accent-yellow);
+            border: 1.5px solid rgba(224, 221, 170, 0.3);
             object-fit: cover;
         }
 
         .voter-mode-icon {
-            font-size: 1rem;
+            font-size: 0.9rem;
+            line-height: 1;
         }
 
         .voter-username {
             color: var(--text-white);
-            font-weight: 600;
+            font-weight: 500;
+            opacity: 0.9;
         }
 
         .voter-display-name {
@@ -3329,12 +3332,11 @@
                         </div>
                         
                         <div class="vote-day-voters">
-                            <div class="voters-header">👥 ${dayVotes.length} voter${dayVotes.length !== 1 ? 's' : ''}</div>
+                            <div class="voters-header">${[...new Map(dayVotes.map(vote => [vote.fid, vote])).values()].length} voters</div>
                             <div class="voters-list">
                                 ${[...new Map(dayVotes.map(vote => [vote.fid, vote])).values()].map(vote => {
                                     const userData = userDataCache[vote.fid];
                                     const username = userData?.username || vote.username || `fid:${vote.fid}`;
-                                    const displayName = userData?.display_name || '';
                                     const pfpUrl = userData?.pfp_url || '';
                                     const warpcastUrl = `https://warpcast.com/${username.replace('fid:', '')}`;
                                     
@@ -3347,7 +3349,6 @@
                                             ${pfpUrl ? `<img src="${pfpUrl}" class="voter-pfp" alt="${username}">` : ''}
                                             <span class="voter-mode-icon">${modes.map(m => modeEmojis[m]).join('')}</span>
                                             <span class="voter-username">@${username}</span>
-                                            ${displayName && displayName !== username ? `<span class="voter-display-name">(${displayName})</span>` : ''}
                                         </a>
                                     `;
                                 }).join('')}
