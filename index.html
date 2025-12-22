@@ -2532,8 +2532,12 @@
             </div>
             
             <!-- Vote Power Breakdown -->
-            <div id="votePowerBreakdown" style="margin-top: 20px; padding: 16px; background: rgba(224, 221, 170, 0.05); border: 1px solid rgba(224, 221, 170, 0.2); border-radius: 12px;">
-                <div style="font-size: 0.9rem; font-weight: 600; color: var(--accent-yellow); margin-bottom: 12px;">💎 Vote Power Breakdown</div>
+            <div id="votePowerBreakdown" style="margin-top: 20px; background: rgba(224, 221, 170, 0.05); border: 1px solid rgba(224, 221, 170, 0.2); border-radius: 12px;">
+                <button onclick="toggleBreakdown()" style="width: 100%; padding: 16px; background: transparent; border: none; cursor: pointer; display: flex; justify-content: space-between; align-items: center; color: var(--accent-yellow); font-size: 0.9rem; font-weight: 600;">
+                    <span>💎 Vote Power Breakdown</span>
+                    <span id="breakdownToggleIcon" style="transition: transform 0.3s ease;">▼</span>
+                </button>
+                <div id="breakdownContent" style="display: none; padding: 0 16px 16px 16px;">
                 <div style="display: grid; gap: 8px; font-size: 0.85rem;">
                     <div style="display: flex; justify-content: space-between; align-items: center;">
                         <span style="color: var(--text-secondary);">📝 /zao Channel Posts:</span>
@@ -2560,6 +2564,7 @@
                     <div style="font-size: 0.75rem; color: var(--text-secondary); margin-top: 8px; text-align: center;" id="breakdownFormula">
                         Formula: Base × Multiplier = Final
                     </div>
+                </div>
                 </div>
             </div>
         </div>
@@ -3326,17 +3331,21 @@
                         <div class="vote-day-voters">
                             <div class="voters-header">👥 ${dayVotes.length} voter${dayVotes.length !== 1 ? 's' : ''}</div>
                             <div class="voters-list">
-                                ${dayVotes.map(vote => {
+                                ${[...new Map(dayVotes.map(vote => [vote.fid, vote])).values()].map(vote => {
                                     const userData = userDataCache[vote.fid];
                                     const username = userData?.username || vote.username || `fid:${vote.fid}`;
                                     const displayName = userData?.display_name || '';
                                     const pfpUrl = userData?.pfp_url || '';
                                     const warpcastUrl = `https://warpcast.com/${username.replace('fid:', '')}`;
                                     
+                                    // Get all modes this user voted for on this day
+                                    const userVotes = dayVotes.filter(v => v.fid === vote.fid);
+                                    const modes = [...new Set(userVotes.map(v => v.mode))];
+                                    
                                     return `
                                         <a href="${warpcastUrl}" target="_blank" class="voter-tag">
                                             ${pfpUrl ? `<img src="${pfpUrl}" class="voter-pfp" alt="${username}">` : ''}
-                                            <span class="voter-mode-icon">${modeEmojis[vote.mode]}</span>
+                                            <span class="voter-mode-icon">${modes.map(m => modeEmojis[m]).join('')}</span>
                                             <span class="voter-username">@${username}</span>
                                             ${displayName && displayName !== username ? `<span class="voter-display-name">(${displayName})</span>` : ''}
                                         </a>
@@ -4894,6 +4903,18 @@
             updateCountdown();
             console.log('✅ Countdown started');
             console.log('🎉 ZABAL Live Hub ready!');
+        }
+        
+        // Toggle vote power breakdown
+        window.toggleBreakdown = function() {
+            const content = document.getElementById('breakdownContent');
+            const icon = document.getElementById('breakdownToggleIcon');
+            
+            if (!content || !icon) return;
+            
+            const isHidden = content.style.display === 'none';
+            content.style.display = isHidden ? 'block' : 'none';
+            icon.style.transform = isHidden ? 'rotate(180deg)' : 'rotate(0deg)';
         }
         
         // Toggle vote history accordion
