@@ -4642,26 +4642,37 @@
             selectedFriends = [];
             
             try {
-                await window.farcasterSDK.actions.composeCast({
+                const result = await window.farcasterSDK.actions.composeCast({
                     text: castText,
                     embeds: [SONGJAM_URL, MINIAPP_URL],
                     channelKey: 'zao'
                 });
-                console.log('✅ Vote shared to Farcaster successfully');
-                console.log('👥 Tagged friends in cast:', taggedFriends);
                 
-                // Track share for analytics
-                trackShare(mode);
-                console.log('📊 Share tracked for mode:', mode);
+                console.log('✅ composeCast result:', result);
                 
-                // Show share success feedback
-                if (!isAuto) {
-                    showShareSuccess();
-                    setTimeout(() => closeShareModal(), 1500);
+                // Only show error if the result explicitly indicates failure
+                // Note: User closing the composer is NOT a failure
+                if (result && result.error) {
+                    console.error('❌ Failed to share vote:', result.error);
+                    showToast('error', 'Share Failed', 'Could not share to Farcaster. Please try again.');
+                } else {
+                    console.log('✅ Vote shared to Farcaster successfully');
+                    console.log('👥 Tagged friends in cast:', taggedFriends);
+                    
+                    // Track share for analytics
+                    trackShare(mode);
+                    console.log('📊 Share tracked for mode:', mode);
+                    
+                    // Show share success feedback
+                    if (!isAuto) {
+                        showShareSuccess();
+                        setTimeout(() => closeShareModal(), 1500);
+                    }
                 }
             } catch (error) {
-                console.error('❌ Failed to share vote:', error);
-                showToast('error', 'Share Failed', 'Could not share to Farcaster. Please try again.');
+                // Only show error for actual exceptions, not user cancellations
+                console.log('⚠️ Share action result:', error);
+                // Don't show error toast - user may have just closed the composer
             }
         }
 
