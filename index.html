@@ -2582,7 +2582,7 @@
         <p class="hero-subtitle" id="heroSubtitle">Show up early. Influence the outcome.</p>
         
         <div class="countdown" id="countdown">
-            <span class="countdown-label">Locks in</span>
+            <span class="countdown-label">Voting ends in</span>
             <span class="countdown-time" id="countdownTime">2:34:12</span>
         </div>
 
@@ -2913,27 +2913,43 @@
 
         let currentState = StreamState.DECIDING;
         
-        // Calculate lock time: Next Monday 5 PM EST (ZABAL AMA #4)
-        function calculateLockTime() {
+        // Helper: Get current date in EST timezone
+        function getESTDate() {
             const now = new Date();
-            
             // Convert to EST (UTC-5)
             const estOffset = -5 * 60; // EST offset in minutes
-            const nowEST = new Date(now.getTime() + (now.getTimezoneOffset() + estOffset) * 60000);
+            return new Date(now.getTime() + (now.getTimezoneOffset() + estOffset) * 60000);
+        }
+        
+        // Helper: Get vote date string (resets at 5 PM EST)
+        function getVoteDate() {
+            const estNow = getESTDate();
             
-            // Get next Monday 5 PM EST
-            const nextMonday = new Date(nowEST);
-            const daysUntilMonday = (1 - nowEST.getDay() + 7) % 7 || 7; // Days until next Monday
-            nextMonday.setDate(nowEST.getDate() + daysUntilMonday);
-            nextMonday.setHours(17, 0, 0, 0); // 5 PM EST
+            // If before 5 PM EST, use previous day's date
+            if (estNow.getHours() < 17) {
+                estNow.setDate(estNow.getDate() - 1);
+            }
             
-            // If it's already past Monday 5 PM this week, go to next week
-            if (nowEST.getDay() === 1 && nowEST.getHours() >= 17) {
-                nextMonday.setDate(nextMonday.getDate() + 7);
+            return estNow.toISOString().split('T')[0];
+        }
+        
+        // Calculate lock time: Today at 5 PM EST (resets daily)
+        function calculateLockTime() {
+            const estNow = getESTDate();
+            const now = new Date();
+            
+            // Set to today 5 PM EST
+            const lockTimeEST = new Date(estNow);
+            lockTimeEST.setHours(17, 0, 0, 0);
+            
+            // If already past 5 PM EST today, set to tomorrow 5 PM EST
+            if (estNow.getHours() >= 17) {
+                lockTimeEST.setDate(lockTimeEST.getDate() + 1);
             }
             
             // Convert back to local time
-            return new Date(nextMonday.getTime() - (now.getTimezoneOffset() + estOffset) * 60000);
+            const estOffset = -5 * 60;
+            return new Date(lockTimeEST.getTime() - (now.getTimezoneOffset() + estOffset) * 60000);
         }
         
         let lockTime = calculateLockTime();
@@ -2947,20 +2963,20 @@
             const countdown = document.getElementById('countdown');
 
             if (currentState === StreamState.DECIDING) {
-                heroState.textContent = 'Stream Being Decided';
+                heroState.textContent = 'Voting Open';
                 heroState.className = 'hero-state deciding';
-                heroTitle.textContent = "Today's Stream Is Being Decided";
-                heroSubtitle.textContent = "Show up early. Influence the outcome.";
+                heroTitle.textContent = "Vote for Today's Stream";
+                heroSubtitle.textContent = "Voting closes at 5 PM EST when Zaal gets home.";
                 // CTA removed
                 countdown.style.display = 'inline-flex';
             } else if (currentState === StreamState.LOCKED) {
-                heroState.textContent = 'Stream Locked';
+                heroState.textContent = 'Voting Closed';
                 heroState.className = 'hero-state locked';
                 const leader = getLeader();
                 const modeName = document.querySelector(`[data-mode="${leader}"] .mode-name`).textContent;
-                heroTitle.textContent = `Today's Stream: ${modeName}`;
-                heroSubtitle.textContent = "The community has decided. Stream starts soon.";
-                heroCTA.textContent = 'See Why This Won';
+                heroTitle.textContent = `Winner: ${modeName}`;
+                heroSubtitle.textContent = `The community chose ${modeName}. Results locked at 5 PM EST.`;
+                heroCTA.textContent = 'See Results';
                 heroCTA.href = '#wheel';
                 countdown.style.display = 'inline-flex';
             } else if (currentState === StreamState.LIVE) {
@@ -3474,7 +3490,7 @@
                     .delete()
                     .eq('fid', validatedFID)
                     .eq('mode', mode)
-                    .eq('vote_date', new Date().toISOString().split('T')[0])
+                    .eq('vote_date', getVoteDate())
                     .select();
                 
                 if (deleteError) {
@@ -4811,8 +4827,9 @@
                 };
                 
                 // Calculate streak (simplified - just check if voted today and yesterday)
-                const today = new Date().toISOString().split('T')[0];
-                const yesterday = new Date(Date.now() - 86400000).toISOString().split('T')[0];
+                const today = getVoteDate();
+                const estNow = getESTDate();
+                const yesterday = new Date(estNow.getTime() - 86400000).toISOString().split('T')[0];
                 
                 const votedToday = userVotes?.some(v => v.vote_date === today);
                 const votedYesterday = userVotes?.some(v => v.vote_date === yesterday);
