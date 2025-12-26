@@ -3455,7 +3455,7 @@
             
             if (!isAuthenticated) {
                 console.error('❌ Not authenticated');
-                showToast('error', 'Authentication Required', 'Please open in Warpcast to vote');
+                showToast('error', 'Authentication Required', 'Please open in Farcaster to vote');
                 window.analytics?.trackUserAction('vote_failed', { reason: 'not_authenticated', mode });
                 return;
             }
@@ -4510,7 +4510,7 @@
             
             // Check authentication
             if (!isAuthenticated) {
-                showToast('error', 'Authentication Required', 'Please open in Warpcast to vote');
+                showToast('error', 'Authentication Required', 'Please open in Farcaster to vote');
                 return;
             }
             
