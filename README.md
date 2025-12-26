@@ -131,9 +131,19 @@ Visit `http://localhost:3000`
 
 ## 📚 Documentation
 
-- [ARCHITECTURE.md](./ARCHITECTURE.md) - System architecture and design decisions
-- [DEPLOYMENT.md](./DEPLOYMENT.md) - Deployment guide and configuration
-- [API.md](./API.md) - API documentation and endpoints
+### Core Documentation
+- [ARCHITECTURE.md](./docs/ARCHITECTURE.md) - System architecture and design decisions
+- [DEPLOYMENT.md](./docs/DEPLOYMENT.md) - Deployment guide and configuration
+- [API.md](./docs/API.md) - API documentation and endpoints
+- [CONTRIBUTING.md](./docs/CONTRIBUTING.md) - Contributing guidelines
+
+### Setup Guides
+- [Supabase Setup](./docs/setup/SUPABASE_SETUP_GUIDE.md) - Complete Supabase database setup
+- [Database Tutorial](./docs/setup/DATABASE_TUTORIAL.md) - Database schema and SQL guide
+- [Vote Power Setup](./docs/setup/VOTE_POWER_SETUP.md) - Vote power calculation configuration
+
+### Additional Guides
+- [Splash Screen Guide](./docs/guides/SPLASH_SCREEN_GUIDE.md) - Splash screen implementation
 
 ## 🎮 Usage
 
