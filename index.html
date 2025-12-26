@@ -3757,7 +3757,7 @@
                 }
                 
                 // Calculate final power (round to 1 decimal)
-                const finalPower = Math.round(power * multiplier * 10) / 10;
+                const finalPower = Math.round(power * multiplier);
                 
                 // Cap at 6x
                 const cappedPower = Math.min(finalPower, 6);
