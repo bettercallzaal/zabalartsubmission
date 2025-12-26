@@ -2,8 +2,10 @@
 
 > Community-driven voting platform for ZABAL's stream direction
 
+[![Version](https://img.shields.io/badge/version-1.0.0-blue)](https://github.com/bettercallzaal/zabalartsubmission/releases)
 [![Production Ready](https://img.shields.io/badge/status-production%20ready-success)](https://zabal.art)
 [![Farcaster](https://img.shields.io/badge/platform-Farcaster-purple)](https://warpcast.com)
+[![License](https://img.shields.io/badge/license-MIT-green)](./LICENSE)
 
 ## 📖 Overview
 
@@ -240,21 +242,19 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 ## 🔄 Changelog
 
-### v2.0.0 (Current)
-- ✅ Multi-mode voting
-- ✅ Production-ready architecture
-- ✅ Memory leak prevention
-- ✅ State management
-- ✅ API rate limiting
-- ✅ Comprehensive error handling
-- ✅ Input validation
-- ✅ Accessibility improvements
+See [CHANGELOG.md](./CHANGELOG.md) for detailed version history.
 
-### v1.0.0
-- Initial release
-- Single-mode voting
-- Basic friend tagging
-- Vote sharing
+### v1.0.0 (Current - Production Release)
+- ✅ Multi-mode voting system
+- ✅ Real-time vote counts and leaderboard
+- ✅ Friend tagging and reconnect feature
+- ✅ Vote power calculation (1-6x multiplier)
+- ✅ Supabase database with RLS
+- ✅ Production-ready architecture
+- ✅ Comprehensive error handling
+- ✅ Memory leak prevention
+- ✅ API rate limiting
+- ✅ Accessibility support
 
 ---
 
