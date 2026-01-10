@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>ZABAL Chat — Community Discussion</title>
+    <meta name="description" content="Join the ZABAL community chat. Connect with other members, discuss stream direction, and coordinate creative activities.">
+    <meta name="keywords" content="ZABAL, chat, community, Farcaster, miniapp, discussion, web3, crypto art">
+    <meta name="author" content="ZABAL">
+    <meta name="theme-color" content="#141e27">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="manifest" href="/site.webmanifest">
+    <meta name="msapplication-TileColor" content="#141e27">
+    <meta name="msapplication-config" content="/browserconfig.xml">
+    
+    <!-- Canonical URL -->
+    <link rel="canonical" href="https://zabal.art/chat.html">
+    
+    <!-- CRITICAL: Call ready() when DOM is loaded -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🎯 DOM loaded, attempting to dismiss splash...');
+            
+            // Method 1: Direct postMessage
+            if (window.parent && window.parent.postMessage) {
+                window.parent.postMessage({ type: 'ready' }, '*');
+                console.log('📤 Sent ready postMessage to parent');
+            }
+            
+            // Method 2: Try SDK if available
+            if (window.sdk && window.sdk.actions && window.sdk.actions.ready) {
+                window.sdk.actions.ready().then(function() {
+                    console.log('✅ SDK ready() succeeded');
+                }).catch(function(err) {
+                    console.log('⚠️ SDK ready() failed:', err);
+                });
+            }
+        });
+    </script>
+    
+    <!-- Open Graph Meta Tags -->
+    <meta property="og:title" content="ZABAL Chat - Community Discussion">
+    <meta property="og:description" content="Join the ZABAL community chat. Connect with other members and coordinate creative activities.">
+    <meta property="og:image" content="https://zabal.art/assets/preview.png">
+    <meta property="og:url" content="https://zabal.art/chat.html">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="ZABAL Live Hub">
+    <meta property="og:locale" content="en_US">
+    
+    <!-- Twitter Card Meta Tags -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="ZABAL Chat - Community Discussion">
+    <meta name="twitter:description" content="Join the ZABAL community chat. Connect with other members and coordinate creative activities.">
+    <meta name="twitter:image" content="https://zabal.art/assets/preview.png">
+    <meta name="twitter:site" content="@zabal">
+    <meta name="twitter:creator" content="@zabal">
+    
+    <!-- Performance and Preconnect Hints -->
+    <link rel="preconnect" href="https://onchat.sebayaki.com">
+    <link rel="preconnect" href="https://esm.sh">
+    <link rel="dns-prefetch" href="https://zabal.art">
+    
+    <!-- Farcaster SDK -->
+    <script type="module">
+        // Import Farcaster SDK and wait for it to load
+        import { sdk } from 'https://esm.sh/@farcaster/miniapp-sdk';
+        window.farcasterSDK = sdk;
+        window.farcasterSDKLoaded = true;
+        console.log('✅ Farcaster SDK loaded');
+        
+        // Immediately call ready() to dismiss splash screen
+        try {
+            await sdk.actions.ready();
+            window.splashDismissed = true;
+            console.log('✅ Splash screen dismissed immediately via SDK');
+        } catch (err) {
+            console.log('⚠️ Immediate ready() failed:', err);
+        }
+    </script>
+    <script>
+        // Aggressive fallback: Force hide splash screen after 1 second
+        window.splashDismissed = false;
+        
+        setTimeout(() => {
+            if (!window.splashDismissed) {
+                console.log('🚨 FORCING splash screen removal after 1s timeout');
+                
+                // Try multiple methods to hide splash screen
+                const splashSelectors = [
+                    '.fc-splash-screen',
+                    '[class*="splash"]',
+                    '[class*="Splash"]',
+                    'iframe[src*="splash"]'
+                ];
+                
+                splashSelectors.forEach(selector => {
+                    const elements = document.querySelectorAll(selector);
+                    elements.forEach(el => {
+                        el.style.display = 'none';
+                        el.style.visibility = 'hidden';
+                        el.style.opacity = '0';
+                        el.remove();
+                    });
+                });
+                
+                // Ensure body is scrollable
+                document.body.style.overflow = 'hidden';
+                document.documentElement.style.overflow = 'hidden';
+                
+                // Mark as dismissed
+                window.splashDismissed = true;
+                console.log('✅ Splash screen forcefully removed');
+            }
+        }, 1000);
+    </script>
+    
+    <!-- OnChat Widget Script -->
+    <script src="https://onchat.sebayaki.com/widget.js" defer></script>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-blue: #141e27;
+            --accent-yellow: #e0ddaa;
+            --bg-black: #000000;
+            --text-white: #ffffff;
+            --text-gray: #a0a0a0;
+            --border-color: #2a3a47;
+            --hover-glow: rgba(224, 221, 170, 0.2);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica', 'Arial', sans-serif;
+            background-color: var(--bg-black);
+            color: var(--text-white);
+            line-height: 1.6;
+            overflow: hidden;
+            height: 100vh;
+        }
+
+        /* Header */
+        header {
+            padding: 1.5rem 0;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            background: rgba(0, 0, 0, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border-color);
+            height: 80px;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .logo {
+            font-size: 1.3rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--text-white) 0%, var(--accent-yellow) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-decoration: none;
+        }
+
+        nav {
+            display: flex;
+            gap: 2rem;
+        }
+
+        nav a {
+            color: var(--text-gray);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.95rem;
+            transition: color 0.3s ease;
+        }
+
+        nav a:hover {
+            color: var(--accent-yellow);
+        }
+
+        nav a.active {
+            color: var(--accent-yellow);
+        }
+
+        /* Chat Container */
+        .chat-container {
+            position: fixed;
+            top: 80px;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            overflow: hidden;
+        }
+
+        #onchat-widget {
+            width: 100%;
+            height: 100%;
+            position: relative;
+        }
+
+        /* Loading State */
+        .loading-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            gap: 20px;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid rgba(224, 221, 170, 0.2);
+            border-top-color: var(--accent-yellow);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .loading-state p {
+            color: var(--text-gray);
+            font-size: 1rem;
+            font-weight: 600;
+        }
+
+        /* Error State */
+        .error-state {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            gap: 20px;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .error-state.show {
+            display: flex;
+        }
+
+        .error-icon {
+            font-size: 4rem;
+        }
+
+        .error-state h2 {
+            color: var(--text-white);
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .error-state p {
+            color: var(--text-gray);
+            font-size: 1rem;
+            max-width: 400px;
+        }
+
+        .retry-btn {
+            padding: 12px 32px;
+            background: var(--accent-yellow);
+            color: var(--primary-blue);
+            border: none;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .retry-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(224, 221, 170, 0.3);
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            nav {
+                gap: 1rem;
+            }
+
+            nav a {
+                font-size: 0.85rem;
+            }
+
+            .logo {
+                font-size: 1.1rem;
+            }
+
+            header {
+                padding: 1rem 0;
+                height: 70px;
+            }
+
+            .chat-container {
+                top: 70px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <a href="index.html" class="logo">ZABAL</a>
+            <nav>
+                <a href="index.html">Vote</a>
+                <a href="submissions.html">Submit</a>
+                <a href="gallery.html">Research</a>
+                <a href="chat.html" class="active">Chat</a>
+            </nav>
+        </div>
+    </header>
+
+    <div class="chat-container">
+        <div id="onchat-widget">
+            <div class="loading-state" id="loadingState">
+                <div class="spinner"></div>
+                <p>Loading chat...</p>
+            </div>
+            <div class="error-state" id="errorState">
+                <div class="error-icon">⚠️</div>
+                <h2>Chat Unavailable</h2>
+                <p id="errorMessage">Unable to load chat. Please check your connection and try again.</p>
+                <button class="retry-btn" onclick="retryMount()">Try Again</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Widget mount logic with retry
+        let mountAttempts = 0;
+        const maxAttempts = 3;
+        const retryDelays = [500, 1000, 2000];
+
+        function hideLoading() {
+            const loadingState = document.getElementById('loadingState');
+            if (loadingState) {
+                loadingState.style.display = 'none';
+            }
+        }
+
+        function showError(message) {
+            hideLoading();
+            const errorState = document.getElementById('errorState');
+            const errorMessage = document.getElementById('errorMessage');
+            if (errorState) {
+                errorState.classList.add('show');
+            }
+            if (errorMessage && message) {
+                errorMessage.textContent = message;
+            }
+            console.error('❌ Chat error:', message);
+        }
+
+        function hideError() {
+            const errorState = document.getElementById('errorState');
+            if (errorState) {
+                errorState.classList.remove('show');
+            }
+        }
+
+        function attemptMount() {
+            console.log(`🔄 Attempting to mount OnChat widget (attempt ${mountAttempts + 1}/${maxAttempts})`);
+
+            // Check if OnChat is available
+            if (typeof OnChat === 'undefined' || typeof OnChat.mount !== 'function') {
+                console.log('⚠️ OnChat not available yet');
+                
+                if (mountAttempts < maxAttempts) {
+                    const delay = retryDelays[mountAttempts];
+                    mountAttempts++;
+                    console.log(`⏳ Retrying in ${delay}ms...`);
+                    setTimeout(attemptMount, delay);
+                } else {
+                    showError('Chat widget failed to load. Please refresh the page.');
+                }
+                return;
+            }
+
+            // OnChat is available, attempt mount
+            try {
+                console.log('✅ OnChat available, mounting widget...');
+                OnChat.mount('#onchat-widget', {
+                    channel: 'zabal',
+                    hideMobileTabs: true,
+                    hideBrand: true
+                });
+                hideLoading();
+                console.log('✅ OnChat widget mounted successfully');
+            } catch (error) {
+                console.error('❌ OnChat mount failed:', error);
+                
+                if (mountAttempts < maxAttempts) {
+                    const delay = retryDelays[mountAttempts];
+                    mountAttempts++;
+                    console.log(`⏳ Retrying in ${delay}ms...`);
+                    setTimeout(attemptMount, delay);
+                } else {
+                    showError('Chat initialization failed. Please try again.');
+                }
+            }
+        }
+
+        function retryMount() {
+            console.log('🔄 Manual retry triggered');
+            hideError();
+            const loadingState = document.getElementById('loadingState');
+            if (loadingState) {
+                loadingState.style.display = 'flex';
+            }
+            mountAttempts = 0;
+            attemptMount();
+        }
+
+        // Start mount process when DOM is ready
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🎯 DOM ready, starting OnChat mount process');
+            attemptMount();
+        });
+    </script>
+</body>
+</html>
