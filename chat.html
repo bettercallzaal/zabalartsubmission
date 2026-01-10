@@ -78,6 +78,7 @@
         
         // Immediately call ready() to dismiss splash screen
         try {
+            console.info('[ZABAL][Chat] Farcaster sdk.ready() called');
             await sdk.actions.ready();
             window.splashDismissed = true;
             console.log('✅ Splash screen dismissed immediately via SDK');
@@ -354,6 +355,9 @@
     </div>
 
     <script>
+        // Page lifecycle instrumentation
+        console.info('[ZABAL][Chat] page loaded');
+        
         // Widget mount logic with retry
         let mountAttempts = 0;
         const maxAttempts = 3;
@@ -387,6 +391,7 @@
         }
 
         function attemptMount() {
+            console.info('[ZABAL][Chat] Attempting OnChat.mount()', mountAttempts + 1);
             console.log(`🔄 Attempting to mount OnChat widget (attempt ${mountAttempts + 1}/${maxAttempts})`);
 
             // Check if OnChat is available
@@ -399,10 +404,13 @@
                     console.log(`⏳ Retrying in ${delay}ms...`);
                     setTimeout(attemptMount, delay);
                 } else {
+                    console.warn('[ZABAL][Chat] Widget retries exhausted');
                     showError('Chat widget failed to load. Please refresh the page.');
                 }
                 return;
             }
+            
+            console.info('[ZABAL][Chat] OnChat widget script loaded');
 
             // OnChat is available, attempt mount
             try {
@@ -413,8 +421,10 @@
                     hideBrand: true
                 });
                 hideLoading();
+                console.info('[ZABAL][Chat] OnChat mounted successfully');
                 console.log('✅ OnChat widget mounted successfully');
             } catch (error) {
+                console.error('[ZABAL][Chat] OnChat mount failed', error);
                 console.error('❌ OnChat mount failed:', error);
                 
                 if (mountAttempts < maxAttempts) {
@@ -423,6 +433,7 @@
                     console.log(`⏳ Retrying in ${delay}ms...`);
                     setTimeout(attemptMount, delay);
                 } else {
+                    console.warn('[ZABAL][Chat] Widget retries exhausted');
                     showError('Chat initialization failed. Please try again.');
                 }
             }
