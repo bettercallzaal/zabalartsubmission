@@ -9,7 +9,7 @@
     "appId": "zabal-live-hub",
     "name": "ZABAL Live Hub",
     "iconUrl": "https://zabal.art/assets/logo.png",
-    "homeUrl": "https://zabal.art",
+    "homeUrl": "https://zabal.art?v=2.0.1",
     "imageUrl": "https://zabal.art/assets/preview.png",
     "buttonTitle": "🎨 Vote Now",
     "splashImageUrl": "https://zabal.art/assets/splash.png",
