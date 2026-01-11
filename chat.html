@@ -300,14 +300,70 @@
             box-shadow: 0 4px 12px rgba(224, 221, 170, 0.3);
         }
 
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .hamburger {
+            display: none;
+            background: none;
+            border: none;
+            color: var(--text-white);
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 8px;
+            line-height: 1;
+        }
+        
+        .hamburger:hover {
+            color: var(--accent-yellow);
+        }
+        
+        .mobile-menu {
+            display: none;
+            flex-direction: column;
+            background: rgba(0, 0, 0, 0.95);
+            border-top: 1px solid var(--border-color);
+            padding: 0;
+        }
+        
+        .mobile-menu a {
+            padding: 16px 20px;
+            color: var(--text-gray);
+            text-decoration: none;
+            font-weight: 600;
+            border-bottom: 1px solid var(--border-color);
+            transition: all 0.2s ease;
+        }
+        
+        .mobile-menu a:hover,
+        .mobile-menu a.active {
+            background: rgba(224, 221, 170, 0.1);
+            color: var(--accent-yellow);
+        }
+        
+        .mobile-menu:not(.hidden) {
+            display: flex;
+        }
+        
+        .user-profile-badge {
+            display: none;
+        }
+        
+        .hidden {
+            display: none;
+        }
+
         /* Mobile Responsive */
         @media (max-width: 768px) {
-            nav {
-                gap: 0.8rem;
+            .desktop-nav {
+                display: none;
             }
-
-            nav a {
-                font-size: 0.75rem;
+            
+            .hamburger {
+                display: block;
             }
 
             .logo {
@@ -324,19 +380,41 @@
             }
         }
     </style>
+    <script>
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobileMenu');
+            if (menu) {
+                menu.classList.toggle('hidden');
+            }
+        }
+    </script>
 </head>
 <body>
     <header>
         <div class="header-content">
             <a href="index.html" class="logo">ZABAL</a>
-            <nav>
+            
+            <nav class="desktop-nav">
                 <a href="index.html">Vote</a>
                 <a href="submissions.html">Submit</a>
                 <a href="gallery.html">Research</a>
                 <a href="chat.html" class="active">Chat</a>
                 <a href="https://www.thezao.com/nexus" target="_blank">ZAO Nexus</a>
             </nav>
+            
+            <div class="header-actions">
+                <div id="userProfile" class="user-profile-badge hidden"></div>
+                <button id="menuToggle" class="hamburger" onclick="toggleMobileMenu()" aria-label="Menu">☰</button>
+            </div>
         </div>
+        
+        <nav id="mobileMenu" class="mobile-menu hidden">
+            <a href="index.html">Vote</a>
+            <a href="submissions.html">Submit</a>
+            <a href="gallery.html">Research</a>
+            <a href="chat.html">Chat</a>
+            <a href="https://www.thezao.com/nexus" target="_blank">ZAO Nexus</a>
+        </nav>
     </header>
 
     <div class="chat-container">

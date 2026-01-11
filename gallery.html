@@ -602,14 +602,70 @@
             font-size: 0.9rem;
         }
 
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .hamburger {
+            display: none;
+            background: none;
+            border: none;
+            color: var(--text-white);
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 8px;
+            line-height: 1;
+        }
+        
+        .hamburger:hover {
+            color: var(--accent-yellow);
+        }
+        
+        .mobile-menu {
+            display: none;
+            flex-direction: column;
+            background: var(--bg-black);
+            border-top: 1px solid var(--border-color);
+            padding: 0;
+        }
+        
+        .mobile-menu a {
+            padding: 16px 20px;
+            color: var(--text-gray);
+            text-decoration: none;
+            font-weight: 600;
+            border-bottom: 1px solid var(--border-color);
+            transition: all 0.2s ease;
+        }
+        
+        .mobile-menu a:hover,
+        .mobile-menu a.active {
+            background: rgba(224, 221, 170, 0.1);
+            color: var(--accent-yellow);
+        }
+        
+        .mobile-menu:not(.hidden) {
+            display: flex;
+        }
+        
+        .user-profile-badge {
+            display: none;
+        }
+        
+        .hidden {
+            display: none;
+        }
+
         /* Responsive */
         @media (max-width: 768px) {
-            nav {
-                gap: 0.8rem;
+            .desktop-nav {
+                display: none;
             }
             
-            nav a {
-                font-size: 0.75rem;
+            .hamburger {
+                display: block;
             }
 
             .updates-grid {
@@ -625,20 +681,42 @@
             }
         }
     </style>
+    <script>
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobileMenu');
+            if (menu) {
+                menu.classList.toggle('hidden');
+            }
+        }
+    </script>
 </head>
 <body>
     <!-- Header -->
     <header>
         <div class="header-content">
             <a href="index.html" class="logo">ZABAL</a>
-            <nav>
+            
+            <nav class="desktop-nav">
                 <a href="index.html">Vote</a>
                 <a href="submissions.html">Submit</a>
                 <a href="gallery.html" class="active">Research</a>
                 <a href="chat.html">Chat</a>
                 <a href="https://www.thezao.com/nexus" target="_blank">ZAO Nexus</a>
             </nav>
+            
+            <div class="header-actions">
+                <div id="userProfile" class="user-profile-badge hidden"></div>
+                <button id="menuToggle" class="hamburger" onclick="toggleMobileMenu()" aria-label="Menu">☰</button>
+            </div>
         </div>
+        
+        <nav id="mobileMenu" class="mobile-menu hidden">
+            <a href="index.html">Vote</a>
+            <a href="submissions.html">Submit</a>
+            <a href="gallery.html">Research</a>
+            <a href="chat.html">Chat</a>
+            <a href="https://www.thezao.com/nexus" target="_blank">ZAO Nexus</a>
+        </nav>
     </header>
 
     <!-- Hero Section -->
@@ -654,22 +732,6 @@
         <div class="container">
             <h2>Featured: Latest Update</h2>
             <div class="article-preview">
-                <div class="article-preview-content">
-                    <span class="article-tag">ZABAL Update #5 • Latest</span>
-                    <h3>Latest Developments in the ZABAL Ecosystem</h3>
-                    <div class="article-meta">
-                        <span>📅 December 2024</span>
-                        <span>✍️ The ZAO Newsletter</span>
-                        <span>⏱️ 5 min read</span>
-                    </div>
-                    <p class="article-excerpt">
-                        The latest developments in the ZABAL ecosystem, community growth, and what's next for collective discovery. Explore how the community is evolving, new experiments in the creator economy, and the path forward for builders in the ZABAL network. This update covers recent milestones, community engagement strategies, and upcoming initiatives that will shape the future of collective discovery.
-                    </p>
-                    <a href="https://paragraph.com/@thezao/zabal-update-5" target="_blank" class="article-cta">
-                        Read Full Article
-                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path>
-                        </svg>
                     </a>
                 </div>
             </div>
