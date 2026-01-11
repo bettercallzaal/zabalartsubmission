@@ -667,7 +667,24 @@
         }
         
         .user-profile-badge {
-            display: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 12px;
+            background: rgba(224, 221, 170, 0.1);
+            border: 1px solid rgba(224, 221, 170, 0.4);
+            border-radius: 20px;
+            font-size: 0.75rem;
+            color: var(--text-white);
+            font-weight: 600;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+        
+        .user-profile-badge:hover {
+            background: rgba(224, 221, 170, 0.15);
+            border-color: var(--accent-yellow);
         }
         
         .hidden {
@@ -721,7 +738,7 @@
             </nav>
             
             <div class="header-actions">
-                <div id="userProfile" class="user-profile-badge hidden"></div>
+                <div id="userProfile" class="user-profile-badge">Loading...</div>
                 <button id="menuToggle" class="hamburger" onclick="toggleMobileMenu()" aria-label="Menu">☰</button>
             </div>
         </div>

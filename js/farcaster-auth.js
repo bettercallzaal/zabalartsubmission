@@ -5,13 +5,14 @@
  */
 
 export async function initFarcasterAuth() {
-    console.log('🔐 Initializing Farcaster auth...');
+    console.info('[FarcasterAuth] Init called');
     
     let userFID = null;
     let username = null;
     let isAuthenticated = false;
     
     // Wait for SDK to be available (loaded in page head)
+    console.info('[FarcasterAuth] Waiting for SDK...');
     let sdkReady = false;
     for (let i = 0; i < 30; i++) {
         if (window.farcasterSDK && window.farcasterSDK.actions) {
@@ -21,16 +22,21 @@ export async function initFarcasterAuth() {
         await new Promise(resolve => setTimeout(resolve, 100));
     }
     
+    console.info('[FarcasterAuth] SDK available:', !!window.farcasterSDK);
+    console.info('[FarcasterAuth] SDK ready:', sdkReady);
+    
     try {
         if (sdkReady && window.farcasterSDK) {
             const context = await window.farcasterSDK.context;
+            console.info('[FarcasterAuth] Context:', context);
+            console.info('[FarcasterAuth] User:', context?.user);
             
             if (context && context.user) {
                 userFID = context.user.fid;
                 username = context.user.username;
                 isAuthenticated = true;
                 
-                console.log('✅ Farcaster user authenticated:', { fid: userFID, username, user: context.user });
+                console.info('[FarcasterAuth] ✅ User authenticated:', { fid: userFID, username });
                 
                 // Show enhanced user profile in header
                 const userProfileEl = document.getElementById('userProfile');
@@ -39,29 +45,51 @@ export async function initFarcasterAuth() {
                 const userFidEl = document.getElementById('userFidDisplay');
                 const verifiedBadgeEl = document.getElementById('verifiedBadge');
                 
+                console.info('[FarcasterAuth] Profile element found:', !!userProfileEl);
+                console.info('[FarcasterAuth] DOM elements:', {
+                    userProfile: !!userProfileEl,
+                    userName: !!userNameEl,
+                    userPfp: !!userPfpEl,
+                    userFid: !!userFidEl,
+                    verifiedBadge: !!verifiedBadgeEl
+                });
+                
                 if (userProfileEl) {
-                    // Only populate if elements exist (Vote page has full profile)
-                    if (userNameEl) {
-                        userNameEl.textContent = `@${username}`;
-                    }
-                    if (userFidEl) {
-                        userFidEl.textContent = `FID: ${userFID}`;
-                    }
-                    
-                    // Set profile picture if available
-                    if (context.user.pfpUrl && userPfpEl) {
-                        userPfpEl.src = context.user.pfpUrl;
-                        userPfpEl.style.display = 'block';
-                    }
-                    
-                    // Show verification badge if user has it
-                    if ((context.user.verified || context.user.verifications?.length > 0) && verifiedBadgeEl) {
-                        verifiedBadgeEl.style.display = 'inline';
+                    // Fallback: Always show username even if child elements missing
+                    if (!userNameEl && !userPfpEl) {
+                        console.info('[FarcasterAuth] No child elements, using fallback text');
+                        userProfileEl.textContent = `@${username}`;
+                        userProfileEl.style.padding = '6px 12px';
+                    } else {
+                        // Only populate if elements exist (Vote page has full profile)
+                        if (userNameEl) {
+                            userNameEl.textContent = `@${username}`;
+                            console.info('[FarcasterAuth] Username set:', userNameEl.textContent);
+                        }
+                        if (userFidEl) {
+                            userFidEl.textContent = `FID: ${userFID}`;
+                        }
+                        
+                        // Set profile picture if available
+                        if (context.user.pfpUrl && userPfpEl) {
+                            userPfpEl.src = context.user.pfpUrl;
+                            userPfpEl.style.display = 'block';
+                            console.info('[FarcasterAuth] Profile picture set');
+                        }
+                        
+                        // Show verification badge if user has it
+                        if ((context.user.verified || context.user.verifications?.length > 0) && verifiedBadgeEl) {
+                            verifiedBadgeEl.style.display = 'inline';
+                        }
                     }
                     
                     // Show the profile badge
                     userProfileEl.classList.remove('hidden');
-                    console.log('✅ Profile badge displayed');
+                    console.info('[FarcasterAuth] ✅ Showing user profile badge');
+                    console.info('[FarcasterAuth] Badge classes:', userProfileEl.className);
+                    console.info('[FarcasterAuth] Badge computed display:', window.getComputedStyle(userProfileEl).display);
+                } else {
+                    console.error('[FarcasterAuth] ❌ #userProfile element not found in DOM');
                 }
                 
                 // Call page-specific user data loaders if they exist
