@@ -645,8 +645,14 @@
             color: var(--accent-yellow);
         }
 
+        /* Utility Classes */
+        .hidden {
+            display: none;
+        }
+
         /* User Profile Badge */
-        .user-profile-badge {
+        .user-profile-badge,
+        .user-profile-badge-floating {
             display: flex;
             align-items: center;
             gap: 8px;
@@ -661,9 +667,23 @@
             max-width: 200px;
         }
 
-        .user-profile-badge {
+        .user-profile-badge,
+        .user-profile-badge-floating {
             cursor: pointer;
             position: relative;
+        }
+
+        .user-profile-badge-floating {
+            position: fixed;
+            top: 16px;
+            right: 16px;
+            z-index: 1001;
+        }
+
+        @media (max-width: 768px) {
+            .user-profile-badge-floating {
+                display: none;
+            }
         }
 
         .user-profile-badge:hover {
@@ -2522,67 +2542,69 @@
                 <a href="chat.html">Chat</a>
                 <a href="https://www.thezao.com/nexus" target="_blank">ZAO Nexus</a>
             </nav>
-            <div id="userProfile" class="user-profile-badge" style="display: none;" onclick="toggleSettingsDropdown()">
-                <img id="userPfp" class="user-pfp" src="" alt="Profile" onerror="this.style.display='none'">
-                <div class="user-info">
-                    <div class="user-name-row">
-                        <span class="user-name" id="userName">Loading...</span>
-                        <span class="verified-badge" id="verifiedBadge" style="display: none;">✓</span>
-                    </div>
-                    <span class="user-fid" id="userFidDisplay"></span>
-                </div>
-                
-                <!-- Settings Dropdown -->
-                <div id="settingsDropdown" class="settings-dropdown" onclick="event.stopPropagation()">
-                    <div class="settings-dropdown-header">
-                        ⚙️ Share Settings
-                    </div>
-                    
-                    <div class="settings-dropdown-item">
-                        <div class="settings-dropdown-label">
-                            <span>Auto-share votes</span>
-                            <span class="settings-dropdown-description">Automatically share when you vote</span>
-                        </div>
-                        <div class="toggle-switch" id="autoShareToggleProfile" onclick="toggleSetting('autoShare')">
-                            <div class="toggle-slider"></div>
-                        </div>
-                    </div>
-
-                    <div class="settings-dropdown-item">
-                        <div class="settings-dropdown-label">
-                            <span>Share only when leading</span>
-                            <span class="settings-dropdown-description">Only auto-share if your mode is winning</span>
-                        </div>
-                        <div class="toggle-switch" id="shareLeadingToggleProfile" onclick="toggleSetting('shareLeading')">
-                            <div class="toggle-slider"></div>
-                        </div>
-                    </div>
-
-                    <div class="settings-dropdown-item">
-                        <div class="settings-dropdown-label">
-                            <span>Milestone celebrations</span>
-                            <span class="settings-dropdown-description">Share on 10th, 50th, 100th vote</span>
-                        </div>
-                        <div class="toggle-switch" id="shareMilestonesToggleProfile" onclick="toggleSetting('shareMilestones')">
-                            <div class="toggle-slider"></div>
-                        </div>
-                    </div>
-
-                    <div class="settings-dropdown-divider"></div>
-
-                    <div class="settings-dropdown-item">
-                        <div class="settings-dropdown-label">
-                            <span>🔔 Daily Reminders</span>
-                            <span class="settings-dropdown-description">Get notified at 11 AM EST to vote</span>
-                        </div>
-                        <button class="enable-notifications-btn" id="enableNotificationsBtn" onclick="enableNotifications()">
-                            Enable
-                        </button>
-                    </div>
-                </div>
-            </div>
         </div>
     </header>
+
+    <!-- User Profile Badge (Floating) -->
+    <div id="userProfile" class="user-profile-badge-floating hidden" onclick="toggleSettingsDropdown()">
+        <img id="userPfp" class="user-pfp" src="" alt="Profile" onerror="this.style.display='none'">
+        <div class="user-info">
+            <div class="user-name-row">
+                <span class="user-name" id="userName">Loading...</span>
+                <span class="verified-badge" id="verifiedBadge" style="display: none;">✓</span>
+            </div>
+            <span class="user-fid" id="userFidDisplay"></span>
+        </div>
+        
+        <!-- Settings Dropdown -->
+        <div id="settingsDropdown" class="settings-dropdown" onclick="event.stopPropagation()">
+            <div class="settings-dropdown-header">
+                ⚙️ Share Settings
+            </div>
+            
+            <div class="settings-dropdown-item">
+                <div class="settings-dropdown-label">
+                    <span>Auto-share votes</span>
+                    <span class="settings-dropdown-description">Automatically share when you vote</span>
+                </div>
+                <div class="toggle-switch" id="autoShareToggleProfile" onclick="toggleSetting('autoShare')">
+                    <div class="toggle-slider"></div>
+                </div>
+            </div>
+
+            <div class="settings-dropdown-item">
+                <div class="settings-dropdown-label">
+                    <span>Share only when leading</span>
+                    <span class="settings-dropdown-description">Only auto-share if your mode is winning</span>
+                </div>
+                <div class="toggle-switch" id="shareLeadingToggleProfile" onclick="toggleSetting('shareLeading')">
+                    <div class="toggle-slider"></div>
+                </div>
+            </div>
+
+            <div class="settings-dropdown-item">
+                <div class="settings-dropdown-label">
+                    <span>Milestone celebrations</span>
+                    <span class="settings-dropdown-description">Share on 10th, 50th, 100th vote</span>
+                </div>
+                <div class="toggle-switch" id="shareMilestonesToggleProfile" onclick="toggleSetting('shareMilestones')">
+                    <div class="toggle-slider"></div>
+                </div>
+            </div>
+
+            <div class="settings-dropdown-divider"></div>
+
+            <div class="settings-dropdown-item">
+                <div class="settings-dropdown-label">
+                    <span>🔔 Daily Reminders</span>
+                    <span class="settings-dropdown-description">Get notified at 11 AM EST to vote</span>
+                </div>
+                <button class="enable-notifications-btn" id="enableNotificationsBtn" onclick="enableNotifications()">
+                    Enable
+                </button>
+            </div>
+        </div>
+    </div>
 
     <!-- Now Live Banner -->
     <div id="nowLiveBanner" class="now-live-banner" style="display: none;">
@@ -3199,7 +3221,7 @@
                                 verifiedBadgeEl.style.display = 'inline';
                             }
                             
-                            userProfileEl.style.display = 'flex';
+                            userProfileEl.classList.remove('hidden');
                         }
                         
                         // Show personal stats and load user data
