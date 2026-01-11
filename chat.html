@@ -534,5 +534,11 @@
             attemptMount();
         });
     </script>
+    
+    <!-- Centralized Farcaster Authentication -->
+    <script type="module">
+        import { initFarcasterAuth } from './js/farcaster-auth.js';
+        initFarcasterAuth();
+    </script>
 </body>
 </html>

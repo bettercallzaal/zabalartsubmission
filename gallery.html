@@ -34,6 +34,22 @@
     <meta name="twitter:image" content="https://zabal.art/icon.png">
     <meta name="twitter:site" content="@zabal">
     
+    <!-- Farcaster SDK -->
+    <script type="module">
+        import { sdk } from 'https://esm.sh/@farcaster/miniapp-sdk';
+        window.farcasterSDK = sdk;
+        window.farcasterSDKLoaded = true;
+        console.log('✅ Farcaster SDK loaded');
+        
+        try {
+            await sdk.actions.ready();
+            window.splashDismissed = true;
+            console.log('✅ Splash screen dismissed');
+        } catch (err) {
+            console.log('⚠️ ready() failed:', err);
+        }
+    </script>
+    
     <style>
         * {
             margin: 0;
@@ -916,5 +932,11 @@
             <p class="footer-tagline">Built for the ZABAL network of creators.</p>
         </div>
     </footer>
+    
+    <!-- Centralized Farcaster Authentication -->
+    <script type="module">
+        import { initFarcasterAuth } from './js/farcaster-auth.js';
+        initFarcasterAuth();
+    </script>
 </body>
 </html>

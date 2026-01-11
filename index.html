@@ -3227,113 +3227,11 @@
             showToast('error', 'Database Error', 'Could not connect to database.');
         }
 
-        // Get Farcaster user context
+        // Get Farcaster user context (now populated by centralized auth module)
         let userFID = null;
         let username = null;
         let isAuthenticated = false;
         let userVotePower = 1; // Cache user's vote power
-
-        async function initializeFarcaster() {
-            console.log('🔐 Initializing Farcaster authentication...');
-            
-            // Wait for SDK to load (max 3 seconds)
-            let sdkReady = false;
-            for (let i = 0; i < 30; i++) {
-                if (window.farcasterSDK && window.farcasterSDK.actions) {
-                    sdkReady = true;
-                    break;
-                }
-                await new Promise(resolve => setTimeout(resolve, 100));
-            }
-            
-            try {
-                if (sdkReady && window.farcasterSDK) {
-                    const context = await window.farcasterSDK.context;
-                    
-                    if (context && context.user) {
-                        userFID = context.user.fid;
-                        username = context.user.username;
-                        isAuthenticated = true;
-                        
-                        console.log('✅ Farcaster user authenticated:', { fid: userFID, username, user: context.user });
-                        
-                        // Show enhanced user profile in header
-                        const userProfileEl = document.getElementById('userProfile');
-                        const userNameEl = document.getElementById('userName');
-                        const userPfpEl = document.getElementById('userPfp');
-                        const userFidEl = document.getElementById('userFidDisplay');
-                        const verifiedBadgeEl = document.getElementById('verifiedBadge');
-                        
-                        if (userProfileEl && userNameEl) {
-                            userNameEl.textContent = `@${username}`;
-                            userFidEl.textContent = `FID: ${userFID}`;
-                            
-                            // Set profile picture if available
-                            if (context.user.pfpUrl) {
-                                userPfpEl.src = context.user.pfpUrl;
-                                userPfpEl.style.display = 'block';
-                            }
-                            
-                            // Show verification badge if user has it
-                            if (context.user.verified || context.user.verifications?.length > 0) {
-                                verifiedBadgeEl.style.display = 'inline';
-                            }
-                            
-                            userProfileEl.classList.remove('hidden');
-                        }
-                        
-                        // Show personal stats and load user data
-                        loadPersonalStats();
-                        
-                        // Load best friends data
-                        loadBestFriends(userFID);
-                    } else {
-                        console.warn('⚠️ No Farcaster user context found');
-                        throw new Error('Not in Farcaster context');
-                    }
-                    
-                    // CRITICAL: Always call ready() to hide splash screen
-                    await window.farcasterSDK.actions.ready();
-                    console.log('✅ Splash screen hidden, app ready');
-                } else {
-                    console.warn('⚠️ Farcaster SDK not loaded after 3s timeout');
-                    throw new Error('Farcaster SDK not available');
-                }
-            } catch (err) {
-                console.log('ℹ️ Not running in Farcaster, using fallback FID');
-                // Fallback for testing outside Farcaster
-                userFID = localStorage.getItem('userFID') || Math.floor(Math.random() * 1000000);
-                localStorage.setItem('userFID', userFID);
-                username = 'Test User';
-                isAuthenticated = false;
-                
-                // Try to call ready() even in fallback mode
-                try {
-                    if (window.farcasterSDK && window.farcasterSDK.actions) {
-                        await window.farcasterSDK.actions.ready();
-                        console.log('✅ Splash screen hidden (fallback mode)');
-                    } else {
-                        console.log('⚠️ SDK not available, manually hiding splash screen');
-                        // Manually hide splash screen when testing outside Farcaster
-                        const splashScreen = document.querySelector('.fc-splash-screen');
-                        if (splashScreen) {
-                            splashScreen.style.display = 'none';
-                        }
-                        document.body.style.overflow = 'auto';
-                    }
-                } catch (readyErr) {
-                    console.log('ℹ️ Could not call ready() in fallback mode:', readyErr);
-                    // Manually hide splash screen on error
-                    const splashScreen = document.querySelector('.fc-splash-screen');
-                    if (splashScreen) {
-                        splashScreen.style.display = 'none';
-                    }
-                    document.body.style.overflow = 'auto';
-                }
-            }
-            
-            console.log('👤 User FID:', userFID, '| Username:', username, '| Authenticated:', isAuthenticated);
-        }
         
         let userVote = null;
         const votes = {
@@ -4156,13 +4054,7 @@
             });
         }
 
-        // Toggle settings dropdown
-        window.toggleSettingsDropdown = function() {
-            const dropdown = document.getElementById('settingsDropdown');
-            if (dropdown) {
-                dropdown.classList.toggle('active');
-            }
-        }
+        // toggleSettingsDropdown and dropdown close listener now in farcaster-auth.js
         
         // Toggle mobile menu
         window.toggleMobileMenu = function() {
@@ -4171,15 +4063,6 @@
                 menu.classList.toggle('hidden');
             }
         }
-
-        // Close dropdown when clicking outside
-        document.addEventListener('click', function(event) {
-            const dropdown = document.getElementById('settingsDropdown');
-            const profileBadge = document.getElementById('userProfile');
-            if (dropdown && !profileBadge?.contains(event.target)) {
-                dropdown.classList.remove('active');
-            }
-        });
 
         // Load preferences from localStorage
         function loadSharePreferences() {
@@ -4220,8 +4103,8 @@
             return milestones.includes(totalVotes);
         }
 
-        // Load best friends from Neynar
-        async function loadBestFriends(fid) {
+        // Load best friends from Neynar (globally accessible for auth module)
+        window.loadBestFriends = async function(fid) {
             if (!fid) {
                 console.warn('⚠️ No FID provided to loadBestFriends');
                 return;
@@ -4951,8 +4834,8 @@
             return leader;
         }
 
-        // Load and display personal stats
-        async function loadPersonalStats() {
+        // Load and display personal stats (globally accessible for auth module)
+        window.loadPersonalStats = async function() {
             if (!isAuthenticated || !userFID || !supabase) return;
             
             try {
@@ -5067,8 +4950,14 @@
             updateHeroState();
             console.log('✅ Hero state updated');
             
-            // Initialize Farcaster authentication
-            initializeFarcaster();
+            // Farcaster authentication now handled by centralized module
+            // Wait for auth to complete and populate global variables
+            if (window.farcasterAuth) {
+                userFID = window.farcasterAuth.userFID;
+                username = window.farcasterAuth.username;
+                isAuthenticated = window.farcasterAuth.isAuthenticated;
+            }
+            
             checkLiveStatus();
             
             // Check live status every 2 minutes (using lifecycle manager)
@@ -5187,6 +5076,19 @@
                 badge.setAttribute('aria-live', 'polite');
                 document.body.appendChild(badge);
             }
+        });
+    </script>
+    
+    <!-- Centralized Farcaster Authentication -->
+    <script type="module">
+        import { initFarcasterAuth } from './js/farcaster-auth.js';
+        
+        // Initialize auth and populate global variables
+        initFarcasterAuth().then(({ userFID: fid, username: user, isAuthenticated: auth }) => {
+            // Update page-level variables
+            if (typeof userFID !== 'undefined') userFID = fid;
+            if (typeof username !== 'undefined') username = user;
+            if (typeof isAuthenticated !== 'undefined') isAuthenticated = auth;
         });
     </script>
 </body>

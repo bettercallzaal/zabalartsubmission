@@ -29,10 +29,26 @@
     
     <!-- Twitter Card Meta Tags -->
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="Submit Your Work to ZABAL">
-    <meta name="twitter:description" content="Submit your creative work to ZABAL. Share your art, NFTs, and creative projects with the community.">
+    <meta name="twitter:title" content="Submit to ZABAL">
+    <meta name="twitter:description" content="Share your creative work with the ZABAL community.">
     <meta name="twitter:image" content="https://zabal.art/icon.png">
     <meta name="twitter:site" content="@zabal">
+    
+    <!-- Farcaster SDK -->
+    <script type="module">
+        import { sdk } from 'https://esm.sh/@farcaster/miniapp-sdk';
+        window.farcasterSDK = sdk;
+        window.farcasterSDKLoaded = true;
+        console.log('✅ Farcaster SDK loaded');
+        
+        try {
+            await sdk.actions.ready();
+            window.splashDismissed = true;
+            console.log('✅ Splash screen dismissed');
+        } catch (err) {
+            console.log('⚠️ ready() failed:', err);
+        }
+    </script>
     
     <style>
         * {
@@ -1131,6 +1147,12 @@
         // Check stream status on load and every 60 seconds
         checkStreamStatus();
         setInterval(checkStreamStatus, 60000);
+    </script>
+    
+    <!-- Centralized Farcaster Authentication -->
+    <script type="module">
+        import { initFarcasterAuth } from './js/farcaster-auth.js';
+        initFarcasterAuth();
     </script>
 </body>
 </html>
