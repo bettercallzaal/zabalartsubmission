@@ -654,17 +654,17 @@
             display: flex;
             align-items: center;
             gap: 8px;
-            padding: 6px 12px 6px 6px;
-            background: rgba(224, 221, 170, 0.1);
-            border: 1px solid rgba(224, 221, 170, 0.4);
+            padding: 4px 12px 4px 4px;
+            background: rgba(224, 221, 170, 0.08);
+            border: 1px solid rgba(224, 221, 170, 0.3);
             border-radius: 20px;
-            font-size: 0.75rem;
-            color: var(--text-white);
+            font-size: 0.8rem;
+            color: var(--accent-yellow);
             font-weight: 600;
             transition: all 0.3s ease;
+            max-width: 200px;
             cursor: pointer;
             position: relative;
-            white-space: nowrap;
         }
         
         .user-profile-badge:hover {
@@ -676,6 +676,7 @@
             display: flex;
             align-items: center;
             gap: 12px;
+            flex-shrink: 0;
         }
         
         .hamburger {
@@ -2582,7 +2583,7 @@
             </nav>
             
             <div class="header-actions">
-                <div id="userProfile" class="user-profile-badge" onclick="toggleSettingsDropdown()">
+                <div id="userProfile" class="user-profile-badge" style="display: none;" onclick="toggleSettingsDropdown()">
         <img id="userPfp" class="user-pfp" src="" alt="Profile" onerror="this.style.display='none'">
         <div class="user-info">
             <div class="user-name-row">

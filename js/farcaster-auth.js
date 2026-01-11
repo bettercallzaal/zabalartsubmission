@@ -83,10 +83,9 @@ export async function initFarcasterAuth() {
                         }
                     }
                     
-                    // Show the profile badge
-                    userProfileEl.classList.remove('hidden');
+                    // Show the profile badge using inline style (v1.0.0 semantics)
+                    userProfileEl.style.display = 'flex';
                     console.info('[FarcasterAuth] ✅ Showing user profile badge');
-                    console.info('[FarcasterAuth] Badge classes:', userProfileEl.className);
                     console.info('[FarcasterAuth] Badge computed display:', window.getComputedStyle(userProfileEl).display);
                 } else {
                     console.error('[FarcasterAuth] ❌ #userProfile element not found in DOM');
