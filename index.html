@@ -215,7 +215,6 @@
 
         /* Header */
         header {
-            padding: 1.5rem 0;
             position: fixed;
             top: 0;
             left: 0;
@@ -224,17 +223,15 @@
             background: rgba(0, 0, 0, 0.95);
             backdrop-filter: blur(10px);
             border-bottom: 1px solid var(--border-color);
-            height: 80px;
         }
 
         .header-content {
             display: flex;
-            justify-content: space-between;
             align-items: center;
+            justify-content: space-between;
             max-width: 1200px;
             margin: 0 auto;
-            padding: 0 20px;
-            height: 100%;
+            padding: 16px 20px;
         }
 
         .logo {
@@ -2106,16 +2103,8 @@
 
         /* Mobile Responsive */
         @media (max-width: 768px) {
-            header {
-                padding: 10px 16px;
-                height: 70px;
-            }
-
             .header-content {
-                flex-direction: row;
-                justify-content: space-between;
-                align-items: center;
-                gap: 0.5rem;
+                padding: 12px 16px;
             }
 
             .logo {
@@ -2618,7 +2607,7 @@
     </div>
 
     <!-- Personal Stats -->
-    <section class="container" style="padding-top: 100px;">
+    <section class="container">
         <div id="personalStats" class="personal-stats">
             <div class="stats-header">
                 <span class="stats-title">📊 Your Stats</span>
