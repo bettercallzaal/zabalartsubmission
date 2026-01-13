@@ -10,7 +10,14 @@
     <meta name="description" content="Join the ZABAL community chat powered by OnChat. Discuss art, voting, and connect with other community members.">
     <meta name="theme-color" content="#141e27">
     
-    <!-- Favicon -->
+    <!-- Canonical URL -->
+    <link rel="canonical" href="https://zabal.art/chat.html">
+    
+    <!-- Shared Navigation Styles -->
+    <link rel="stylesheet" href="css/shared-navigation.css">
+    
+    <!-- Shared Navigation Script -->
+    <script src="js/mobile-navigation.js" defer></script>
     <link rel="icon" type="image/x-icon" href="/favicon.ico">
     <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
@@ -87,56 +94,6 @@
             color: #ffffff;
         }
 
-        .hamburger {
-            display: none;
-            flex-direction: column;
-            gap: 4px;
-            cursor: pointer;
-            padding: 8px;
-            background: none;
-            border: none;
-        }
-
-        .hamburger span {
-            width: 24px;
-            height: 2px;
-            background: #ffffff;
-            border-radius: 2px;
-            transition: all 0.3s;
-        }
-
-        .mobile-menu {
-            display: none;
-            position: fixed;
-            top: 60px;
-            left: 0;
-            right: 0;
-            background: rgba(20, 30, 39, 0.98);
-            backdrop-filter: blur(10px);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            padding: 1rem;
-            z-index: 999;
-        }
-
-        .mobile-menu.active {
-            display: block;
-        }
-
-        .mobile-menu a {
-            display: block;
-            color: rgba(255, 255, 255, 0.9);
-            text-decoration: none;
-            padding: 0.75rem 1rem;
-            border-radius: 8px;
-            margin-bottom: 0.5rem;
-            transition: all 0.2s;
-        }
-
-        .mobile-menu a:hover {
-            background: rgba(255, 255, 255, 0.1);
-            color: #ffffff;
-        }
-
         .chat-container {
             flex: 1;
             display: flex;
@@ -185,17 +142,6 @@
                 font-size: 1.2rem;
             }
 
-            nav {
-                display: none;
-            }
-
-            .hamburger {
-                display: flex;
-            }
-
-            .mobile-menu {
-                top: 56px;
-            }
 
             .chat-container {
                 margin-top: 56px;
@@ -268,32 +214,5 @@
 
     <!-- OnChat Widget Script -->
     <script type="module" src="https://onchat.ai/widget.js"></script>
-    
-    <!-- Mobile Menu Toggle -->
-    <script>
-        function toggleMobileMenu() {
-            const menu = document.getElementById('mobileMenu');
-            menu.classList.toggle('active');
-        }
-
-        // Close menu when clicking outside
-        document.addEventListener('click', function(event) {
-            const menu = document.getElementById('mobileMenu');
-            const hamburger = document.querySelector('.hamburger');
-            
-            if (menu.classList.contains('active') && 
-                !menu.contains(event.target) && 
-                !hamburger.contains(event.target)) {
-                menu.classList.remove('active');
-            }
-        });
-
-        // Close menu when clicking a link
-        document.querySelectorAll('.mobile-menu a').forEach(link => {
-            link.addEventListener('click', function() {
-                document.getElementById('mobileMenu').classList.remove('active');
-            });
-        });
-    </script>
 </body>
 </html>
