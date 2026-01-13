@@ -114,6 +114,86 @@
             color: var(--accent-yellow);
         }
 
+        nav a.active {
+            color: var(--accent-yellow);
+        }
+
+        /* Hamburger Menu */
+        .hamburger {
+            display: none;
+            flex-direction: column;
+            gap: 5px;
+            cursor: pointer;
+            padding: 8px;
+            background: none;
+            border: none;
+            z-index: 1001;
+        }
+
+        .hamburger span {
+            width: 25px;
+            height: 3px;
+            background: var(--accent-yellow);
+            border-radius: 2px;
+            transition: all 0.3s ease;
+        }
+
+        .hamburger.active span:nth-child(1) {
+            transform: rotate(45deg) translate(8px, 8px);
+        }
+
+        .hamburger.active span:nth-child(2) {
+            opacity: 0;
+        }
+
+        .hamburger.active span:nth-child(3) {
+            transform: rotate(-45deg) translate(7px, -7px);
+        }
+
+        /* Mobile Menu */
+        .mobile-menu {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.98);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            padding-top: 80px;
+            overflow-y: auto;
+        }
+
+        .mobile-menu.active {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+        }
+
+        .mobile-menu a {
+            color: var(--text-white);
+            text-decoration: none;
+            font-size: 1.5rem;
+            font-weight: 700;
+            padding: 1.5rem 2rem;
+            width: 100%;
+            text-align: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .mobile-menu a:hover,
+        .mobile-menu a.active {
+            background: rgba(224, 221, 170, 0.1);
+            color: var(--accent-yellow);
+        }
+
+        .mobile-menu a:first-child {
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
         /* Live Stream Status */
         .stream-status {
             display: flex;
@@ -717,6 +797,26 @@
 
         /* Responsive Design */
         @media (max-width: 768px) {
+            header {
+                padding: 10px 16px;
+            }
+
+            .logo {
+                font-size: 1.2rem;
+            }
+
+            nav {
+                display: none;
+            }
+
+            .hamburger {
+                display: flex;
+            }
+
+            .stream-status {
+                display: none;
+            }
+
             section {
                 padding: 60px 20px;
             }
@@ -755,12 +855,27 @@
             <a href="index.html" class="logo">ZABAL.art</a>
             <nav>
                 <a href="index.html">Vote</a>
+                <a href="chat.html">Chat</a>
                 <a href="submissions.html" class="active">Submit</a>
                 <a href="gallery.html">Research</a>
                 <a href="https://www.thezao.com/nexus" target="_blank">ZAO Nexus</a>
             </nav>
+            <button class="hamburger" onclick="toggleMobileMenu()" aria-label="Menu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
         </div>
     </header>
+
+    <!-- Mobile Menu -->
+    <div class="mobile-menu" id="mobileMenu">
+        <a href="index.html">🗳️ Vote</a>
+        <a href="chat.html">💬 Chat</a>
+        <a href="submissions.html" class="active">📤 Submit</a>
+        <a href="gallery.html">🔍 Research</a>
+        <a href="https://www.thezao.com/nexus" target="_blank">🌐 ZAO Nexus</a>
+    </div>
 
     <!-- Hero Section -->
     <section class="hero">
@@ -1044,6 +1159,35 @@
         // Check stream status on load and every 60 seconds
         checkStreamStatus();
         setInterval(checkStreamStatus, 60000);
+
+        // Toggle mobile menu
+        window.toggleMobileMenu = function() {
+            const menu = document.getElementById('mobileMenu');
+            const hamburger = document.querySelector('.hamburger');
+            
+            if (menu && hamburger) {
+                menu.classList.toggle('active');
+                hamburger.classList.toggle('active');
+                
+                // Prevent body scroll when menu is open
+                if (menu.classList.contains('active')) {
+                    document.body.style.overflow = 'hidden';
+                } else {
+                    document.body.style.overflow = '';
+                }
+            }
+        }
+
+        // Close mobile menu when clicking a link
+        document.querySelectorAll('.mobile-menu a').forEach(link => {
+            link.addEventListener('click', function() {
+                const menu = document.getElementById('mobileMenu');
+                const hamburger = document.querySelector('.hamburger');
+                if (menu) menu.classList.remove('active');
+                if (hamburger) hamburger.classList.remove('active');
+                document.body.style.overflow = '';
+            });
+        });
     </script>
 </body>
 </html>
