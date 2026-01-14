@@ -348,6 +348,178 @@
             opacity: 0.8;
         }
 
+        /* Weekly Focus Voting Styles */
+        .weekly-focus-section {
+            padding: 60px 20px;
+            background: linear-gradient(180deg, rgba(20, 30, 39, 0.5) 0%, rgba(10, 10, 10, 0.5) 100%);
+        }
+
+        .weekly-focus-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .weekly-focus-header h2 {
+            font-size: clamp(1.8rem, 5vw, 2.5rem);
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--text-white) 0%, var(--accent-yellow) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 0.5rem;
+        }
+
+        .weekly-focus-header p {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+        }
+
+        .weekly-focus-categories {
+            display: grid;
+            gap: 2rem;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .focus-category {
+            background: rgba(224, 221, 170, 0.03);
+            border: 1px solid rgba(224, 221, 170, 0.1);
+            border-radius: 16px;
+            padding: 2rem;
+            transition: all 0.3s ease;
+        }
+
+        .focus-category:hover {
+            background: rgba(224, 221, 170, 0.05);
+            border-color: rgba(224, 221, 170, 0.2);
+        }
+
+        .focus-category-header {
+            margin-bottom: 1.5rem;
+        }
+
+        .focus-category-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--accent-yellow);
+            margin-bottom: 0.5rem;
+        }
+
+        .focus-category-subtitle {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        .focus-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .focus-option-btn {
+            background: rgba(224, 221, 170, 0.05);
+            border: 2px solid rgba(224, 221, 170, 0.2);
+            border-radius: 12px;
+            padding: 1rem 0.75rem;
+            color: var(--text-white);
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: center;
+        }
+
+        .focus-option-btn:hover {
+            background: rgba(224, 221, 170, 0.1);
+            border-color: var(--accent-yellow);
+            transform: translateY(-2px);
+        }
+
+        .focus-option-btn.voted {
+            background: rgba(224, 221, 170, 0.15);
+            border-color: var(--accent-yellow);
+            color: var(--accent-yellow);
+        }
+
+        .focus-results {
+            border-top: 1px solid rgba(224, 221, 170, 0.1);
+            padding-top: 1.5rem;
+        }
+
+        .focus-results-title {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .focus-result-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 0.75rem;
+            padding: 0.5rem;
+            border-radius: 8px;
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        .focus-result-item.leading {
+            background: rgba(224, 221, 170, 0.1);
+            border: 1px solid rgba(224, 221, 170, 0.3);
+        }
+
+        .focus-result-name {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text-white);
+        }
+
+        .focus-result-item.leading .focus-result-name {
+            color: var(--accent-yellow);
+        }
+
+        .focus-result-votes {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--text-secondary);
+        }
+
+        .focus-result-item.leading .focus-result-votes {
+            color: var(--accent-yellow);
+        }
+
+        .focus-result-bar {
+            height: 4px;
+            background: rgba(224, 221, 170, 0.1);
+            border-radius: 2px;
+            margin-top: 0.25rem;
+            overflow: hidden;
+        }
+
+        .focus-result-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, rgba(224, 221, 170, 0.3) 0%, var(--accent-yellow) 100%);
+            border-radius: 2px;
+            transition: width 0.5s ease;
+        }
+
+        @media (max-width: 768px) {
+            .weekly-focus-section {
+                padding: 40px 16px;
+            }
+
+            .focus-options {
+                grid-template-columns: 1fr;
+            }
+
+            .focus-category {
+                padding: 1.5rem;
+            }
+        }
+
 
         /* Live State Hero */
         .live-hero {
@@ -3037,6 +3209,80 @@
         </div>
     </section>
 
+    <!-- Weekly Focus Voting -->
+    <section class="weekly-focus-section">
+        <div class="container">
+            <div class="weekly-focus-header">
+                <h2>Weekly Focus (Community Vote)</h2>
+                <p>Help shape ZABAL's direction for the week. Your vote power applies here too.</p>
+            </div>
+            
+            <div class="weekly-focus-categories">
+                <!-- Stream Focus Category -->
+                <div class="focus-category">
+                    <div class="focus-category-header">
+                        <div class="focus-category-title">🎥 Stream Focus for the Week</div>
+                        <div class="focus-category-subtitle">What should streams prioritize this week?</div>
+                    </div>
+                    
+                    <div class="focus-options" id="streamFocusOptions">
+                        <button class="focus-option-btn" onclick="submitWeeklyFocusVote('stream', 'Live Music')">
+                            🎵 Live Music
+                        </button>
+                        <button class="focus-option-btn" onclick="submitWeeklyFocusVote('stream', 'Education / Tutorials')">
+                            📚 Education / Tutorials
+                        </button>
+                        <button class="focus-option-btn" onclick="submitWeeklyFocusVote('stream', 'Community Calls')">
+                            💬 Community Calls
+                        </button>
+                        <button class="focus-option-btn" onclick="submitWeeklyFocusVote('stream', 'Open Mic / Freestyle')">
+                            🎤 Open Mic / Freestyle
+                        </button>
+                        <button class="focus-option-btn" onclick="submitWeeklyFocusVote('stream', 'AMAs')">
+                            ❓ AMAs
+                        </button>
+                    </div>
+                    
+                    <div class="focus-results">
+                        <div class="focus-results-title">Live Results</div>
+                        <div id="streamFocusResults"></div>
+                    </div>
+                </div>
+                
+                <!-- Social Media Focus Category -->
+                <div class="focus-category">
+                    <div class="focus-category-header">
+                        <div class="focus-category-title">📱 Social Media Focus for the Week</div>
+                        <div class="focus-category-subtitle">Where should we focus community engagement?</div>
+                    </div>
+                    
+                    <div class="focus-options" id="socialFocusOptions">
+                        <button class="focus-option-btn" onclick="submitWeeklyFocusVote('social', 'X (Twitter)')">
+                            🐦 X (Twitter)
+                        </button>
+                        <button class="focus-option-btn" onclick="submitWeeklyFocusVote('social', 'Farcaster')">
+                            🟣 Farcaster
+                        </button>
+                        <button class="focus-option-btn" onclick="submitWeeklyFocusVote('social', 'TikTok')">
+                            🎵 TikTok
+                        </button>
+                        <button class="focus-option-btn" onclick="submitWeeklyFocusVote('social', 'YouTube')">
+                            📺 YouTube
+                        </button>
+                        <button class="focus-option-btn" onclick="submitWeeklyFocusVote('social', 'Instagram')">
+                            📸 Instagram
+                        </button>
+                    </div>
+                    
+                    <div class="focus-results">
+                        <div class="focus-results-title">Live Results</div>
+                        <div id="socialFocusResults"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <!-- Vote History Accordion -->
     <section class="vote-history-accordion-section">
         <div class="container">
@@ -5103,6 +5349,10 @@
             // Load vote history
             await loadVoteHistory();
             
+            // Initialize weekly focus voting
+            initializeWeeklyFocus();
+            console.log('✅ Weekly focus voting initialized');
+            
             // Refresh votes every 30 seconds (using lifecycle manager)
             window.appLifecycle.addInterval(loadVotes, 30000, 'vote-refresh');
             console.log('✅ Vote refresh interval set (30s)');
@@ -5112,6 +5362,235 @@
             console.log('✅ Countdown started');
             console.log('🎉 ZABAL Live Hub ready!');
         }
+        
+        // ============================================
+        // WEEKLY FOCUS VOTING LOGIC
+        // ============================================
+        
+        // Get current week key (ISO week format: YYYY-Www)
+        // Week runs Monday 00:00 UTC to Sunday 23:59 UTC
+        function getCurrentWeekKey() {
+            const now = new Date();
+            const utcDate = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()));
+            
+            // Get ISO week number
+            const dayNum = utcDate.getUTCDay() || 7; // Make Sunday = 7
+            utcDate.setUTCDate(utcDate.getUTCDate() + 4 - dayNum); // Thursday of current week
+            const yearStart = new Date(Date.UTC(utcDate.getUTCFullYear(), 0, 1));
+            const weekNum = Math.ceil((((utcDate - yearStart) / 86400000) + 1) / 7);
+            
+            const weekKey = `${utcDate.getUTCFullYear()}-W${String(weekNum).padStart(2, '0')}`;
+            console.debug('📅 Current week key:', weekKey);
+            return weekKey;
+        }
+        
+        // Submit weekly focus vote
+        async function submitWeeklyFocusVote(category, option) {
+            try {
+                console.debug('🗳️ Weekly focus vote:', { category, option });
+                
+                // Check if user is authenticated
+                if (!isAuthenticated || !userFID) {
+                    showToast('Please connect your Farcaster account to vote', 'error');
+                    return;
+                }
+                
+                const weekKey = getCurrentWeekKey();
+                const storageKey = `weeklyFocus_${weekKey}`;
+                
+                // Get existing votes for this week
+                let weeklyVotes = {};
+                try {
+                    const stored = localStorage.getItem(storageKey);
+                    if (stored) {
+                        weeklyVotes = JSON.parse(stored);
+                    }
+                } catch (e) {
+                    console.error('Error parsing weekly votes:', e);
+                    weeklyVotes = {};
+                }
+                
+                // Initialize category if needed
+                if (!weeklyVotes[category]) {
+                    weeklyVotes[category] = { votes: {}, userVotes: {} };
+                }
+                
+                // Check if user already voted for this category this week
+                const previousVote = weeklyVotes[category].userVotes[userFID];
+                if (previousVote && previousVote !== option) {
+                    console.debug('🔄 Vote overwrite detected:', { previous: previousVote, new: option });
+                    // Remove previous vote
+                    if (weeklyVotes[category].votes[previousVote]) {
+                        weeklyVotes[category].votes[previousVote] -= userVotePower;
+                        if (weeklyVotes[category].votes[previousVote] <= 0) {
+                            delete weeklyVotes[category].votes[previousVote];
+                        }
+                    }
+                }
+                
+                // Add new vote with vote power
+                if (!weeklyVotes[category].votes[option]) {
+                    weeklyVotes[category].votes[option] = 0;
+                }
+                weeklyVotes[category].votes[option] += userVotePower;
+                weeklyVotes[category].userVotes[userFID] = option;
+                
+                // Save to localStorage
+                localStorage.setItem(storageKey, JSON.stringify(weeklyVotes));
+                
+                console.debug('✅ Weekly focus vote submitted:', { category, option, votePower: userVotePower });
+                
+                // Update UI
+                loadWeeklyFocusResults(category);
+                highlightUserVote(category, option);
+                
+                showToast(`Vote recorded: ${option}`, 'success');
+                
+            } catch (error) {
+                console.error('❌ Error submitting weekly focus vote:', error);
+                showToast('Failed to record vote', 'error');
+            }
+        }
+        
+        // Load and display weekly focus results
+        function loadWeeklyFocusResults(category) {
+            try {
+                const weekKey = getCurrentWeekKey();
+                const storageKey = `weeklyFocus_${weekKey}`;
+                
+                // Get votes for this week
+                let weeklyVotes = {};
+                try {
+                    const stored = localStorage.getItem(storageKey);
+                    if (stored) {
+                        weeklyVotes = JSON.parse(stored);
+                    }
+                } catch (e) {
+                    console.error('Error parsing weekly votes:', e);
+                }
+                
+                const categoryVotes = weeklyVotes[category]?.votes || {};
+                
+                // Define options for each category
+                const options = {
+                    stream: ['Live Music', 'Education / Tutorials', 'Community Calls', 'Open Mic / Freestyle', 'AMAs'],
+                    social: ['X (Twitter)', 'Farcaster', 'TikTok', 'YouTube', 'Instagram']
+                };
+                
+                // Calculate total votes and find max
+                const voteCounts = options[category].map(opt => ({
+                    name: opt,
+                    votes: categoryVotes[opt] || 0
+                }));
+                
+                const totalVotes = voteCounts.reduce((sum, item) => sum + item.votes, 0);
+                const maxVotes = Math.max(...voteCounts.map(item => item.votes));
+                
+                // Render results
+                const resultsContainer = document.getElementById(`${category}FocusResults`);
+                if (!resultsContainer) return;
+                
+                if (totalVotes === 0) {
+                    resultsContainer.innerHTML = '<div style="text-align: center; color: var(--text-secondary); font-size: 0.85rem; padding: 1rem;">No votes yet. Be the first to vote!</div>';
+                    return;
+                }
+                
+                resultsContainer.innerHTML = voteCounts
+                    .sort((a, b) => b.votes - a.votes)
+                    .map(item => {
+                        const percentage = totalVotes > 0 ? (item.votes / totalVotes * 100) : 0;
+                        const isLeading = item.votes === maxVotes && item.votes > 0;
+                        
+                        return `
+                            <div class="focus-result-item ${isLeading ? 'leading' : ''}">
+                                <div style="flex: 1;">
+                                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                                        <span class="focus-result-name">${item.name}</span>
+                                        <span class="focus-result-votes">${item.votes.toFixed(1)}x</span>
+                                    </div>
+                                    <div class="focus-result-bar">
+                                        <div class="focus-result-bar-fill" style="width: ${percentage}%"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    })
+                    .join('');
+                
+                console.debug('📊 Results loaded for', category, ':', voteCounts);
+                
+            } catch (error) {
+                console.error('❌ Error loading weekly focus results:', error);
+            }
+        }
+        
+        // Highlight user's current vote
+        function highlightUserVote(category, option) {
+            try {
+                const optionsContainer = document.getElementById(`${category}FocusOptions`);
+                if (!optionsContainer) return;
+                
+                // Remove all 'voted' classes
+                const buttons = optionsContainer.querySelectorAll('.focus-option-btn');
+                buttons.forEach(btn => btn.classList.remove('voted'));
+                
+                // Add 'voted' class to selected option
+                buttons.forEach(btn => {
+                    if (btn.textContent.trim().includes(option)) {
+                        btn.classList.add('voted');
+                    }
+                });
+            } catch (error) {
+                console.error('Error highlighting user vote:', error);
+            }
+        }
+        
+        // Initialize weekly focus voting
+        function initializeWeeklyFocus() {
+            try {
+                console.debug('🎯 Initializing weekly focus voting...');
+                
+                // Load results for both categories
+                loadWeeklyFocusResults('stream');
+                loadWeeklyFocusResults('social');
+                
+                // Highlight user's existing votes if any
+                if (isAuthenticated && userFID) {
+                    const weekKey = getCurrentWeekKey();
+                    const storageKey = `weeklyFocus_${weekKey}`;
+                    
+                    try {
+                        const stored = localStorage.getItem(storageKey);
+                        if (stored) {
+                            const weeklyVotes = JSON.parse(stored);
+                            
+                            // Highlight stream vote
+                            if (weeklyVotes.stream?.userVotes[userFID]) {
+                                highlightUserVote('stream', weeklyVotes.stream.userVotes[userFID]);
+                            }
+                            
+                            // Highlight social vote
+                            if (weeklyVotes.social?.userVotes[userFID]) {
+                                highlightUserVote('social', weeklyVotes.social.userVotes[userFID]);
+                            }
+                        }
+                    } catch (e) {
+                        console.error('Error loading user votes:', e);
+                    }
+                }
+                
+                console.debug('✅ Weekly focus voting initialized');
+            } catch (error) {
+                console.error('❌ Error initializing weekly focus:', error);
+            }
+        }
+        
+        // Make submitWeeklyFocusVote globally accessible
+        window.submitWeeklyFocusVote = submitWeeklyFocusVote;
+        
+        // ============================================
+        // END WEEKLY FOCUS VOTING LOGIC
+        // ============================================
         
         // Toggle vote power breakdown
         window.toggleBreakdown = function() {
