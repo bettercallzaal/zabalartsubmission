@@ -5099,7 +5099,7 @@
                 
                 const emoji = platformEmojis[platform] || '📱';
                 
-                let castText = `${emoji} Just voted for ${platform} as this week's social focus on ZABAL!\n\nWhere should we focus community engagement this week?\n\nVote now 👇`;
+                let castText = `${emoji} I voted for ${platform} as ZABAL's social focus this week!\n\nWhere should we focus community engagement?\n\nVote now 👇`;
                 
                 // Add friend tags if selected
                 let friendTags = '';
@@ -5544,6 +5544,10 @@
             window.appLifecycle.addInterval(loadVotes, 30000, 'vote-refresh');
             console.log('✅ Vote refresh interval set (30s)');
             
+            // Refresh weekly social results every 30 seconds
+            window.appLifecycle.addInterval(loadWeeklySocialResults, 30000, 'weekly-refresh');
+            console.log('✅ Weekly social refresh interval set (30s)');
+            
             window.appLifecycle.addInterval(updateCountdown, 1000, 'countdown');
             updateCountdown();
             console.log('✅ Countdown started');
@@ -5571,7 +5575,7 @@
             return weekKey;
         }
         
-        // Submit weekly social vote (single-select only)
+        // Submit weekly social vote (single-select only) - DB-backed
         window.submitWeeklySocialVote = async function(platform) {
             try {
                 console.log('🗳️ [WEEKLY SOCIAL] Vote button clicked for:', platform);
@@ -5583,58 +5587,60 @@
                     return;
                 }
                 
-                const weekKey = getCurrentWeekKey();
-                const storageKey = `weeklySocial_${weekKey}`;
+                if (!supabase) {
+                    console.error('❌ [WEEKLY SOCIAL] Supabase not initialized');
+                    showToast('error', 'Database Error', 'Database not connected. Please refresh the page.');
+                    return;
+                }
                 
-                // Check if user already voted this week
-                const existingVote = localStorage.getItem(storageKey);
-                if (existingVote) {
-                    try {
-                        const voteData = JSON.parse(existingVote);
-                        if (voteData.userVotes && voteData.userVotes[userFID]) {
-                            console.log('⚠️ [WEEKLY SOCIAL] User already voted this week for:', voteData.userVotes[userFID]);
-                            showToast('info', 'Already Voted', `You already voted for ${voteData.userVotes[userFID]} this week. Come back next Monday!`);
-                            return;
-                        }
-                    } catch (e) {
-                        console.error('Error parsing existing vote:', e);
+                // Show loading state
+                window.loadingManager?.show('weeklyVote');
+                
+                console.log('📤 [WEEKLY SOCIAL] Calling submit_weekly_social_vote RPC:', { fid: userFID, platform });
+                
+                // Call Supabase RPC to submit vote
+                const { data, error } = await supabase.rpc('submit_weekly_social_vote', {
+                    p_fid: userFID,
+                    p_platform: platform
+                });
+                
+                window.loadingManager?.hide('weeklyVote');
+                
+                if (error) {
+                    console.error('❌ [WEEKLY SOCIAL] RPC error:', error);
+                    showToast('error', 'Submission Failed', 'Could not submit vote. Please try again.');
+                    return;
+                }
+                
+                console.log('📥 [WEEKLY SOCIAL] RPC response:', data);
+                
+                // Check if vote was successful
+                if (!data.success) {
+                    if (data.error === 'already_voted') {
+                        console.log('⚠️ [WEEKLY SOCIAL] User already voted for:', data.existing_platform);
+                        showToast('info', 'Already Voted', `You already voted for ${data.existing_platform} this week. Come back next Monday!`);
+                        
+                        // Lock UI and show existing vote
+                        showWeeklySocialVotedState(data.existing_platform);
+                        disableWeeklySocialVoting();
+                        return;
+                    } else {
+                        console.error('❌ [WEEKLY SOCIAL] Vote failed:', data.error);
+                        showToast('error', 'Submission Failed', data.error || 'Could not submit vote.');
+                        return;
                     }
                 }
                 
-                // Get existing votes for this week
-                let weeklyVotes = { votes: {}, userVotes: {} };
-                try {
-                    const stored = localStorage.getItem(storageKey);
-                    if (stored) {
-                        weeklyVotes = JSON.parse(stored);
-                        if (!weeklyVotes.votes) weeklyVotes.votes = {};
-                        if (!weeklyVotes.userVotes) weeklyVotes.userVotes = {};
-                    }
-                } catch (e) {
-                    console.error('Error parsing weekly votes:', e);
-                    weeklyVotes = { votes: {}, userVotes: {} };
-                }
-                
-                // Add new vote with vote power
-                if (!weeklyVotes.votes[platform]) {
-                    weeklyVotes.votes[platform] = 0;
-                }
-                weeklyVotes.votes[platform] += userVotePower;
-                weeklyVotes.userVotes[userFID] = platform;
-                
-                // Save to localStorage
-                localStorage.setItem(storageKey, JSON.stringify(weeklyVotes));
-                
-                console.log('✅ [WEEKLY SOCIAL] Vote submitted:', { platform, votePower: userVotePower });
+                console.log('✅ [WEEKLY SOCIAL] Vote submitted successfully:', platform);
                 
                 // Update UI
-                loadWeeklySocialResults();
+                await loadWeeklySocialResults();
                 showWeeklySocialVotedState(platform);
                 disableWeeklySocialVoting();
                 
                 showToast('success', 'Vote Recorded!', `Voted for ${platform}`);
                 
-                // STEP 3: Open share modal after successful vote
+                // Open share modal after successful vote
                 console.log('📤 [WEEKLY SOCIAL] Opening share modal for platform:', platform);
                 setTimeout(() => {
                     openShareModal([platform], true); // true = isWeeklyVote
@@ -5646,57 +5652,60 @@
             }
         }
         
-        // Load and display weekly social results
-        function loadWeeklySocialResults() {
+        // Load and display weekly social results - DB-backed
+        async function loadWeeklySocialResults() {
             try {
-                const weekKey = getCurrentWeekKey();
-                const storageKey = `weeklySocial_${weekKey}`;
-                
-                // Get votes for this week
-                let weeklyVotes = { votes: {}, userVotes: {} };
-                try {
-                    const stored = localStorage.getItem(storageKey);
-                    if (stored) {
-                        weeklyVotes = JSON.parse(stored);
-                        if (!weeklyVotes.votes) weeklyVotes.votes = {};
-                        if (!weeklyVotes.userVotes) weeklyVotes.userVotes = {};
-                    }
-                } catch (e) {
-                    console.error('Error parsing weekly votes:', e);
+                if (!supabase) {
+                    console.error('❌ [WEEKLY SOCIAL] Supabase not initialized');
+                    return;
                 }
                 
-                const platforms = ['X (Twitter)', 'Farcaster', 'TikTok', 'YouTube', 'Instagram'];
+                console.log('📤 [WEEKLY SOCIAL] Calling get_weekly_social_results RPC');
                 
-                // Calculate total votes and find max
-                const voteCounts = platforms.map(platform => ({
-                    name: platform,
-                    votes: weeklyVotes.votes[platform] || 0
-                }));
+                // Call Supabase RPC to get results
+                const { data, error } = await supabase.rpc('get_weekly_social_results');
                 
-                const totalVotes = voteCounts.reduce((sum, item) => sum + item.votes, 0);
-                const maxVotes = Math.max(...voteCounts.map(item => item.votes));
+                if (error) {
+                    console.error('❌ [WEEKLY SOCIAL] RPC error:', error);
+                    return;
+                }
                 
-                // Render results
+                console.log('📥 [WEEKLY SOCIAL] RPC response:', data);
+                
                 const resultsContainer = document.getElementById('socialFocusResults');
                 if (!resultsContainer) return;
                 
-                if (totalVotes === 0) {
+                // If no results, show empty state
+                if (!data || data.length === 0) {
                     resultsContainer.innerHTML = '<div style="text-align: center; color: var(--text-secondary); font-size: 0.85rem; padding: 1rem;">No votes yet. Be the first to vote!</div>';
                     return;
                 }
                 
-                resultsContainer.innerHTML = voteCounts
-                    .sort((a, b) => b.votes - a.votes)
+                // Calculate total vote power and find max
+                const totalVotePower = data.reduce((sum, item) => sum + parseFloat(item.total_power), 0);
+                const maxVotePower = Math.max(...data.map(item => parseFloat(item.total_power)));
+                
+                // Render results with leading badge
+                resultsContainer.innerHTML = data
                     .map(item => {
-                        const percentage = totalVotes > 0 ? (item.votes / totalVotes * 100) : 0;
-                        const isLeading = item.votes === maxVotes && item.votes > 0;
+                        const votePower = parseFloat(item.total_power);
+                        const voterCount = parseInt(item.voter_count);
+                        const percentage = totalVotePower > 0 ? (votePower / totalVotePower * 100) : 0;
+                        const isLeading = votePower === maxVotePower && votePower > 0;
                         
                         return `
                             <div class="focus-result-item ${isLeading ? 'leading' : ''}">
                                 <div style="flex: 1;">
-                                    <div style="display: flex; justify-content: space-between; align-items: center;">
-                                        <span class="focus-result-name">${item.name}</span>
-                                        <span class="focus-result-votes">${item.votes.toFixed(1)}x</span>
+                                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+                                        <span class="focus-result-name">${item.platform}</span>
+                                        <div style="display: flex; align-items: center; gap: 8px;">
+                                            ${isLeading ? '<span class="leading-badge">🏆 Leading</span>' : ''}
+                                            <span class="focus-result-votes">${votePower.toFixed(1)}x</span>
+                                        </div>
+                                    </div>
+                                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                                        <span style="font-size: 0.75rem; color: var(--text-gray);">${voterCount} voter${voterCount !== 1 ? 's' : ''}</span>
+                                        <span style="font-size: 0.75rem; color: var(--text-gray);">${percentage.toFixed(1)}%</span>
                                     </div>
                                     <div class="focus-result-bar">
                                         <div class="focus-result-bar-fill" style="width: ${percentage}%"></div>
@@ -5707,7 +5716,7 @@
                     })
                     .join('');
                 
-                console.log('📊 [WEEKLY SOCIAL] Results loaded:', voteCounts);
+                console.log('📊 [WEEKLY SOCIAL] Results loaded from DB:', data.length, 'platforms');
                 
             } catch (error) {
                 console.error('❌ [WEEKLY SOCIAL] Error loading results:', error);
@@ -5737,34 +5746,44 @@
             console.log('🔒 [WEEKLY SOCIAL] Voting buttons disabled');
         }
         
-        // Initialize weekly social voting
-        function initializeWeeklySocial() {
+        // Initialize weekly social voting - DB-backed
+        async function initializeWeeklySocial() {
             try {
                 console.log('🎯 [WEEKLY SOCIAL] Initializing...');
                 
-                // Load results
-                loadWeeklySocialResults();
+                if (!supabase) {
+                    console.error('❌ [WEEKLY SOCIAL] Supabase not initialized');
+                    return;
+                }
                 
-                // Check if user already voted this week
+                // Load results from DB
+                await loadWeeklySocialResults();
+                
+                // Check if user already voted this week (requires auth)
                 if (isAuthenticated && userFID) {
-                    const weekKey = getCurrentWeekKey();
-                    const storageKey = `weeklySocial_${weekKey}`;
+                    console.log('📤 [WEEKLY SOCIAL] Calling has_voted_this_week RPC for FID:', userFID);
                     
-                    try {
-                        const stored = localStorage.getItem(storageKey);
-                        if (stored) {
-                            const weeklyVotes = JSON.parse(stored);
-                            
-                            if (weeklyVotes.userVotes && weeklyVotes.userVotes[userFID]) {
-                                const votedPlatform = weeklyVotes.userVotes[userFID];
-                                console.log('✅ [WEEKLY SOCIAL] User already voted for:', votedPlatform);
-                                showWeeklySocialVotedState(votedPlatform);
-                                disableWeeklySocialVoting();
-                            }
-                        }
-                    } catch (e) {
-                        console.error('Error loading user vote:', e);
+                    const { data, error } = await supabase.rpc('has_voted_this_week', {
+                        p_fid: userFID
+                    });
+                    
+                    if (error) {
+                        console.error('❌ [WEEKLY SOCIAL] RPC error:', error);
+                        return;
                     }
+                    
+                    console.log('📥 [WEEKLY SOCIAL] RPC response:', data);
+                    
+                    if (data && data.has_voted) {
+                        const votedPlatform = data.platform;
+                        console.log('✅ [WEEKLY SOCIAL] User already voted for:', votedPlatform);
+                        showWeeklySocialVotedState(votedPlatform);
+                        disableWeeklySocialVoting();
+                    } else {
+                        console.log('🗳️ [WEEKLY SOCIAL] User has not voted this week - buttons enabled');
+                    }
+                } else {
+                    console.log('⚠️ [WEEKLY SOCIAL] User not authenticated - voting disabled');
                 }
                 
                 console.log('✅ [WEEKLY SOCIAL] Initialized');
