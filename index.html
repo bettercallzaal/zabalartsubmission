@@ -1890,6 +1890,29 @@
         .countdown-time {
             color: var(--accent-yellow);
             font-variant-numeric: tabular-nums;
+            transition: color 0.3s ease;
+        }
+
+        .countdown.urgent-1hr {
+            border-color: #ff9800;
+        }
+
+        .countdown.urgent-1hr .countdown-time {
+            color: #ff9800;
+        }
+
+        .countdown.urgent-15min {
+            border-color: #ff4444;
+            animation: pulse-countdown 1.5s ease-in-out infinite;
+        }
+
+        .countdown.urgent-15min .countdown-time {
+            color: #ff4444;
+        }
+
+        @keyframes pulse-countdown {
+            0%, 100% { box-shadow: 0 0 0 rgba(255, 68, 68, 0); }
+            50% { box-shadow: 0 0 20px rgba(255, 68, 68, 0.4); }
         }
 
         .hero-cta {
@@ -2030,6 +2053,42 @@
             color: var(--text-gray);
             text-transform: uppercase;
             letter-spacing: 0.5px;
+        }
+
+        .vote-percentage-bar {
+            width: 100%;
+            height: 4px;
+            background: rgba(224, 221, 170, 0.1);
+            border-radius: 2px;
+            margin-top: 8px;
+            overflow: hidden;
+        }
+
+        .vote-percentage-fill {
+            height: 100%;
+            background: linear-gradient(90deg, rgba(224, 221, 170, 0.3) 0%, var(--accent-yellow) 100%);
+            border-radius: 2px;
+            transition: width 0.5s ease;
+        }
+
+        .mode-card:not(.leading) .vote-percentage-fill {
+            background: linear-gradient(90deg, rgba(100, 100, 100, 0.3) 0%, rgba(150, 150, 150, 0.5) 100%);
+        }
+
+        .leading-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: var(--accent-yellow);
+            margin-top: 6px;
+            animation: pulse-badge 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse-badge {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
         }
 
         .vote-checkbox-hidden {
@@ -2956,6 +3015,10 @@
                     <div class="mode-votes">
                         <span class="vote-count" data-votes="studio">42</span>
                         <span class="vote-label">Votes</span>
+                        <div class="leading-badge">🏆 Leading</div>
+                        <div class="vote-percentage-bar">
+                            <div class="vote-percentage-fill" data-percentage="studio" style="width: 0%"></div>
+                        </div>
                         <div class="selection-indicator">✓ Selected</div>
                     </div>
                 </div>
@@ -2971,6 +3034,9 @@
                     <div class="mode-votes">
                         <span class="vote-count" data-votes="market">28</span>
                         <span class="vote-label">Votes</span>
+                        <div class="vote-percentage-bar">
+                            <div class="vote-percentage-fill" data-percentage="market" style="width: 0%"></div>
+                        </div>
                         <div class="selection-indicator">✓ Selected</div>
                     </div>
                 </div>
@@ -2986,6 +3052,9 @@
                     <div class="mode-votes">
                         <span class="vote-count" data-votes="social">35</span>
                         <span class="vote-label">Votes</span>
+                        <div class="vote-percentage-bar">
+                            <div class="vote-percentage-fill" data-percentage="social" style="width: 0%"></div>
+                        </div>
                         <div class="selection-indicator">✓ Selected</div>
                     </div>
                 </div>
@@ -3001,6 +3070,9 @@
                     <div class="mode-votes">
                         <span class="vote-count" data-votes="battle">31</span>
                         <span class="vote-label">Votes</span>
+                        <div class="vote-percentage-bar">
+                            <div class="vote-percentage-fill" data-percentage="battle" style="width: 0%"></div>
+                        </div>
                         <div class="selection-indicator">✓ Selected</div>
                     </div>
                 </div>
@@ -3432,6 +3504,21 @@
 
             const countdownTime = document.getElementById('countdownTime');
             countdownTime.textContent = `${hours}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+            
+            // VISUAL CHANGE 3: Apply urgency classes to countdown
+            const countdownEl = document.getElementById('countdown');
+            if (countdownEl) {
+                const totalMinutes = hours * 60 + minutes;
+                countdownEl.classList.remove('urgent-1hr', 'urgent-15min');
+                
+                if (totalMinutes < 15) {
+                    countdownEl.classList.add('urgent-15min');
+                    console.log('⏰ [URGENCY] <15 minutes remaining - RED ALERT');
+                } else if (totalMinutes < 60) {
+                    countdownEl.classList.add('urgent-1hr');
+                    console.log('⏰ [URGENCY] <1 hour remaining - ORANGE WARNING');
+                }
+            }
         }
 
         // Toast Notification System
@@ -3853,6 +3940,7 @@
                 
                 updateVotes();
                 updateLeader();
+                updatePercentageBars();
                 
             } catch (err) {
                 console.error('❌ Exception loading votes:', err);
@@ -4878,6 +4966,8 @@
         let selectedModes = [];
 
         window.toggleModeSelection = function(mode) {
+            console.log('🖱️ [USER FLOW] Card clicked:', mode);
+            
             const card = document.querySelector(`.mode-card[data-mode="${mode}"]`);
             const checkbox = card.querySelector('.vote-checkbox-hidden');
             
@@ -4907,12 +4997,18 @@
             
             if (btn) {
                 btn.disabled = selectedModes.length === 0;
+                if (selectedModes.length > 0) {
+                    console.log('✅ [USER FLOW] Submit button ENABLED -', selectedModes.length, 'mode(s) selected');
+                } else {
+                    console.log('🔒 [USER FLOW] Submit button DISABLED - no selections');
+                }
             }
             
             console.log('📊 Selected modes:', selectedModes);
         }
 
         window.submitVotes = async function() {
+            console.log('🗳️ [USER FLOW] Submit button clicked');
             console.log('🗳️ Submitting votes for modes:', selectedModes);
             
             // Validate modes
@@ -4966,6 +5062,9 @@
                 selectedModes = [];
                 document.querySelectorAll('.vote-checkbox').forEach(cb => cb.checked = false);
                 updateSubmitButton();
+                
+                console.log('✅ [USER FLOW] All votes submitted successfully');
+                console.log('📤 [USER FLOW] Opening share modal with modes:', votedModes);
                 
                 // Open share modal with all voted modes
                 setTimeout(() => openShareModal(votedModes), 500);
@@ -5278,6 +5377,50 @@
             }
         }
 
+        // VISUAL CHANGE 1 & 2: Update percentage bars and leading badge
+        function updatePercentageBars() {
+            const totalVotes = votes.studio + votes.market + votes.social + votes.battle;
+            
+            if (totalVotes === 0) {
+                console.log('📊 [VISUAL] No votes yet, bars at 0%');
+                return;
+            }
+            
+            const modes = ['studio', 'market', 'social', 'battle'];
+            let maxVotes = 0;
+            let leadingMode = null;
+            
+            modes.forEach(mode => {
+                const percentage = (votes[mode] / totalVotes) * 100;
+                const fillEl = document.querySelector(`[data-percentage="${mode}"]`);
+                
+                if (fillEl) {
+                    fillEl.style.width = `${percentage}%`;
+                }
+                
+                if (votes[mode] > maxVotes) {
+                    maxVotes = votes[mode];
+                    leadingMode = mode;
+                }
+            });
+            
+            // Show/hide leading badges
+            modes.forEach(mode => {
+                const card = document.querySelector(`[data-mode="${mode}"]`);
+                const badge = card?.querySelector('.leading-badge');
+                
+                if (badge) {
+                    badge.style.display = (mode === leadingMode) ? 'inline-flex' : 'none';
+                }
+            });
+            
+            console.log('📊 [VISUAL] Percentage bars updated:', {
+                totalVotes,
+                leadingMode,
+                percentages: modes.map(m => `${m}: ${((votes[m] / totalVotes) * 100).toFixed(1)}%`)
+            });
+        }
+        
         function updateLeader() {
             console.log('🔄 updateLeader() called');
             console.log('📊 Current votes:', votes);
