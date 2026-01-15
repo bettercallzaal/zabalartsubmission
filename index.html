@@ -3993,50 +3993,40 @@
                 // Validate FID before database operation
                 const validatedFID = window.Validator.validateFID(userFID);
                 
-                // Delete any existing vote for this specific mode today
-                console.log('🗑️ Checking for existing vote to delete for mode:', mode);
-                const { data: deleteData, error: deleteError } = await supabase
-                    .from('votes')
-                    .delete()
-                    .eq('fid', validatedFID)
-                    .eq('mode', mode)
-                    .eq('vote_date', getVoteDate())
-                    .select();
-                
-                if (deleteError) {
-                    console.error('❌ Error deleting old vote:', deleteError);
-                } else if (deleteData && deleteData.length > 0) {
-                    console.log('✅ Deleted old vote:', deleteData);
-                } else {
-                    console.log('ℹ️ No existing vote to delete (first vote today)');
-                }
-                
                 // Calculate vote power for this user
                 const votePowerData = await calculateVotePower(validatedFID);
                 const votePower = votePowerData.power;
                 
-                console.log('➕ Inserting new vote:', { fid: validatedFID, mode, vote_power: votePower });
-                const { data, error } = await supabase
-                    .from('votes')
-                    .insert([
-                        {
-                            fid: validatedFID,
-                            mode: mode,
-                            vote_power: votePower,
-                            source: 'web'
-                        }
-                    ])
-                    .select();
+                console.log('📤 [DAILY VOTE] Calling upsert_daily_vote RPC:', { fid: validatedFID, mode, vote_power: votePower });
+                
+                // Call UPSERT RPC (last vote wins)
+                const { data, error } = await supabase.rpc('upsert_daily_vote', {
+                    p_fid: validatedFID,
+                    p_mode: mode,
+                    p_vote_power: votePower
+                });
                 
                 if (error) {
-                    console.error('❌ Error voting:', error);
-                    console.error('❌ Error details:', JSON.stringify(error, null, 2));
+                    console.error('❌ [DAILY VOTE] RPC error:', error);
                     showToast('error', 'Vote Failed', 'Could not record your vote. Please try again.');
                     window.analytics?.trackError(error, { context: 'vote', mode });
+                    window.loadingManager?.hide('vote');
                     return;
                 }
                 
-                console.log('✅ Vote recorded:', data);
+                console.log('📥 [DAILY VOTE] RPC response:', data);
+                
+                // Show appropriate feedback based on vote state
+                if (data.previous_mode && data.changed) {
+                    console.log('🔄 [DAILY VOTE] Vote changed from', data.previous_mode, 'to', data.new_mode);
+                    showToast('success', 'Vote Changed', `Changed from ${data.previous_mode} to ${data.new_mode}`);
+                } else if (data.previous_mode && !data.changed) {
+                    console.log('✅ [DAILY VOTE] Vote confirmed for', data.new_mode);
+                    showToast('info', 'Vote Confirmed', `Still voting for ${data.new_mode}`);
+                } else {
+                    console.log('✅ [DAILY VOTE] First vote recorded for', data.new_mode);
+                    showToast('success', 'Vote Recorded', `Voted for ${data.new_mode}`);
+                }
                 
                 userVote = mode;
                 console.log('💾 User vote saved:', mode);
@@ -4051,8 +4041,9 @@
                 // Hide loading state
                 window.loadingManager?.hide('vote');
                 
-                // Only open share modal if not skipped (i.e., not called from submitVotes)
-                if (!skipModal) {
+                // Only open share modal if not skipped AND this is first vote of the day
+                if (!skipModal && !data.previous_mode) {
+                    console.log('🎉 [DAILY VOTE] First vote - opening share modal');
                     // Check if should auto-share
                     if (shouldAutoShare(mode)) {
                         console.log('🔄 Auto-sharing vote...');
@@ -4061,6 +4052,8 @@
                         // Open share modal directly after vote
                         setTimeout(() => openShareModal(mode), 500);
                     }
+                } else if (!skipModal && data.previous_mode) {
+                    console.log('🔁 [DAILY VOTE] Vote change - skipping share modal');
                 }
                 
                 // Only reload votes if not in batch mode (submitVotes will reload once at the end)
@@ -5316,7 +5309,7 @@
                 }
             });
 
-            console.log('🔘 Resetting all vote buttons...');
+            console.log('🔘 Updating vote button states...');
             document.querySelectorAll('.vote-button').forEach(btn => {
                 btn.disabled = false;
                 // Show different text based on authentication
@@ -5329,9 +5322,9 @@
                 if (votedCard) {
                     const btn = votedCard.querySelector('.vote-button');
                     if (btn) {
-                        btn.disabled = true;
-                        btn.textContent = 'Voted';
-                        console.log('✅ Marked', userVote, 'button as "Voted"');
+                        // Keep button enabled - allow vote changes
+                        btn.textContent = 'Voted ✓';
+                        console.log('✅ Marked', userVote, 'as voted (still clickable)');
                     } else {
                         console.warn('⚠️ Vote button not found for:', userVote);
                     }
@@ -5614,37 +5607,38 @@
                 
                 console.log('📥 [WEEKLY SOCIAL] RPC response:', data);
                 
-                // Check if vote was successful
-                if (!data.success) {
-                    if (data.error === 'already_voted') {
-                        console.log('⚠️ [WEEKLY SOCIAL] User already voted for:', data.existing_platform);
-                        showToast('info', 'Already Voted', `You already voted for ${data.existing_platform} this week. Come back next Monday!`);
-                        
-                        // Lock UI and show existing vote
-                        showWeeklySocialVotedState(data.existing_platform);
-                        disableWeeklySocialVoting();
-                        return;
-                    } else {
-                        console.error('❌ [WEEKLY SOCIAL] Vote failed:', data.error);
-                        showToast('error', 'Submission Failed', data.error || 'Could not submit vote.');
-                        return;
-                    }
+                // Check if RPC call was successful
+                if (!data || !data.success) {
+                    console.error('❌ [WEEKLY SOCIAL] Vote failed:', data?.error || 'Unknown error');
+                    showToast('error', 'Vote Failed', 'Could not submit vote. Please try again.');
+                    return;
                 }
                 
-                console.log('✅ [WEEKLY SOCIAL] Vote submitted successfully:', platform);
+                // Show appropriate feedback based on vote state
+                if (data.previous_platform && data.changed) {
+                    console.log('🔄 [WEEKLY SOCIAL] Vote changed from', data.previous_platform, 'to', data.new_platform);
+                    showToast('success', 'Vote Changed', `Changed from ${data.previous_platform} to ${data.new_platform}`);
+                } else if (data.previous_platform && !data.changed) {
+                    console.log('✅ [WEEKLY SOCIAL] Vote confirmed for', data.new_platform);
+                    showToast('info', 'Vote Confirmed', `Still voting for ${data.new_platform}`);
+                } else {
+                    console.log('✅ [WEEKLY SOCIAL] First vote recorded for', data.new_platform);
+                    showToast('success', 'Vote Recorded', `Voted for ${data.new_platform}`);
+                }
                 
-                // Update UI
+                // Update UI (but don't disable cards)
                 await loadWeeklySocialResults();
                 showWeeklySocialVotedState(platform);
-                disableWeeklySocialVoting();
                 
-                showToast('success', 'Vote Recorded!', `Voted for ${platform}`);
-                
-                // Open share modal after successful vote
-                console.log('📤 [WEEKLY SOCIAL] Opening share modal for platform:', platform);
-                setTimeout(() => {
-                    openShareModal([platform], true); // true = isWeeklyVote
-                }, 500);
+                // Open share modal ONLY on first vote of the week
+                if (!data.previous_platform) {
+                    console.log('🎉 [WEEKLY SOCIAL] First vote - opening share modal');
+                    setTimeout(() => {
+                        openShareModal([platform], true); // true = isWeeklyVote
+                    }, 500);
+                } else {
+                    console.log('🔁 [WEEKLY SOCIAL] Vote change - skipping share modal');
+                }
                 
             } catch (error) {
                 console.error('❌ [WEEKLY SOCIAL] Error submitting vote:', error);
@@ -5735,17 +5729,6 @@
             }
         }
         
-        // Disable weekly social voting buttons
-        function disableWeeklySocialVoting() {
-            const buttons = document.querySelectorAll('#socialFocusOptions .focus-option-btn');
-            buttons.forEach(btn => {
-                btn.disabled = true;
-                btn.style.opacity = '0.5';
-                btn.style.cursor = 'not-allowed';
-            });
-            console.log('🔒 [WEEKLY SOCIAL] Voting buttons disabled');
-        }
-        
         // Initialize weekly social voting - DB-backed
         async function initializeWeeklySocial() {
             try {
@@ -5778,7 +5761,7 @@
                         const votedPlatform = data.platform;
                         console.log('✅ [WEEKLY SOCIAL] User already voted for:', votedPlatform);
                         showWeeklySocialVotedState(votedPlatform);
-                        disableWeeklySocialVoting();
+                        // Cards remain clickable - users can change their vote
                     } else {
                         console.log('🗳️ [WEEKLY SOCIAL] User has not voted this week - buttons enabled');
                     }
