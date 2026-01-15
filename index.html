@@ -506,6 +506,85 @@
             transition: width 0.5s ease;
         }
 
+        /* Weekly Voting Locked State */
+        .weekly-focus-section.locked {
+            position: relative;
+            pointer-events: none;
+        }
+
+        .weekly-focus-section.locked .focus-category {
+            filter: blur(3px);
+            opacity: 0.4;
+            transition: all 0.3s ease;
+        }
+
+        .weekly-unlock-overlay {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 10;
+            text-align: center;
+            background: rgba(10, 10, 10, 0.95);
+            border: 2px solid rgba(224, 221, 170, 0.3);
+            border-radius: 20px;
+            padding: 2.5rem 3rem;
+            max-width: 90%;
+            width: 400px;
+            pointer-events: auto;
+        }
+
+        .weekly-unlock-overlay .lock-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            animation: lockPulse 2s ease-in-out infinite;
+        }
+
+        @keyframes lockPulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.1); opacity: 0.8; }
+        }
+
+        .weekly-unlock-overlay h3 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--accent-yellow);
+            margin-bottom: 0.75rem;
+        }
+
+        .weekly-unlock-overlay p {
+            font-size: 1rem;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+
+        .weekly-unlock-overlay .unlock-cta {
+            margin-top: 1rem;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text-white);
+            background: rgba(224, 221, 170, 0.1);
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            border: 1px solid rgba(224, 221, 170, 0.2);
+        }
+
+        /* Weekly Voting Unlocked Animation */
+        .weekly-focus-section.unlocking {
+            animation: unlockFade 0.5s ease-out;
+        }
+
+        @keyframes unlockFade {
+            from {
+                opacity: 0.6;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
         @media (max-width: 768px) {
             .weekly-focus-section {
                 padding: 40px 16px;
@@ -3313,7 +3392,15 @@
     </section>
 
     <!-- Weekly Social Focus Voting -->
-    <section class="weekly-focus-section">
+    <section class="weekly-focus-section" id="weeklyFocusSection">
+        <!-- Lock Overlay (shown when locked) -->
+        <div class="weekly-unlock-overlay" id="weeklyUnlockOverlay" style="display: none;">
+            <div class="lock-icon">🔒</div>
+            <h3>Weekly Social Focus</h3>
+            <p>Vote in today's stream to unlock weekly voting</p>
+            <div class="unlock-cta">Complete daily vote to unlock</div>
+        </div>
+        
         <div class="container">
             <div class="weekly-focus-header">
                 <h2>📱 Social Media Focus for the Week</h2>
@@ -4026,6 +4113,12 @@
                 } else {
                     console.log('✅ [DAILY VOTE] First vote recorded for', data.new_mode);
                     showToast('success', 'Vote Recorded', `Voted for ${data.new_mode}`);
+                    
+                    // Unlock weekly voting on first daily vote
+                    console.log('🔓 [DAILY VOTE] First vote - unlocking weekly voting');
+                    localStorage.setItem('daily_voted_today', 'true');
+                    localStorage.setItem('daily_voted_date', getTodayUTC());
+                    unlockWeeklyVoting();
                 }
                 
                 userVote = mode;
@@ -5529,8 +5622,19 @@
             // Load vote history
             await loadVoteHistory();
             
-            // Initialize weekly social voting
-            initializeWeeklySocial();
+            // Initialize weekly social voting with gating
+            console.log('🎯 [INIT] Checking daily vote status for weekly gating...');
+            const hasVotedToday = await checkDailyVoteStatus();
+            
+            if (hasVotedToday) {
+                console.log('✅ [INIT] User voted today - unlocking weekly voting');
+                await initializeWeeklySocial();
+                unlockWeeklyVoting();
+            } else {
+                console.log('🔒 [INIT] User has not voted today - locking weekly voting');
+                await initializeWeeklySocial(); // Still load results, just lock UI
+                lockWeeklyVoting();
+            }
             console.log('✅ Weekly social voting initialized');
             
             // Refresh votes every 30 seconds (using lifecycle manager)
@@ -5772,6 +5876,113 @@
                 console.log('✅ [WEEKLY SOCIAL] Initialized');
             } catch (error) {
                 console.error('❌ [WEEKLY SOCIAL] Error initializing:', error);
+            }
+        }
+        
+        // ============================================
+        // WEEKLY VOTING GATING LOGIC
+        // ============================================
+        
+        // Get today's date in UTC (YYYY-MM-DD format)
+        function getTodayUTC() {
+            const now = new Date();
+            return now.toISOString().split('T')[0];
+        }
+        
+        // Lock weekly voting section
+        function lockWeeklyVoting() {
+            const section = document.getElementById('weeklyFocusSection');
+            const overlay = document.getElementById('weeklyUnlockOverlay');
+            
+            if (section && overlay) {
+                section.classList.add('locked');
+                overlay.style.display = 'block';
+                console.log('🔒 [WEEKLY GATING] Weekly voting locked');
+            }
+        }
+        
+        // Unlock weekly voting section
+        function unlockWeeklyVoting() {
+            const section = document.getElementById('weeklyFocusSection');
+            const overlay = document.getElementById('weeklyUnlockOverlay');
+            
+            if (section && overlay) {
+                section.classList.remove('locked');
+                section.classList.add('unlocking');
+                overlay.style.display = 'none';
+                
+                // Remove unlocking animation class after animation completes
+                setTimeout(() => {
+                    section.classList.remove('unlocking');
+                }, 500);
+                
+                console.log('🔓 [WEEKLY GATING] Weekly voting unlocked');
+                
+                // Show unlock toast
+                showToast('success', 'Weekly Voting Unlocked!', 'You can now vote on social media focus');
+                
+                // Scroll weekly section into view (subtle)
+                setTimeout(() => {
+                    section.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }, 300);
+            }
+        }
+        
+        // Check if user has voted today (hybrid: localStorage + DB)
+        async function checkDailyVoteStatus() {
+            try {
+                // 1. Check localStorage first (instant)
+                const localVoted = localStorage.getItem('daily_voted_today') === 'true';
+                const votedDate = localStorage.getItem('daily_voted_date');
+                const today = getTodayUTC();
+                
+                console.log('🔍 [WEEKLY GATING] Checking daily vote status:', { localVoted, votedDate, today });
+                
+                // If localStorage says voted today, trust it (instant unlock)
+                if (localVoted && votedDate === today) {
+                    console.log('✅ [WEEKLY GATING] localStorage confirms vote today - instant unlock');
+                    return true;
+                }
+                
+                // If date mismatch, clear stale localStorage
+                if (votedDate && votedDate !== today) {
+                    console.log('🗑️ [WEEKLY GATING] Clearing stale localStorage (date mismatch)');
+                    localStorage.removeItem('daily_voted_today');
+                    localStorage.removeItem('daily_voted_date');
+                }
+                
+                // 2. Check DB (authoritative)
+                if (!supabase || !isAuthenticated || !userFID) {
+                    console.log('⚠️ [WEEKLY GATING] Cannot check DB - not authenticated');
+                    return false;
+                }
+                
+                console.log('📤 [WEEKLY GATING] Checking DB for daily vote...');
+                const { data, error } = await supabase.rpc('has_voted_today', {
+                    p_fid: userFID
+                });
+                
+                if (error) {
+                    console.error('❌ [WEEKLY GATING] DB check error:', error);
+                    return false;
+                }
+                
+                console.log('📥 [WEEKLY GATING] DB response:', data);
+                
+                if (data?.has_voted) {
+                    // Update localStorage to match DB
+                    localStorage.setItem('daily_voted_today', 'true');
+                    localStorage.setItem('daily_voted_date', today);
+                    console.log('✅ [WEEKLY GATING] DB confirms vote today - syncing localStorage');
+                    return true;
+                }
+                
+                console.log('❌ [WEEKLY GATING] No daily vote found');
+                return false;
+                
+            } catch (error) {
+                console.error('❌ [WEEKLY GATING] Error checking daily vote status:', error);
+                return false;
             }
         }
         
