@@ -5601,7 +5601,7 @@
                 // Call Supabase RPC to submit vote
                 const { data, error } = await supabase.rpc('submit_weekly_social_vote', {
                     user_fid: userFID,
-                    platform: platform
+                    platform_choice: platform
                 });
                 
                 window.loadingManager?.hide('weeklyVote');
