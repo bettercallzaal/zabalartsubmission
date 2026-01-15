@@ -4118,7 +4118,7 @@
                     console.log('🔓 [DAILY VOTE] First vote - unlocking weekly voting');
                     localStorage.setItem('daily_voted_today', 'true');
                     localStorage.setItem('daily_voted_date', getTodayUTC());
-                    unlockWeeklyVoting();
+                    unlockWeeklyVoting(true); // Show feedback (toast + scroll)
                 }
                 
                 userVote = mode;
@@ -5629,7 +5629,7 @@
             if (hasVotedToday) {
                 console.log('✅ [INIT] User voted today - unlocking weekly voting');
                 await initializeWeeklySocial();
-                unlockWeeklyVoting();
+                unlockWeeklyVoting(false); // Silent unlock on page load
             } else {
                 console.log('🔒 [INIT] User has not voted today - locking weekly voting');
                 await initializeWeeklySocial(); // Still load results, just lock UI
@@ -5676,6 +5676,13 @@
         window.submitWeeklySocialVote = async function(platform) {
             try {
                 console.log('🗳️ [WEEKLY SOCIAL] Vote button clicked for:', platform);
+                
+                // CRITICAL: Check if weekly voting is locked (gating)
+                const section = document.getElementById('weeklyFocusSection');
+                if (section?.classList.contains('locked')) {
+                    console.log('🔒 [WEEKLY SOCIAL] Voting locked - user must vote daily first');
+                    return; // Silent fail - no error toast (UX gating, not error)
+                }
                 
                 // Check if user is authenticated
                 if (!isAuthenticated || !userFID) {
@@ -5902,7 +5909,9 @@
         }
         
         // Unlock weekly voting section
-        function unlockWeeklyVoting() {
+        // showFeedback: if true, shows toast + scroll (for first unlock after daily vote)
+        //               if false, silent unlock (for page load when already voted)
+        function unlockWeeklyVoting(showFeedback = false) {
             const section = document.getElementById('weeklyFocusSection');
             const overlay = document.getElementById('weeklyUnlockOverlay');
             
@@ -5916,15 +5925,17 @@
                     section.classList.remove('unlocking');
                 }, 500);
                 
-                console.log('🔓 [WEEKLY GATING] Weekly voting unlocked');
+                console.log('🔓 [WEEKLY GATING] Weekly voting unlocked', showFeedback ? '(with feedback)' : '(silent)');
                 
-                // Show unlock toast
-                showToast('success', 'Weekly Voting Unlocked!', 'You can now vote on social media focus');
-                
-                // Scroll weekly section into view (subtle)
-                setTimeout(() => {
-                    section.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                }, 300);
+                // Only show toast + scroll on first unlock (after daily vote)
+                if (showFeedback) {
+                    showToast('success', 'Weekly Voting Unlocked!', 'You can now vote on social media focus');
+                    
+                    // Scroll weekly section into view (subtle)
+                    setTimeout(() => {
+                        section.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }, 300);
+                }
             }
         }
         
