@@ -2091,6 +2091,37 @@
             50% { transform: scale(1.05); }
         }
 
+        .weekly-voted-state {
+            margin-top: 24px;
+            padding: 16px 20px;
+            background: rgba(76, 175, 80, 0.1);
+            border: 2px solid rgba(76, 175, 80, 0.3);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .voted-state-icon {
+            font-size: 1.5rem;
+        }
+
+        .voted-state-text {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .voted-state-text strong {
+            color: var(--text-white);
+            font-size: 0.95rem;
+        }
+
+        .voted-state-text span {
+            color: var(--text-gray);
+            font-size: 0.85rem;
+        }
+
         .vote-checkbox-hidden {
             display: none;
         }
@@ -3281,74 +3312,43 @@
         </div>
     </section>
 
-    <!-- Weekly Focus Voting -->
+    <!-- Weekly Social Focus Voting -->
     <section class="weekly-focus-section">
         <div class="container">
             <div class="weekly-focus-header">
-                <h2>Weekly Focus (Community Vote)</h2>
-                <p>Help shape ZABAL's direction for the week. Your vote power applies here too.</p>
+                <h2>📱 Social Media Focus for the Week</h2>
+                <p>Vote once per week on where we should focus community engagement. Your vote power applies here too.</p>
             </div>
             
-            <div class="weekly-focus-categories">
-                <!-- Stream Focus Category -->
-                <div class="focus-category">
-                    <div class="focus-category-header">
-                        <div class="focus-category-title">🎥 Stream Focus for the Week</div>
-                        <div class="focus-category-subtitle">What should streams prioritize this week?</div>
-                    </div>
-                    
-                    <div class="focus-options" id="streamFocusOptions">
-                        <button class="focus-option-btn" onclick="submitWeeklyFocusVote('stream', 'Live Music')">
-                            🎵 Live Music
-                        </button>
-                        <button class="focus-option-btn" onclick="submitWeeklyFocusVote('stream', 'Education / Tutorials')">
-                            📚 Education / Tutorials
-                        </button>
-                        <button class="focus-option-btn" onclick="submitWeeklyFocusVote('stream', 'Community Calls')">
-                            💬 Community Calls
-                        </button>
-                        <button class="focus-option-btn" onclick="submitWeeklyFocusVote('stream', 'Open Mic / Freestyle')">
-                            🎤 Open Mic / Freestyle
-                        </button>
-                        <button class="focus-option-btn" onclick="submitWeeklyFocusVote('stream', 'AMAs')">
-                            ❓ AMAs
-                        </button>
-                    </div>
-                    
-                    <div class="focus-results">
-                        <div class="focus-results-title">Live Results</div>
-                        <div id="streamFocusResults"></div>
-                    </div>
+            <div class="focus-category">
+                <div class="focus-options" id="socialFocusOptions">
+                    <button class="focus-option-btn" onclick="submitWeeklySocialVote('X (Twitter)')">
+                        🐦 X (Twitter)
+                    </button>
+                    <button class="focus-option-btn" onclick="submitWeeklySocialVote('Farcaster')">
+                        🟣 Farcaster
+                    </button>
+                    <button class="focus-option-btn" onclick="submitWeeklySocialVote('TikTok')">
+                        🎵 TikTok
+                    </button>
+                    <button class="focus-option-btn" onclick="submitWeeklySocialVote('YouTube')">
+                        📺 YouTube
+                    </button>
+                    <button class="focus-option-btn" onclick="submitWeeklySocialVote('Instagram')">
+                        📸 Instagram
+                    </button>
                 </div>
                 
-                <!-- Social Media Focus Category -->
-                <div class="focus-category">
-                    <div class="focus-category-header">
-                        <div class="focus-category-title">📱 Social Media Focus for the Week</div>
-                        <div class="focus-category-subtitle">Where should we focus community engagement?</div>
-                    </div>
-                    
-                    <div class="focus-options" id="socialFocusOptions">
-                        <button class="focus-option-btn" onclick="submitWeeklyFocusVote('social', 'X (Twitter)')">
-                            🐦 X (Twitter)
-                        </button>
-                        <button class="focus-option-btn" onclick="submitWeeklyFocusVote('social', 'Farcaster')">
-                            🟣 Farcaster
-                        </button>
-                        <button class="focus-option-btn" onclick="submitWeeklyFocusVote('social', 'TikTok')">
-                            🎵 TikTok
-                        </button>
-                        <button class="focus-option-btn" onclick="submitWeeklyFocusVote('social', 'YouTube')">
-                            📺 YouTube
-                        </button>
-                        <button class="focus-option-btn" onclick="submitWeeklyFocusVote('social', 'Instagram')">
-                            📸 Instagram
-                        </button>
-                    </div>
-                    
-                    <div class="focus-results">
-                        <div class="focus-results-title">Live Results</div>
-                        <div id="socialFocusResults"></div>
+                <div class="focus-results">
+                    <div class="focus-results-title">Live Results</div>
+                    <div id="socialFocusResults"></div>
+                </div>
+                
+                <div id="weeklySocialVotedState" class="weekly-voted-state" style="display: none;">
+                    <div class="voted-state-icon">✅</div>
+                    <div class="voted-state-text">
+                        <strong>You voted this week!</strong>
+                        <span id="weeklySocialVotedPlatform"></span>
                     </div>
                 </div>
             </div>
@@ -4408,15 +4408,16 @@
             }
         }
         
-        window.openShareModal = function(votedModes) {
+        window.openShareModal = function(votedModes, isWeeklyVote = false) {
             // Handle both single mode (string) and multiple modes (array)
             const modesArray = Array.isArray(votedModes) ? votedModes : [votedModes];
             
             // Store all voted modes for sharing
             currentVotedModes = modesArray;
             currentShareMode = modesArray[0]; // Keep for backwards compatibility
+            window.isWeeklyVote = isWeeklyVote; // Store for shareVote function
             
-            console.log('📤 Opening share modal with modes:', currentVotedModes);
+            console.log('📤 Opening share modal with modes:', currentVotedModes, 'isWeekly:', isWeeklyVote);
             
             const modal = document.getElementById('shareModal');
             modal.classList.add('active');
@@ -5081,8 +5082,51 @@
         window.shareVote = async function(modes, isAuto = false) {
             // Handle both single mode (string) and multiple modes (array)
             const votedModes = Array.isArray(modes) ? modes : [modes];
-            console.log('📤 Starting shareVote:', { modes: votedModes, isAuto, selectedFriends: selectedFriends.length });
+            const isWeekly = window.isWeeklyVote || false;
+            console.log('📤 Starting shareVote:', { modes: votedModes, isAuto, isWeekly, selectedFriends: selectedFriends.length });
             
+            // STEP 3: Different copy for weekly social votes vs daily stream votes
+            if (isWeekly) {
+                // Weekly social platform vote
+                const platform = votedModes[0]; // Single platform for weekly
+                const platformEmojis = {
+                    'X (Twitter)': '🐦',
+                    'Farcaster': '🟣',
+                    'TikTok': '🎵',
+                    'YouTube': '📺',
+                    'Instagram': '📸'
+                };
+                
+                const emoji = platformEmojis[platform] || '📱';
+                
+                let castText = `${emoji} Just voted for ${platform} as this week's social focus on ZABAL!\n\nWhere should we focus community engagement this week?\n\nVote now 👇`;
+                
+                // Add friend tags if selected
+                let friendTags = '';
+                if (selectedFriends.length > 0) {
+                    console.log('👥 Tagging friends:', selectedFriends);
+                    friendTags = '\n\n' + selectedFriends.map(f => `@${f.username}`).join(' ');
+                    castText += friendTags;
+                }
+                
+                const finalCast = `${castText}\n\n${MINIAPP_URL}`;
+                
+                console.log('📝 Weekly social cast text:', finalCast);
+                
+                try {
+                    await sdk.actions.openUrl(`https://warpcast.com/~/compose?text=${encodeURIComponent(finalCast)}`);
+                    console.log('✅ Weekly social vote shared to Farcaster');
+                    closeShareModal();
+                    showToast('success', 'Shared!', 'Your weekly vote has been shared to Farcaster');
+                } catch (error) {
+                    console.error('❌ Failed to share weekly vote:', error);
+                    showToast('error', 'Share Failed', 'Could not share. Please try again.');
+                }
+                
+                return;
+            }
+            
+            // Daily stream voting (original logic)
             const modeEmojis = {
                 studio: '🎬',
                 market: '🛒',
@@ -5492,9 +5536,9 @@
             // Load vote history
             await loadVoteHistory();
             
-            // Initialize weekly focus voting
-            initializeWeeklyFocus();
-            console.log('✅ Weekly focus voting initialized');
+            // Initialize weekly social voting
+            initializeWeeklySocial();
+            console.log('✅ Weekly social voting initialized');
             
             // Refresh votes every 30 seconds (using lifecycle manager)
             window.appLifecycle.addInterval(loadVotes, 30000, 'vote-refresh');
@@ -5507,7 +5551,7 @@
         }
         
         // ============================================
-        // WEEKLY FOCUS VOTING LOGIC
+        // WEEKLY SOCIAL FOCUS VOTING LOGIC
         // ============================================
         
         // Get current week key (ISO week format: YYYY-Www)
@@ -5523,114 +5567,117 @@
             const weekNum = Math.ceil((((utcDate - yearStart) / 86400000) + 1) / 7);
             
             const weekKey = `${utcDate.getUTCFullYear()}-W${String(weekNum).padStart(2, '0')}`;
-            console.debug('📅 Current week key:', weekKey);
+            console.log('📅 [WEEKLY SOCIAL] Current week key:', weekKey);
             return weekKey;
         }
         
-        // Submit weekly focus vote
-        async function submitWeeklyFocusVote(category, option) {
+        // Submit weekly social vote (single-select only)
+        window.submitWeeklySocialVote = async function(platform) {
             try {
-                console.debug('🗳️ Weekly focus vote:', { category, option });
+                console.log('🗳️ [WEEKLY SOCIAL] Vote button clicked for:', platform);
                 
                 // Check if user is authenticated
                 if (!isAuthenticated || !userFID) {
-                    showToast('Please connect your Farcaster account to vote', 'error');
+                    showToast('error', 'Authentication Required', 'Please connect your Farcaster account to vote');
+                    console.log('❌ [WEEKLY SOCIAL] Not authenticated');
                     return;
                 }
                 
                 const weekKey = getCurrentWeekKey();
-                const storageKey = `weeklyFocus_${weekKey}`;
+                const storageKey = `weeklySocial_${weekKey}`;
+                
+                // Check if user already voted this week
+                const existingVote = localStorage.getItem(storageKey);
+                if (existingVote) {
+                    try {
+                        const voteData = JSON.parse(existingVote);
+                        if (voteData.userVotes && voteData.userVotes[userFID]) {
+                            console.log('⚠️ [WEEKLY SOCIAL] User already voted this week for:', voteData.userVotes[userFID]);
+                            showToast('info', 'Already Voted', `You already voted for ${voteData.userVotes[userFID]} this week. Come back next Monday!`);
+                            return;
+                        }
+                    } catch (e) {
+                        console.error('Error parsing existing vote:', e);
+                    }
+                }
                 
                 // Get existing votes for this week
-                let weeklyVotes = {};
+                let weeklyVotes = { votes: {}, userVotes: {} };
                 try {
                     const stored = localStorage.getItem(storageKey);
                     if (stored) {
                         weeklyVotes = JSON.parse(stored);
+                        if (!weeklyVotes.votes) weeklyVotes.votes = {};
+                        if (!weeklyVotes.userVotes) weeklyVotes.userVotes = {};
                     }
                 } catch (e) {
                     console.error('Error parsing weekly votes:', e);
-                    weeklyVotes = {};
-                }
-                
-                // Initialize category if needed
-                if (!weeklyVotes[category]) {
-                    weeklyVotes[category] = { votes: {}, userVotes: {} };
-                }
-                
-                // Check if user already voted for this category this week
-                const previousVote = weeklyVotes[category].userVotes[userFID];
-                if (previousVote && previousVote !== option) {
-                    console.debug('🔄 Vote overwrite detected:', { previous: previousVote, new: option });
-                    // Remove previous vote
-                    if (weeklyVotes[category].votes[previousVote]) {
-                        weeklyVotes[category].votes[previousVote] -= userVotePower;
-                        if (weeklyVotes[category].votes[previousVote] <= 0) {
-                            delete weeklyVotes[category].votes[previousVote];
-                        }
-                    }
+                    weeklyVotes = { votes: {}, userVotes: {} };
                 }
                 
                 // Add new vote with vote power
-                if (!weeklyVotes[category].votes[option]) {
-                    weeklyVotes[category].votes[option] = 0;
+                if (!weeklyVotes.votes[platform]) {
+                    weeklyVotes.votes[platform] = 0;
                 }
-                weeklyVotes[category].votes[option] += userVotePower;
-                weeklyVotes[category].userVotes[userFID] = option;
+                weeklyVotes.votes[platform] += userVotePower;
+                weeklyVotes.userVotes[userFID] = platform;
                 
                 // Save to localStorage
                 localStorage.setItem(storageKey, JSON.stringify(weeklyVotes));
                 
-                console.debug('✅ Weekly focus vote submitted:', { category, option, votePower: userVotePower });
+                console.log('✅ [WEEKLY SOCIAL] Vote submitted:', { platform, votePower: userVotePower });
                 
                 // Update UI
-                loadWeeklyFocusResults(category);
-                highlightUserVote(category, option);
+                loadWeeklySocialResults();
+                showWeeklySocialVotedState(platform);
+                disableWeeklySocialVoting();
                 
-                showToast(`Vote recorded: ${option}`, 'success');
+                showToast('success', 'Vote Recorded!', `Voted for ${platform}`);
+                
+                // STEP 3: Open share modal after successful vote
+                console.log('📤 [WEEKLY SOCIAL] Opening share modal for platform:', platform);
+                setTimeout(() => {
+                    openShareModal([platform], true); // true = isWeeklyVote
+                }, 500);
                 
             } catch (error) {
-                console.error('❌ Error submitting weekly focus vote:', error);
-                showToast('Failed to record vote', 'error');
+                console.error('❌ [WEEKLY SOCIAL] Error submitting vote:', error);
+                showToast('error', 'Submission Failed', 'Could not record vote. Please try again.');
             }
         }
         
-        // Load and display weekly focus results
-        function loadWeeklyFocusResults(category) {
+        // Load and display weekly social results
+        function loadWeeklySocialResults() {
             try {
                 const weekKey = getCurrentWeekKey();
-                const storageKey = `weeklyFocus_${weekKey}`;
+                const storageKey = `weeklySocial_${weekKey}`;
                 
                 // Get votes for this week
-                let weeklyVotes = {};
+                let weeklyVotes = { votes: {}, userVotes: {} };
                 try {
                     const stored = localStorage.getItem(storageKey);
                     if (stored) {
                         weeklyVotes = JSON.parse(stored);
+                        if (!weeklyVotes.votes) weeklyVotes.votes = {};
+                        if (!weeklyVotes.userVotes) weeklyVotes.userVotes = {};
                     }
                 } catch (e) {
                     console.error('Error parsing weekly votes:', e);
                 }
                 
-                const categoryVotes = weeklyVotes[category]?.votes || {};
-                
-                // Define options for each category
-                const options = {
-                    stream: ['Live Music', 'Education / Tutorials', 'Community Calls', 'Open Mic / Freestyle', 'AMAs'],
-                    social: ['X (Twitter)', 'Farcaster', 'TikTok', 'YouTube', 'Instagram']
-                };
+                const platforms = ['X (Twitter)', 'Farcaster', 'TikTok', 'YouTube', 'Instagram'];
                 
                 // Calculate total votes and find max
-                const voteCounts = options[category].map(opt => ({
-                    name: opt,
-                    votes: categoryVotes[opt] || 0
+                const voteCounts = platforms.map(platform => ({
+                    name: platform,
+                    votes: weeklyVotes.votes[platform] || 0
                 }));
                 
                 const totalVotes = voteCounts.reduce((sum, item) => sum + item.votes, 0);
                 const maxVotes = Math.max(...voteCounts.map(item => item.votes));
                 
                 // Render results
-                const resultsContainer = document.getElementById(`${category}FocusResults`);
+                const resultsContainer = document.getElementById('socialFocusResults');
                 if (!resultsContainer) return;
                 
                 if (totalVotes === 0) {
@@ -5660,79 +5707,74 @@
                     })
                     .join('');
                 
-                console.debug('📊 Results loaded for', category, ':', voteCounts);
+                console.log('📊 [WEEKLY SOCIAL] Results loaded:', voteCounts);
                 
             } catch (error) {
-                console.error('❌ Error loading weekly focus results:', error);
+                console.error('❌ [WEEKLY SOCIAL] Error loading results:', error);
             }
         }
         
-        // Highlight user's current vote
-        function highlightUserVote(category, option) {
-            try {
-                const optionsContainer = document.getElementById(`${category}FocusOptions`);
-                if (!optionsContainer) return;
-                
-                // Remove all 'voted' classes
-                const buttons = optionsContainer.querySelectorAll('.focus-option-btn');
-                buttons.forEach(btn => btn.classList.remove('voted'));
-                
-                // Add 'voted' class to selected option
-                buttons.forEach(btn => {
-                    if (btn.textContent.trim().includes(option)) {
-                        btn.classList.add('voted');
-                    }
-                });
-            } catch (error) {
-                console.error('Error highlighting user vote:', error);
+        // Show "you voted" state
+        function showWeeklySocialVotedState(platform) {
+            const stateEl = document.getElementById('weeklySocialVotedState');
+            const platformEl = document.getElementById('weeklySocialVotedPlatform');
+            
+            if (stateEl && platformEl) {
+                platformEl.textContent = `Your choice: ${platform}`;
+                stateEl.style.display = 'flex';
+                console.log('✅ [WEEKLY SOCIAL] Showing voted state for:', platform);
             }
         }
         
-        // Initialize weekly focus voting
-        function initializeWeeklyFocus() {
+        // Disable weekly social voting buttons
+        function disableWeeklySocialVoting() {
+            const buttons = document.querySelectorAll('#socialFocusOptions .focus-option-btn');
+            buttons.forEach(btn => {
+                btn.disabled = true;
+                btn.style.opacity = '0.5';
+                btn.style.cursor = 'not-allowed';
+            });
+            console.log('🔒 [WEEKLY SOCIAL] Voting buttons disabled');
+        }
+        
+        // Initialize weekly social voting
+        function initializeWeeklySocial() {
             try {
-                console.debug('🎯 Initializing weekly focus voting...');
+                console.log('🎯 [WEEKLY SOCIAL] Initializing...');
                 
-                // Load results for both categories
-                loadWeeklyFocusResults('stream');
-                loadWeeklyFocusResults('social');
+                // Load results
+                loadWeeklySocialResults();
                 
-                // Highlight user's existing votes if any
+                // Check if user already voted this week
                 if (isAuthenticated && userFID) {
                     const weekKey = getCurrentWeekKey();
-                    const storageKey = `weeklyFocus_${weekKey}`;
+                    const storageKey = `weeklySocial_${weekKey}`;
                     
                     try {
                         const stored = localStorage.getItem(storageKey);
                         if (stored) {
                             const weeklyVotes = JSON.parse(stored);
                             
-                            // Highlight stream vote
-                            if (weeklyVotes.stream?.userVotes[userFID]) {
-                                highlightUserVote('stream', weeklyVotes.stream.userVotes[userFID]);
-                            }
-                            
-                            // Highlight social vote
-                            if (weeklyVotes.social?.userVotes[userFID]) {
-                                highlightUserVote('social', weeklyVotes.social.userVotes[userFID]);
+                            if (weeklyVotes.userVotes && weeklyVotes.userVotes[userFID]) {
+                                const votedPlatform = weeklyVotes.userVotes[userFID];
+                                console.log('✅ [WEEKLY SOCIAL] User already voted for:', votedPlatform);
+                                showWeeklySocialVotedState(votedPlatform);
+                                disableWeeklySocialVoting();
                             }
                         }
                     } catch (e) {
-                        console.error('Error loading user votes:', e);
+                        console.error('Error loading user vote:', e);
                     }
                 }
                 
-                console.debug('✅ Weekly focus voting initialized');
+                console.log('✅ [WEEKLY SOCIAL] Initialized');
             } catch (error) {
-                console.error('❌ Error initializing weekly focus:', error);
+                console.error('❌ [WEEKLY SOCIAL] Error initializing:', error);
             }
         }
         
-        // Make submitWeeklyFocusVote globally accessible
-        window.submitWeeklyFocusVote = submitWeeklyFocusVote;
-        
         // ============================================
-        // END WEEKLY FOCUS VOTING LOGIC
+        // END WEEKLY SOCIAL FOCUS VOTING LOGIC
         // ============================================
         
         // Toggle vote power breakdown
