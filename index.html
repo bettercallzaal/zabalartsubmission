@@ -135,15 +135,18 @@
     <meta name="fc:frame" content='{"version":"1","imageUrl":"https://zabal.art/assets/preview.png","button":{"title":"🎨 Vote Now","action":{"type":"launch_frame","name":"ZABAL Live Hub","url":"https://zabal.art","splashImageUrl":"https://zabal.art/assets/splash.png","splashBackgroundColor":"#141e27"}}}' />
     
     <script src="https://unpkg.com/@supabase/supabase-js@2.39.0/dist/umd/supabase.js"></script>
-    <script type="module">
-        // Import Farcaster SDK and make it globally available
-        import { sdk } from 'https://esm.sh/@farcaster/miniapp-sdk';
-        window.farcasterSDK = sdk;
-        window.farcasterSDKLoaded = true;
-        console.log('✅ Farcaster SDK loaded');
-        
-        // Signal that SDK is ready for use
-        window.dispatchEvent(new Event('farcasterSDKReady'));
+    <!-- Farcaster Mini App SDK - CDN version for better compatibility -->
+    <script src="https://cdn.jsdelivr.net/npm/@farcaster/miniapp-sdk/dist/index.min.js"></script>
+    <script>
+        // SDK is now available as window.miniapp.sdk
+        if (window.miniapp && window.miniapp.sdk) {
+            window.farcasterSDK = window.miniapp.sdk;
+            window.farcasterSDKLoaded = true;
+            console.log('✅ Farcaster SDK loaded from CDN');
+            window.dispatchEvent(new Event('farcasterSDKReady'));
+        } else {
+            console.warn('⚠️ Farcaster SDK not found on window.miniapp');
+        }
     </script>
     <script>
         // Aggressive fallback: Force hide splash screen after 3 seconds
