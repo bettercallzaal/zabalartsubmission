@@ -3689,8 +3689,8 @@
                         console.warn('⚠️ ready() call failed:', readyErr);
                     }
                     
-                    // NOW access context (synchronously, not async)
-                    const context = window.farcasterSDK.context;
+                    // Access context - it's a Proxy that needs to be awaited
+                    const context = await window.farcasterSDK.context;
                     
                     if (context && context.user) {
                         userFID = context.user.fid;
