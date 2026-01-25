@@ -433,10 +433,24 @@
             transform: translateY(-2px);
         }
 
+        .focus-option-btn {
+            position: relative;
+        }
+
         .focus-option-btn.voted {
             background: rgba(224, 221, 170, 0.15);
             border-color: var(--accent-yellow);
             color: var(--accent-yellow);
+        }
+
+        .focus-option-btn.voted::after {
+            content: '✓';
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            font-size: 1rem;
+            color: var(--accent-yellow);
+            font-weight: bold;
         }
 
         .focus-results {
@@ -510,8 +524,8 @@
         }
 
         .weekly-focus-section.locked .focus-category {
-            filter: blur(3px);
-            opacity: 0.4;
+            filter: blur(2px);
+            opacity: 0.55;
             transition: all 0.3s ease;
         }
 
@@ -529,6 +543,7 @@
             max-width: 90%;
             width: 400px;
             pointer-events: auto;
+            animation: overlayFadeIn 0.2s ease-out;
         }
 
         .weekly-unlock-overlay .lock-icon {
@@ -539,7 +554,7 @@
 
         @keyframes lockPulse {
             0%, 100% { transform: scale(1); opacity: 1; }
-            50% { transform: scale(1.1); opacity: 0.8; }
+            50% { transform: scale(1.05); opacity: 0.85; }
         }
 
         .weekly-unlock-overlay h3 {
@@ -569,6 +584,11 @@
         /* Weekly Voting Unlocked Animation */
         .weekly-focus-section.unlocking {
             animation: unlockFade 0.5s ease-out;
+        }
+
+        @keyframes overlayFadeIn {
+            from { opacity: 0; transform: translate(-50%, -48%); }
+            to { opacity: 1; transform: translate(-50%, -50%); }
         }
 
         @keyframes unlockFade {
@@ -3399,8 +3419,8 @@
         
         <div class="container">
             <div class="weekly-focus-header">
-                <h2>Weekly Social Focus (Unlocked)</h2>
-                <p>Choose where we focus community engagement this week.</p>
+                <h2>Weekly Social Focus</h2>
+                <p>Help guide where the community shows up this week.</p>
             </div>
             
             <div class="focus-category">
@@ -3428,10 +3448,8 @@
                 </div>
                 
                 <div id="weeklySocialVotedState" class="weekly-voted-state" style="display: none;">
-                    <div class="voted-state-icon">✅</div>
                     <div class="voted-state-text">
-                        <strong>You voted this week!</strong>
-                        <span id="weeklySocialVotedPlatform"></span>
+                        You're backing <strong id="weeklySocialVotedPlatform"></strong> this week.
                     </div>
                 </div>
             </div>
@@ -5800,7 +5818,7 @@
                 
                 // If no results, show empty state
                 if (!data || data.length === 0) {
-                    resultsContainer.innerHTML = '<div style="text-align: center; color: var(--text-secondary); font-size: 0.85rem; padding: 1rem;">No votes yet. Be the first to vote!</div>';
+                    resultsContainer.innerHTML = '<div style="text-align: center; color: var(--text-secondary); font-size: 0.85rem; padding: 1rem;">Be the first to signal this.</div>';
                     return;
                 }
                 
