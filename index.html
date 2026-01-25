@@ -4058,17 +4058,37 @@
                 // Validate FID before database operation
                 const validatedFID = window.Validator.validateFID(userFID);
                 
-                // Calculate vote power for this user
-                const votePowerData = await calculateVotePower(validatedFID);
-                const votePower = votePowerData.power;
+                // Calculate vote power SERVER-SIDE via serverless function
+                console.log('🎯 [DAILY VOTE] Calculating vote power server-side...');
+                let votePowerData;
+                try {
+                    const vpResponse = await fetch(`/api/calculate-vote-power?fid=${validatedFID}`);
+                    if (vpResponse.ok) {
+                        votePowerData = await vpResponse.json();
+                        console.log('✅ [DAILY VOTE] Vote power calculated:', votePowerData);
+                        
+                        // Cache the result in database
+                        await supabase.rpc('update_vote_power_cache', {
+                            p_fid: validatedFID,
+                            p_vote_power: votePowerData.power,
+                            p_zao_casts: votePowerData.zaoCasts,
+                            p_neynar_score: votePowerData.neynarScore
+                        });
+                    } else {
+                        console.warn('⚠️ [DAILY VOTE] Vote power calculation failed, using default');
+                        votePowerData = { power: 1 };
+                    }
+                } catch (vpError) {
+                    console.error('❌ [DAILY VOTE] Vote power error:', vpError);
+                    votePowerData = { power: 1 };
+                }
                 
-                console.log('📤 [DAILY VOTE] Calling upsert_daily_vote RPC:', { fid: validatedFID, mode, vote_power: votePower });
+                console.log('📤 [DAILY VOTE] Calling upsert_daily_vote RPC:', { fid: validatedFID, mode });
                 
-                // Call UPSERT RPC (last vote wins)
+                // Call UPSERT RPC (vote_power read from cache server-side)
                 const { data, error } = await supabase.rpc('upsert_daily_vote', {
                     p_fid: validatedFID,
-                    p_mode: mode,
-                    p_vote_power: votePower
+                    p_mode: mode
                 });
                 
                 if (error) {
@@ -5657,13 +5677,32 @@
                 // Validate FID before database operation (match daily voting pattern)
                 const validatedFID = window.Validator.validateFID(userFID);
                 
-                // Calculate vote power for this user (match daily voting pattern)
-                const votePowerData = await calculateVotePower(validatedFID);
-                const votePower = votePowerData.power;
+                // Calculate vote power SERVER-SIDE via serverless function
+                console.log('🎯 [WEEKLY SOCIAL] Calculating vote power server-side...');
+                let votePowerData;
+                try {
+                    const vpResponse = await fetch(`/api/calculate-vote-power?fid=${validatedFID}`);
+                    if (vpResponse.ok) {
+                        votePowerData = await vpResponse.json();
+                        console.log('✅ [WEEKLY SOCIAL] Vote power calculated:', votePowerData);
+                        
+                        // Cache the result in database
+                        await supabase.rpc('update_vote_power_cache', {
+                            p_fid: validatedFID,
+                            p_vote_power: votePowerData.power,
+                            p_zao_casts: votePowerData.zaoCasts,
+                            p_neynar_score: votePowerData.neynarScore
+                        });
+                    } else {
+                        console.warn('⚠️ [WEEKLY SOCIAL] Vote power calculation failed, using default');
+                        votePowerData = { power: 1 };
+                    }
+                } catch (vpError) {
+                    console.error('❌ [WEEKLY SOCIAL] Vote power error:', vpError);
+                    votePowerData = { power: 1 };
+                }
                 
                 // Normalize platform name to match database constraint
-                // Frontend passes: 'X (Twitter)', 'Farcaster', 'TikTok', 'YouTube', 'Instagram'
-                // Database expects: 'twitter', 'farcaster', 'tiktok', 'youtube', 'instagram'
                 const platformMap = {
                     'X (Twitter)': 'twitter',
                     'Farcaster': 'farcaster',
@@ -5673,13 +5712,12 @@
                 };
                 const normalizedPlatform = platformMap[platform] || platform.toLowerCase();
                 
-                console.log('📤 [WEEKLY SOCIAL] Calling submit_weekly_social_vote RPC:', { fid: validatedFID, platform: normalizedPlatform, vote_power: votePower });
+                console.log('📤 [WEEKLY SOCIAL] Calling submit_weekly_social_vote RPC:', { fid: validatedFID, platform: normalizedPlatform });
                 
-                // Call Supabase RPC to submit vote (with vote_power like daily voting)
+                // Call Supabase RPC to submit vote (vote_power read from cache server-side)
                 const { data, error } = await supabase.rpc('submit_weekly_social_vote', {
                     user_fid: validatedFID,
-                    platform_choice: normalizedPlatform,
-                    p_vote_power: votePower
+                    platform_choice: normalizedPlatform
                 });
                 
                 window.loadingManager?.hide('weeklyVote');
