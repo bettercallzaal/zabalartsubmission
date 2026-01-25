@@ -19,8 +19,8 @@ class Config {
         this.SUPABASE_ANON_KEY = this.getEnvVar('SUPABASE_ANON_KEY', 'sb_publishable_FWOea9rLUfAWTrdN-c1nrg_AIGbWhCF');
         
         // Neynar Configuration
-        // This should be moved to serverless function in production
-        this.NEYNAR_API_KEY = this.getEnvVar('NEYNAR_API_KEY', 'FE60D90E-8F00-4400-9C39-F67E6C46E3EA');
+        // API key is now handled server-side via /api/neynar proxy
+        // No client-side key needed
         
         // App URLs
         this.MINIAPP_URL = 'https://zabal.art';
