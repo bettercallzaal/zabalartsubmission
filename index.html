@@ -3622,6 +3622,10 @@
             }
         }
 
+        /* ==============================================
+           UI HELPERS & UTILITIES
+        ============================================== */
+
         // Toast Notification System
         function showToast(type, title, message, duration = 4000) {
             const container = document.getElementById('toastContainer');
@@ -3652,6 +3656,10 @@
                 setTimeout(() => toast.remove(), 300);
             }, duration);
         }
+
+        /* ==============================================
+           DATABASE & AUTHENTICATION
+        ============================================== */
 
         // Initialize Supabase using config
         console.log('🎪 ZABAL Live Hub - Initializing Supabase...');
@@ -3970,6 +3978,10 @@
             timeline.innerHTML = html;
         }
 
+        /* ==============================================
+           VOTE DISPLAY & STATE MANAGEMENT
+        ============================================== */
+
         // Load votes from database
         async function loadVotes() {
             console.log('📊 Loading votes from database...');
@@ -4028,6 +4040,10 @@
                 console.error('❌ Exception loading votes:', err);
             }
         }
+
+        /* ==============================================
+           DAILY VOTING LOGIC
+        ============================================== */
 
         // Vote function with database - exposed to global scope for onclick handlers
         // skipModal parameter prevents opening share modal (used when called from submitVotes)
@@ -4485,6 +4501,10 @@
             }
         }
         
+        /* ==============================================
+           SHARE MODAL & SOCIAL FEATURES
+        ============================================== */
+
         window.openShareModal = function(votedModes, isWeeklyVote = false) {
             // Handle both single mode (string) and multiple modes (array)
             const modesArray = Array.isArray(votedModes) ? votedModes : [votedModes];
@@ -5663,6 +5683,10 @@
             return weekKey;
         }
         
+        /* ==============================================
+           WEEKLY VOTING LOGIC
+        ============================================== */
+
         // Submit weekly social vote (single-select only) - DB-backed
         window.submitWeeklySocialVote = async function(platform) {
             try {
@@ -5944,6 +5968,10 @@
             }
         }
         
+        /* ==============================================
+           WEEKLY GATING LOGIC
+        ============================================== */
+
         // Unlock weekly voting section
         // showFeedback: if true, shows toast + scroll (for first unlock after daily vote)
         //               if false, silent unlock (for page load when already voted)
