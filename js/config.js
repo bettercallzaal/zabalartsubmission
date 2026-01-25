@@ -13,10 +13,10 @@ class Config {
 
     loadConfig() {
         // Supabase Configuration
-        // In production, these should come from Vercel environment variables
-        // For now, using the anon key is safe as it has RLS policies
+        // These MUST come from environment variables (set in Vercel)
+        // Anon keys are public by design but should not be hardcoded
         this.SUPABASE_URL = this.getEnvVar('SUPABASE_URL', 'https://vfdwmvkjbxsqcwykyybt.supabase.co');
-        this.SUPABASE_ANON_KEY = this.getEnvVar('SUPABASE_ANON_KEY', 'sb_publishable_FWOea9rLUfAWTrdN-c1nrg_AIGbWhCF');
+        this.SUPABASE_ANON_KEY = this.getEnvVar('SUPABASE_ANON_KEY', '');
         
         // Neynar Configuration
         // API key is now handled server-side via /api/neynar proxy
