@@ -4102,6 +4102,8 @@
                 console.log('📥 [DAILY VOTE] RPC response:', data);
                 
                 // Show appropriate feedback based on vote state
+                const isFirstVote = !data.previous_mode;
+                
                 if (data.previous_mode && data.changed) {
                     console.log('🔄 [DAILY VOTE] Vote changed from', data.previous_mode, 'to', data.new_mode);
                     showToast('success', 'Vote Changed', `Changed from ${data.previous_mode} to ${data.new_mode}`);
@@ -4111,13 +4113,13 @@
                 } else {
                     console.log('✅ [DAILY VOTE] First vote recorded for', data.new_mode);
                     showToast('success', 'Vote Recorded', `Voted for ${data.new_mode}`);
-                    
-                    // Unlock weekly voting on first daily vote
-                    console.log('🔓 [DAILY VOTE] First vote - unlocking weekly voting');
-                    localStorage.setItem('daily_voted_today', 'true');
-                    localStorage.setItem('daily_voted_date', getTodayUTC());
-                    unlockWeeklyVoting(true); // Show feedback (toast + scroll)
                 }
+                
+                // Always unlock weekly voting after any daily vote
+                console.log('🔓 [DAILY VOTE] Unlocking weekly voting');
+                localStorage.setItem('daily_voted_today', 'true');
+                localStorage.setItem('daily_voted_date', getTodayUTC());
+                unlockWeeklyVoting(isFirstVote); // Show feedback only on first vote
                 
                 userVote = mode;
                 console.log('💾 User vote saved:', mode);
