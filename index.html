@@ -3106,8 +3106,8 @@
     <section class="wheel-section" id="wheel">
         <div class="container">
             <div class="wheel-header">
-                <h2>The stream isn't scheduled. It's decided.</h2>
-                <p>Vote for today's mode. Leader locks at stream time.</p>
+                <h2>Vote on Today's Stream Focus</h2>
+                <p>Choose what Zaal creates live today. Voting closes at 5 PM EST.</p>
             </div>
 
             <div class="wheel-container">
@@ -3394,14 +3394,13 @@
         <div class="weekly-unlock-overlay" id="weeklyUnlockOverlay" style="display: none;">
             <div class="lock-icon">🔒</div>
             <h3>Weekly Social Focus</h3>
-            <p>Vote in today's stream to unlock weekly voting</p>
-            <div class="unlock-cta">Complete daily vote to unlock</div>
+            <p>🔒 Vote today to unlock weekly voting</p>
         </div>
         
         <div class="container">
             <div class="weekly-focus-header">
-                <h2>📱 Social Media Focus for the Week</h2>
-                <p>Vote once per week on where we should focus community engagement. Your vote power applies here too.</p>
+                <h2>Weekly Social Focus (Unlocked)</h2>
+                <p>Choose where we focus community engagement this week.</p>
             </div>
             
             <div class="focus-category">
@@ -4106,14 +4105,12 @@
                 
                 if (data.previous_mode && data.changed) {
                     console.log('🔄 [DAILY VOTE] Vote changed from', data.previous_mode, 'to', data.new_mode);
-                    showToast('success', 'Vote Changed', `Changed from ${data.previous_mode} to ${data.new_mode}`);
-                } else if (data.previous_mode && !data.changed) {
-                    console.log('✅ [DAILY VOTE] Vote confirmed for', data.new_mode);
-                    showToast('info', 'Vote Confirmed', `Still voting for ${data.new_mode}`);
-                } else {
+                    showToast('success', 'Vote Updated', `Now voting for ${data.new_mode}`);
+                } else if (!data.previous_mode) {
                     console.log('✅ [DAILY VOTE] First vote recorded for', data.new_mode);
-                    showToast('success', 'Vote Recorded', `Voted for ${data.new_mode}`);
+                    showToast('success', 'Vote Recorded', `Voting for ${data.new_mode}`);
                 }
+                // No toast for same-mode confirmation - avoid spam
                 
                 // Always unlock weekly voting after any daily vote
                 console.log('🔓 [DAILY VOTE] Unlocking weekly voting');
