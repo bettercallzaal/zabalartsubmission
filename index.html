@@ -5375,7 +5375,8 @@
                 let friendTags = '';
                 if (selectedFriends.length > 0) {
                     console.log('👥 Tagging friends:', selectedFriends);
-                    friendTags = '\n\n' + selectedFriends.map(f => `@${f.username}`).join(' ');
+                    // selectedFriends contains username strings, not objects
+                    friendTags = '\n\n' + selectedFriends.map(f => `@${typeof f === 'string' ? f : f.username}`).join(' ');
                     castText += friendTags;
                 }
                 
@@ -6143,7 +6144,7 @@
                 resultsContainer.innerHTML = data
                     .map(item => {
                         const votePower = parseFloat(item.total_power);
-                        const voterCount = parseInt(item.voter_count);
+                        const voterCount = parseInt(item.voter_count) || 0;
                         const percentage = totalVotePower > 0 ? (votePower / totalVotePower * 100) : 0;
                         const isLeading = votePower === maxVotePower && votePower > 0;
                         
