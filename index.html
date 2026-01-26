@@ -2341,6 +2341,71 @@
             box-shadow: none;
         }
 
+        /* Post-Vote Invite Nudge */
+        .invite-nudge {
+            margin-top: 1.5rem;
+            padding: 1rem 1.25rem;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            text-align: center;
+            font-size: 0.9rem;
+            color: var(--text-gray);
+            opacity: 1;
+            transition: opacity 150ms ease;
+        }
+
+        .invite-nudge.hidden {
+            display: none;
+        }
+
+        .invite-nudge.fade-in {
+            animation: nudgeFadeIn 150ms ease;
+        }
+
+        @keyframes nudgeFadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .invite-actions {
+            display: flex;
+            justify-content: center;
+            gap: 0.75rem;
+            margin-top: 0.75rem;
+        }
+
+        .invite-btn {
+            padding: 0.5rem 1.25rem;
+            background: var(--accent-yellow);
+            color: var(--primary-blue);
+            border: none;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: opacity 120ms ease;
+        }
+
+        .invite-btn:hover {
+            opacity: 0.9;
+        }
+
+        .dismiss-btn {
+            padding: 0.5rem 1.25rem;
+            background: transparent;
+            color: var(--text-gray);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: border-color 120ms ease;
+        }
+
+        .dismiss-btn:hover {
+            border-color: var(--text-secondary);
+        }
+
         /* Today/Yesterday Section */
         .stream-history {
             padding: 80px 20px;
@@ -3239,6 +3304,15 @@
                 <button class="submit-votes-btn" id="submitVotesBtn" onclick="submitVotes()" disabled>
                     Submit Votes (<span id="selectedCount">0</span> selected)
                 </button>
+            </div>
+            
+            <!-- Post-Vote Invite Nudge (hidden by default) -->
+            <div id="inviteNudge" class="invite-nudge hidden">
+                <span>Know someone who'd enjoy this? Invite one person.</span>
+                <div class="invite-actions">
+                    <button id="inviteFriendBtn" class="invite-btn">Invite</button>
+                    <button id="dismissInviteBtn" class="dismiss-btn">Not now</button>
+                </div>
             </div>
         </div>
     </section>
@@ -4202,6 +4276,16 @@
                     setTimeout(() => votedCard.classList.remove('vote-confirmed'), 600);
                 }
                 
+                // Show invite nudge (once per UTC day, daily vote only)
+                const INVITE_KEY = 'invite_prompt_shown_date';
+                const today = getTodayUTC();
+                const hasShownInviteToday = localStorage.getItem(INVITE_KEY) === today;
+                
+                if (!hasShownInviteToday) {
+                    setTimeout(() => showInviteNudge(), 800);
+                    localStorage.setItem(INVITE_KEY, today);
+                }
+                
                 // Hide loading state
                 window.loadingManager?.hide('vote');
                 
@@ -4541,6 +4625,54 @@
             }
         }
         
+        /* ==============================================
+           POST-VOTE INVITE NUDGE
+        ============================================== */
+
+        // Show the invite nudge with fade-in
+        function showInviteNudge() {
+            const nudge = document.getElementById('inviteNudge');
+            if (!nudge) return;
+            
+            nudge.classList.remove('hidden');
+            nudge.classList.add('fade-in');
+            console.log('👋 [INVITE] Showing invite nudge');
+        }
+
+        // Hide the invite nudge
+        function hideInviteNudge() {
+            const nudge = document.getElementById('inviteNudge');
+            if (!nudge) return;
+            
+            nudge.classList.add('hidden');
+            nudge.classList.remove('fade-in');
+            console.log('👋 [INVITE] Hiding invite nudge');
+        }
+
+        // Wire invite button - opens share modal with invite source
+        document.addEventListener('DOMContentLoaded', function() {
+            const inviteBtn = document.getElementById('inviteFriendBtn');
+            const dismissBtn = document.getElementById('dismissInviteBtn');
+            
+            if (inviteBtn) {
+                inviteBtn.addEventListener('click', function() {
+                    console.log('👋 [INVITE] Invite button clicked');
+                    // Open share modal with invite context
+                    if (window.openShareModal && currentShareMode) {
+                        window.openShareModal(currentShareMode, false);
+                    }
+                    hideInviteNudge();
+                });
+            }
+            
+            if (dismissBtn) {
+                dismissBtn.addEventListener('click', function() {
+                    console.log('👋 [INVITE] Dismissed');
+                    hideInviteNudge();
+                });
+            }
+        });
+
         /* ==============================================
            SHARE MODAL & SOCIAL FEATURES
         ============================================== */
