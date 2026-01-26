@@ -5385,7 +5385,11 @@
                 console.log('📝 Weekly social cast text:', finalCast);
                 
                 try {
-                    await sdk.actions.openUrl(`https://warpcast.com/~/compose?text=${encodeURIComponent(finalCast)}`);
+                    await window.farcasterSDK.actions.composeCast({
+                        text: finalCast,
+                        embeds: [MINIAPP_URL + '?source=share&vote=weekly'],
+                        channelKey: 'zao'
+                    });
                     console.log('✅ Weekly social vote shared to Farcaster');
                     closeShareModal();
                     showToast('success', 'Shared!', 'Your weekly vote has been shared to Farcaster');
