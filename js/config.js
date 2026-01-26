@@ -16,7 +16,7 @@ class Config {
         // Anon keys are public by design - security comes from RLS policies
         // These can safely be in client-side code
         this.SUPABASE_URL = this.getEnvVar('SUPABASE_URL', 'https://vfdwmvkjbxsqcwykyybt.supabase.co');
-        this.SUPABASE_ANON_KEY = this.getEnvVar('SUPABASE_ANON_KEY', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZmZHdtdmtqYnhzcWN3eWt5eWJ0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzY4MTgwMzUsImV4cCI6MjA1MjM5NDAzNX0.Is0JGGP5dFfSdJNvJB0Z6dIZnXgXLqsqTLdHx6l2m7c');
+        this.SUPABASE_ANON_KEY = this.getEnvVar('SUPABASE_ANON_KEY', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZmZHdtdmtqYnhzcWN3eWt5eWJ0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjY3NzMwMzMsImV4cCI6MjA4MjM0OTAzM30.Jq1IlotBxXkntOUPFNva-OfZ0Nh75Dlk-7AXtcVZ3Hw');
         
         // Neynar Configuration
         // API key is now handled server-side via /api/neynar proxy
