@@ -6083,15 +6083,11 @@
                 await loadWeeklySocialResults();
                 showWeeklySocialVotedState(platform);
                 
-                // Open share modal ONLY on first vote of the week
-                if (!data.previous_platform) {
-                    console.log('🎉 [WEEKLY SOCIAL] First vote - opening share modal');
-                    setTimeout(() => {
-                        openShareModal([platform], true); // true = isWeeklyVote
-                    }, 500);
-                } else {
-                    console.log('🔁 [WEEKLY SOCIAL] Vote change - skipping share modal');
-                }
+                // Open share modal on every weekly vote
+                console.log('🎉 [WEEKLY SOCIAL] Opening share modal');
+                setTimeout(() => {
+                    openShareModal([platform], true); // true = isWeeklyVote
+                }, 500);
                 
             } catch (error) {
                 console.error('❌ [WEEKLY SOCIAL] Error submitting vote:', error);
