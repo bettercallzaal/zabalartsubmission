@@ -3453,6 +3453,11 @@
             </div>
             
             <div class="focus-category">
+                <!-- Leader emphasis message (populated dynamically) -->
+                <div id="weeklyLeaderMessage" style="text-align: center; margin-bottom: 1rem; font-size: 0.9rem; color: var(--text-gray); display: none;">
+                    <!-- Populated by JS when leader exists -->
+                </div>
+                
                 <div class="focus-options" id="socialFocusOptions">
                     <button class="focus-option-btn" onclick="submitWeeklySocialVote('X (Twitter)')">
                         🐦 X (Twitter)
@@ -4590,7 +4595,8 @@
         }
         
         window.copyMiniappLink = function() {
-            navigator.clipboard.writeText(MINIAPP_URL).then(() => {
+            const shareUrl = window.isWeeklyVote ? `${MINIAPP_URL}?source=share&vote=weekly` : `${MINIAPP_URL}?source=share&vote=daily`;
+            navigator.clipboard.writeText(shareUrl).then(() => {
                 const btn = document.querySelector('.copy-link-btn');
                 const originalText = btn.textContent;
                 btn.textContent = '✓ Copied!';
@@ -4982,12 +4988,12 @@
             };
             
             const timeRemaining = getTimeUntilZabalUpdate();
-            const inviteText = `Hey @${topFriend.username}! 👋\n\nI just voted ${modeEmojis[currentShareMode]} ${modeNames[currentShareMode]} on ZABAL Live Hub!\n\nWhat's your vote? Join me! 🎨\n\n⏰ ZABAL Update #4 in ${timeRemaining}\n📊 ${SONGJAM_URL}\n\n${MINIAPP_URL}`;
+            const inviteText = `Hey @${topFriend.username}! 👋\n\nI just voted ${modeEmojis[currentShareMode]} ${modeNames[currentShareMode]} on ZABAL Live Hub!\n\nWhat's your vote? Join me! 🎨\n\n⏰ ZABAL Update #4 in ${timeRemaining}\n📊 ${SONGJAM_URL}\n\n${MINIAPP_URL}?source=share&vote=daily`;
             
             try {
                 await window.farcasterSDK.actions.composeCast({
                     text: inviteText,
-                    embeds: [MINIAPP_URL],
+                    embeds: [MINIAPP_URL + '?source=share&vote=daily'],
                     channelKey: 'zao'
                 });
                 
@@ -5023,12 +5029,12 @@
             
             const friendMentions = friendsToTag.map(u => `@${u}`).join(' ');
             
-            const challengeText = `⚔️ Challenge time!\n\n${friendMentions} I just voted ${modeEmojis[currentShareMode]} ${modeNames[currentShareMode]} on ZABAL!\n\nWhat's YOUR vote? 🎨\n\n${MINIAPP_URL}`;
+            const challengeText = `⚔️ Challenge time!\n\n${friendMentions} I just voted ${modeEmojis[currentShareMode]} ${modeNames[currentShareMode]} on ZABAL!\n\nWhat's YOUR vote? 🎨\n\n${MINIAPP_URL}?source=share&vote=daily`;
             
             try {
                 await window.farcasterSDK.actions.composeCast({
                     text: challengeText,
-                    embeds: [MINIAPP_URL],
+                    embeds: [MINIAPP_URL + '?source=share&vote=daily'],
                     channelKey: 'zao'
                 });
                 
@@ -5241,7 +5247,7 @@
                     castText += friendTags;
                 }
                 
-                const finalCast = `${castText}\n\n${MINIAPP_URL}`;
+                const finalCast = `${castText}\n\n${MINIAPP_URL}?source=share&vote=weekly`;
                 
                 console.log('📝 Weekly social cast text:', finalCast);
                 
@@ -5344,7 +5350,7 @@
             const zabalUpdateInfo = `\n\n⏰ ZABAL Update #4 in ${timeRemaining}\n📊 ZABAL Empire Leaderboard\n🎵 ${SONGJAM_URL}`;
             
             // Add call to action and links
-            castText += callToAction + zaalMention + friendTags + zabalUpdateInfo + '\n\n' + MINIAPP_URL;
+            castText += callToAction + zaalMention + friendTags + zabalUpdateInfo + '\n\n' + MINIAPP_URL + '?source=share&vote=daily';
             
             // Log cast details before sending
             console.log('📝 Cast text length:', castText.length);
@@ -5358,7 +5364,7 @@
             try {
                 const result = await window.farcasterSDK.actions.composeCast({
                     text: castText,
-                    embeds: [SONGJAM_URL, MINIAPP_URL],
+                    embeds: [SONGJAM_URL, MINIAPP_URL + '?source=share&vote=daily'],
                     channelKey: 'zao'
                 });
                 
@@ -5636,8 +5642,107 @@
         }
 
         // Initialize
+        /* ==============================================
+           URL CONTEXT PARSING & SMART SCROLL
+        ============================================== */
+
+        // Parse URL context params and handle scroll intent
+        function parseAndHandleURLContext() {
+            const params = new URLSearchParams(window.location.search);
+            const voteContext = params.get('vote');
+            
+            if (voteContext) {
+                console.log('🔗 [CONTEXT] URL context detected:', voteContext);
+                
+                // Clean URL after parsing (keep it clean)
+                history.replaceState({}, document.title, window.location.pathname);
+                
+                // Return context for later handling (after init completes)
+                return voteContext;
+            }
+            
+            return null;
+        }
+
+        // Handle context scroll after initialization completes
+        async function handleContextScroll(context) {
+            if (!context) return;
+            
+            console.log('📍 [CONTEXT] Handling scroll for:', context);
+            
+            // Respect motion preferences
+            const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+            const scrollBehavior = prefersReducedMotion ? 'auto' : 'smooth';
+            
+            if (context === 'daily') {
+                // Scroll to daily voting section
+                const dailySection = document.querySelector('.wheel-section');
+                if (dailySection) {
+                    dailySection.scrollIntoView({ behavior: scrollBehavior, block: 'center' });
+                    
+                    // Add temporary highlight to daily section
+                    dailySection.style.outline = '2px solid rgba(79, 209, 197, 0.6)';
+                    dailySection.style.outlineOffset = '8px';
+                    dailySection.style.borderRadius = '12px';
+                    
+                    setTimeout(() => {
+                        dailySection.style.outline = '';
+                        dailySection.style.outlineOffset = '';
+                    }, 1200);
+                    
+                    console.log('✅ [CONTEXT] Scrolled to daily voting');
+                }
+            } else if (context === 'weekly') {
+                // Check if weekly is locked or unlocked
+                const weeklySection = document.getElementById('weeklyFocusSection');
+                const isLocked = weeklySection?.classList.contains('locked');
+                
+                if (isLocked) {
+                    // Weekly is locked - scroll to daily with CTA message
+                    console.log('🔒 [CONTEXT] Weekly locked - redirecting to daily');
+                    const dailySection = document.querySelector('.wheel-section');
+                    if (dailySection) {
+                        dailySection.scrollIntoView({ behavior: scrollBehavior, block: 'center' });
+                        
+                        // Highlight daily section
+                        dailySection.style.outline = '2px solid rgba(224, 221, 170, 0.6)';
+                        dailySection.style.outlineOffset = '8px';
+                        dailySection.style.borderRadius = '12px';
+                        
+                        setTimeout(() => {
+                            dailySection.style.outline = '';
+                            dailySection.style.outlineOffset = '';
+                        }, 1200);
+                        
+                        // Show contextual toast
+                        showToast('info', 'Vote Today First', 'Vote on today\'s stream to unlock weekly voting.');
+                    }
+                } else {
+                    // Weekly is unlocked - scroll to weekly section
+                    console.log('✅ [CONTEXT] Weekly unlocked - scrolling to weekly');
+                    if (weeklySection) {
+                        weeklySection.scrollIntoView({ behavior: scrollBehavior, block: 'center' });
+                        
+                        // Highlight weekly section
+                        weeklySection.style.outline = '2px solid rgba(79, 209, 197, 0.6)';
+                        weeklySection.style.outlineOffset = '8px';
+                        weeklySection.style.borderRadius = '12px';
+                        
+                        setTimeout(() => {
+                            weeklySection.style.outline = '';
+                            weeklySection.style.outlineOffset = '';
+                        }, 1200);
+                    }
+                }
+            }
+        }
+
         async function initialize() {
             console.log('🚀 Initializing app...');
+            
+            // Parse URL context early (before clearing)
+            const urlContext = parseAndHandleURLContext();
+            
             updateHeroState();
             console.log('✅ Hero state updated');
             
@@ -5695,6 +5800,11 @@
             updateCountdown();
             console.log('✅ Countdown started');
             console.log('🎉 ZABAL Live Hub ready!');
+            
+            // Handle context scroll after everything is initialized
+            if (urlContext) {
+                setTimeout(() => handleContextScroll(urlContext), 500);
+            }
         }
         
         // ============================================
@@ -5885,6 +5995,18 @@
                 const totalVotePower = data.reduce((sum, item) => sum + parseFloat(item.total_power), 0);
                 const maxVotePower = Math.max(...data.map(item => parseFloat(item.total_power)));
                 
+                // Find leading platform for emphasis message
+                const leadingPlatform = data.find(item => parseFloat(item.total_power) === maxVotePower && maxVotePower > 0);
+                
+                // Update leader emphasis message
+                const leaderMessage = document.getElementById('weeklyLeaderMessage');
+                if (leaderMessage && leadingPlatform) {
+                    leaderMessage.textContent = `Most of the community is backing ${leadingPlatform.platform} this week.`;
+                    leaderMessage.style.display = 'block';
+                } else if (leaderMessage) {
+                    leaderMessage.style.display = 'none';
+                }
+                
                 // Render results with leading badge
                 resultsContainer.innerHTML = data
                     .map(item => {
@@ -5899,7 +6021,7 @@
                                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
                                         <span class="focus-result-name">${item.platform}</span>
                                         <div style="display: flex; align-items: center; gap: 8px;">
-                                            ${isLeading ? '<span class="leading-badge">🏆 Leading</span>' : ''}
+                                            ${isLeading ? '<span class="leading-badge">🔥 Most Backed</span>' : ''}
                                             <span class="focus-result-votes">${votePower.toFixed(1)}x</span>
                                         </div>
                                     </div>
