@@ -13,10 +13,10 @@ class Config {
 
     loadConfig() {
         // Supabase Configuration
-        // These MUST come from environment variables (set in Vercel)
-        // Anon keys are public by design but should not be hardcoded
+        // Anon keys are public by design - security comes from RLS policies
+        // These can safely be in client-side code
         this.SUPABASE_URL = this.getEnvVar('SUPABASE_URL', 'https://vfdwmvkjbxsqcwykyybt.supabase.co');
-        this.SUPABASE_ANON_KEY = this.getEnvVar('SUPABASE_ANON_KEY', '');
+        this.SUPABASE_ANON_KEY = this.getEnvVar('SUPABASE_ANON_KEY', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZmZHdtdmtqYnhzcWN3eWt5eWJ0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzY4MTgwMzUsImV4cCI6MjA1MjM5NDAzNX0.Is0JGGP5dFfSdJNvJB0Z6dIZnXgXLqsqTLdHx6l2m7c');
         
         // Neynar Configuration
         // API key is now handled server-side via /api/neynar proxy
