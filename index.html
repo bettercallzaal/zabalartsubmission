@@ -215,9 +215,8 @@
             padding: 0 20px;
         }
 
-        /* Header */
+        /* Header - Collapsible */
         header {
-            padding: 1.5rem 0;
             position: fixed;
             top: 0;
             left: 0;
@@ -226,6 +225,79 @@
             background: rgba(0, 0, 0, 0.95);
             backdrop-filter: blur(10px);
             border-bottom: 1px solid var(--border-color);
+            /* Smooth height transition */
+            transition: padding 0.3s ease, height 0.3s ease;
+            will-change: padding;
+        }
+
+        /* Expanded state (default) */
+        header.expanded {
+            padding: 1.5rem 0;
+        }
+
+        /* Collapsed state - compact header */
+        header.collapsed {
+            padding: 0.5rem 0;
+        }
+
+        header.collapsed .user-profile-badge,
+        header.collapsed nav {
+            opacity: 0;
+            visibility: hidden;
+            height: 0;
+            overflow: hidden;
+            transition: opacity 0.2s ease, visibility 0.2s ease;
+        }
+
+        header.expanded .user-profile-badge,
+        header.expanded nav {
+            opacity: 1;
+            visibility: visible;
+            height: auto;
+            transition: opacity 0.3s ease 0.1s, visibility 0.3s ease 0.1s;
+        }
+
+        /* Header toggle chevron */
+        .header-toggle {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 28px;
+            height: 28px;
+            background: rgba(224, 221, 170, 0.1);
+            border: 1px solid rgba(224, 221, 170, 0.2);
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background 0.2s ease, transform 0.3s ease;
+            margin-left: 12px;
+            flex-shrink: 0;
+        }
+
+        .header-toggle:hover {
+            background: rgba(224, 221, 170, 0.2);
+        }
+
+        .header-toggle-icon {
+            font-size: 0.7rem;
+            color: var(--accent-yellow);
+            transition: transform 0.3s ease;
+        }
+
+        header.collapsed .header-toggle-icon {
+            transform: rotate(180deg);
+        }
+
+        /* Respect reduced motion */
+        @media (prefers-reduced-motion: reduce) {
+            header,
+            header.expanded .user-profile-badge,
+            header.expanded nav,
+            header.collapsed .user-profile-badge,
+            header.collapsed nav,
+            .header-toggle,
+            .header-toggle-icon {
+                transition: none;
+            }
         }
 
         .header-content {
@@ -2617,8 +2689,12 @@
 
         /* Mobile Responsive */
         @media (max-width: 768px) {
-            header {
+            header.expanded {
                 padding: 10px 16px;
+            }
+
+            header.collapsed {
+                padding: 6px 16px;
             }
 
             .header-content {
@@ -2630,6 +2706,12 @@
 
             .logo {
                 font-size: 1.2rem;
+            }
+
+            /* Ensure toggle is visible on mobile */
+            .header-toggle {
+                width: 32px;
+                height: 32px;
             }
 
 
@@ -2833,12 +2915,22 @@
             }
 
         @media (max-width: 480px) {
-            header {
+            header.expanded {
                 padding: 8px 12px;
+            }
+
+            header.collapsed {
+                padding: 5px 12px;
             }
 
             .logo {
                 font-size: 1rem;
+            }
+
+            .header-toggle {
+                width: 28px;
+                height: 28px;
+                margin-left: 8px;
             }
 
             .user-profile-badge {
@@ -3045,10 +3137,14 @@
     <!-- Toast Notification Container -->
     <div class="toast-container" id="toastContainer"></div>
 
-    <!-- Header -->
-    <header>
+    <!-- Header - Collapsible (expanded by default, collapses on scroll or vote) -->
+    <header id="mainHeader" class="expanded">
         <div class="header-content">
             <a href="index.html" class="logo">ZABAL</a>
+            <!-- Header toggle chevron - always visible -->
+            <button class="header-toggle" id="headerToggle" onclick="toggleHeader()" aria-label="Toggle header">
+                <span class="header-toggle-icon">▲</span>
+            </button>
             <nav>
                 <a href="index.html" class="active">Vote</a>
                 <a href="chat.html">Chat</a>
@@ -3734,6 +3830,79 @@
            UI HELPERS & UTILITIES
         ============================================== */
 
+        // ============================================
+        // COLLAPSIBLE HEADER UTILITY
+        // Collapses on scroll (40px) or after daily vote
+        // Manual toggle via chevron button
+        // ============================================
+        
+        let headerCollapsed = false;
+        let hasScrolledOnce = false; // Only auto-collapse on first scroll
+        
+        // Toggle header between expanded/collapsed
+        function toggleHeader() {
+            const header = document.getElementById('mainHeader');
+            if (!header) return;
+            
+            headerCollapsed = !headerCollapsed;
+            
+            if (headerCollapsed) {
+                header.classList.remove('expanded');
+                header.classList.add('collapsed');
+                console.log('📌 Header collapsed (manual)');
+            } else {
+                header.classList.remove('collapsed');
+                header.classList.add('expanded');
+                console.log('📌 Header expanded (manual)');
+            }
+        }
+        
+        // Collapse header programmatically (called after vote)
+        function collapseHeader() {
+            const header = document.getElementById('mainHeader');
+            if (!header || headerCollapsed) return;
+            
+            headerCollapsed = true;
+            header.classList.remove('expanded');
+            header.classList.add('collapsed');
+            console.log('📌 Header collapsed (auto - vote)');
+        }
+        
+        // Expand header programmatically
+        function expandHeader() {
+            const header = document.getElementById('mainHeader');
+            if (!header || !headerCollapsed) return;
+            
+            headerCollapsed = false;
+            header.classList.remove('collapsed');
+            header.classList.add('expanded');
+            console.log('📌 Header expanded (auto)');
+        }
+        
+        // Auto-collapse on first scroll (40px threshold)
+        function initHeaderScrollCollapse() {
+            let scrollThreshold = 40;
+            
+            window.addEventListener('scroll', function() {
+                // Only trigger on first significant scroll, and only if not already collapsed
+                if (!hasScrolledOnce && !headerCollapsed && window.scrollY > scrollThreshold) {
+                    hasScrolledOnce = true;
+                    collapseHeader();
+                    console.log('📌 Header collapsed (auto - scroll)');
+                }
+            }, { passive: true });
+        }
+        
+        // Initialize header collapse behavior on DOM ready
+        document.addEventListener('DOMContentLoaded', function() {
+            initHeaderScrollCollapse();
+            console.log('📌 Collapsible header initialized');
+        });
+        
+        // ============================================
+        // END COLLAPSIBLE HEADER UTILITY
+        // ============================================
+
         // Toast Notification System
         function showToast(type, title, message, duration = 4000) {
             const container = document.getElementById('toastContainer');
@@ -4259,6 +4428,9 @@
                 localStorage.setItem('daily_voted_today', 'true');
                 localStorage.setItem('daily_voted_date', getTodayUTC());
                 unlockWeeklyVoting(isFirstVote); // Show feedback only on first vote
+                
+                // Collapse header after vote to focus on content
+                collapseHeader();
                 
                 userVote = mode;
                 console.log('💾 User vote saved:', mode);
