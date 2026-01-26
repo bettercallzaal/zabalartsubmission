@@ -1626,6 +1626,142 @@
             color: var(--text-white);
         }
 
+        /* Winning Vote Share Section - Celebration moment after results */
+        .winning-share-section {
+            padding: 30px 20px;
+            background: linear-gradient(180deg, rgba(224, 221, 170, 0.03) 0%, transparent 100%);
+        }
+
+        .winning-share-card {
+            max-width: 480px;
+            margin: 0 auto 20px;
+            padding: 28px 24px;
+            background: rgba(224, 221, 170, 0.05);
+            border: 1px solid rgba(224, 221, 170, 0.15);
+            border-radius: 16px;
+            text-align: center;
+            /* Fade-in animation */
+            animation: winningCardFadeIn 0.5s ease-out;
+        }
+
+        .winning-share-card.weekly {
+            background: rgba(138, 43, 226, 0.05);
+            border-color: rgba(138, 43, 226, 0.2);
+        }
+
+        @keyframes winningCardFadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Respect reduced motion */
+        @media (prefers-reduced-motion: reduce) {
+            .winning-share-card {
+                animation: none;
+            }
+        }
+
+        .winning-share-icon {
+            font-size: 2.5rem;
+            margin-bottom: 12px;
+        }
+
+        .winning-share-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-white);
+            margin-bottom: 8px;
+        }
+
+        .winning-share-result {
+            font-size: 1rem;
+            color: var(--text-gray);
+            margin-bottom: 8px;
+        }
+
+        .winning-share-result span {
+            font-weight: 700;
+            color: var(--accent-yellow);
+        }
+
+        .winning-share-card.weekly .winning-share-result span {
+            color: #a855f7;
+        }
+
+        .winning-share-thanks {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-bottom: 16px;
+        }
+
+        /* Voter avatar stack */
+        .winning-share-voters {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+
+        .voter-avatar-stack {
+            display: flex;
+            align-items: center;
+        }
+
+        .voter-avatar-stack img {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            border: 2px solid var(--bg-black);
+            margin-left: -10px;
+            object-fit: cover;
+        }
+
+        .voter-avatar-stack img:first-child {
+            margin-left: 0;
+        }
+
+        .voter-count-text {
+            font-size: 0.8rem;
+            color: var(--text-gray);
+        }
+
+        .winning-share-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 12px 24px;
+            background: linear-gradient(135deg, var(--accent-yellow) 0%, #d4af37 100%);
+            color: var(--bg-black);
+            font-weight: 700;
+            font-size: 0.95rem;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .winning-share-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 16px rgba(224, 221, 170, 0.3);
+        }
+
+        .winning-share-card.weekly .winning-share-btn {
+            background: linear-gradient(135deg, #a855f7 0%, #7c3aed 100%);
+            color: white;
+        }
+
+        .winning-share-card.weekly .winning-share-btn:hover {
+            box-shadow: 0 4px 16px rgba(168, 85, 247, 0.3);
+        }
+
         /* Vote History Accordion Section */
         .vote-history-accordion-section {
             background: linear-gradient(180deg, var(--bg-black) 0%, #0a0a0a 100%);
@@ -3660,6 +3796,47 @@
         </div>
     </section>
 
+    <!-- Winning Vote Share Cards (appear after results are decided) -->
+    <section class="winning-share-section" id="winningShareSection" style="display: none;">
+        <div class="container">
+            <!-- Daily Winning Share Card (shown after 5 PM EST when voting closes) -->
+            <div class="winning-share-card" id="dailyWinningCard" style="display: none;">
+                <div class="winning-share-icon">🏆</div>
+                <h3 class="winning-share-title">Today's stream is set.</h3>
+                <div class="winning-share-result">
+                    <span id="dailyWinnerName">Studio Mode</span> won
+                </div>
+                <p class="winning-share-thanks">Thanks to everyone who voted.</p>
+                <!-- Voter avatar stack (max 5) -->
+                <div class="winning-share-voters" id="dailyVoterAvatars" style="display: none;">
+                    <div class="voter-avatar-stack"></div>
+                    <span class="voter-count-text"></span>
+                </div>
+                <button class="winning-share-btn" onclick="shareWinningResult('daily')">
+                    Share the Result
+                </button>
+            </div>
+
+            <!-- Weekly Winning Share Card (shown when there's a leading platform) -->
+            <div class="winning-share-card weekly" id="weeklyWinningCard" style="display: none;">
+                <div class="winning-share-icon">🌐</div>
+                <h3 class="winning-share-title">This week's signal is clear.</h3>
+                <div class="winning-share-result">
+                    <span id="weeklyWinnerName">Farcaster</span> is where the community showed up
+                </div>
+                <p class="winning-share-thanks">Appreciate everyone who voted.</p>
+                <!-- Voter avatar stack (max 5) -->
+                <div class="winning-share-voters" id="weeklyVoterAvatars" style="display: none;">
+                    <div class="voter-avatar-stack"></div>
+                    <span class="voter-count-text"></span>
+                </div>
+                <button class="winning-share-btn" onclick="shareWinningResult('weekly')">
+                    Share the Result
+                </button>
+            </div>
+        </div>
+    </section>
+
     <!-- Vote History Accordion -->
     <section class="vote-history-accordion-section">
         <div class="container">
@@ -3800,6 +3977,8 @@
             if (diff <= 0) {
                 currentState = StreamState.LOCKED;
                 updateHeroState();
+                // Show winning share card when voting closes
+                updateDailyWinningCard();
                 return;
             }
 
@@ -3901,6 +4080,161 @@
         
         // ============================================
         // END COLLAPSIBLE HEADER UTILITY
+        // ============================================
+
+        // ============================================
+        // WINNING VOTE SHARE CARDS
+        // Shows celebration card after results are decided
+        // Daily: after 5 PM EST when voting closes
+        // Weekly: when there's a leading platform
+        // ============================================
+        
+        // Track current winning states
+        let dailyWinner = null;
+        let weeklyWinner = null;
+        let dailyTopVoters = []; // Max 5 voters to tag
+        let weeklyTopVoters = []; // Max 5 voters to tag
+        
+        // Check if daily voting is closed (past 5 PM EST)
+        function isDailyVotingClosed() {
+            const estNow = getESTDate();
+            return estNow.getHours() >= 17; // 5 PM EST or later
+        }
+        
+        // Update daily winning share card visibility
+        function updateDailyWinningCard() {
+            const section = document.getElementById('winningShareSection');
+            const card = document.getElementById('dailyWinningCard');
+            const winnerNameEl = document.getElementById('dailyWinnerName');
+            
+            if (!section || !card || !winnerNameEl) return;
+            
+            // Only show if voting is closed AND we have a clear winner
+            if (isDailyVotingClosed() && currentState === StreamState.LOCKED) {
+                const leader = getLeader();
+                if (leader && votes[leader] > 0) {
+                    // Get the mode display name
+                    const modeEl = document.querySelector(`[data-mode="${leader}"] .mode-name`);
+                    const modeName = modeEl ? modeEl.textContent : leader;
+                    
+                    dailyWinner = modeName;
+                    winnerNameEl.textContent = modeName;
+                    
+                    card.style.display = 'block';
+                    section.style.display = 'block';
+                    console.log('🏆 [WINNING SHARE] Daily winner card shown:', modeName);
+                } else {
+                    card.style.display = 'none';
+                }
+            } else {
+                card.style.display = 'none';
+                dailyWinner = null;
+            }
+            
+            // Check if any card should be visible
+            checkWinningSectionVisibility();
+        }
+        
+        // Update weekly winning share card visibility
+        function updateWeeklyWinningCard(leadingPlatform, voterCount) {
+            const section = document.getElementById('winningShareSection');
+            const card = document.getElementById('weeklyWinningCard');
+            const winnerNameEl = document.getElementById('weeklyWinnerName');
+            
+            if (!section || !card || !winnerNameEl) return;
+            
+            // Show if there's a leading platform with votes
+            if (leadingPlatform && voterCount > 0) {
+                weeklyWinner = leadingPlatform;
+                winnerNameEl.textContent = leadingPlatform;
+                
+                card.style.display = 'block';
+                section.style.display = 'block';
+                console.log('🌐 [WINNING SHARE] Weekly leader card shown:', leadingPlatform);
+            } else {
+                card.style.display = 'none';
+                weeklyWinner = null;
+            }
+            
+            // Check if any card should be visible
+            checkWinningSectionVisibility();
+        }
+        
+        // Check if the winning share section should be visible
+        function checkWinningSectionVisibility() {
+            const section = document.getElementById('winningShareSection');
+            const dailyCard = document.getElementById('dailyWinningCard');
+            const weeklyCard = document.getElementById('weeklyWinningCard');
+            
+            if (!section) return;
+            
+            // Show section if either card is visible
+            const dailyVisible = dailyCard && dailyCard.style.display !== 'none';
+            const weeklyVisible = weeklyCard && weeklyCard.style.display !== 'none';
+            
+            section.style.display = (dailyVisible || weeklyVisible) ? 'block' : 'none';
+        }
+        
+        // Share the winning result - opens share modal with pre-built copy
+        function shareWinningResult(type) {
+            console.log('📤 [WINNING SHARE] Sharing result:', type);
+            
+            if (type === 'daily' && dailyWinner) {
+                // Build daily share copy
+                const shareCopy = `${dailyWinner} won today's stream.\nThanks to everyone who voted 👀\nJoin tomorrow → zabal.art`;
+                
+                // Open share modal with the winning mode
+                openWinningShareModal(shareCopy, dailyTopVoters, 'daily');
+                
+            } else if (type === 'weekly' && weeklyWinner) {
+                // Build weekly share copy
+                const shareCopy = `${weeklyWinner} is where the ZABAL community showed up this week.\nAppreciate everyone who voted 💛\nJoin the signal → zabal.art`;
+                
+                // Open share modal with the winning platform
+                openWinningShareModal(shareCopy, weeklyTopVoters, 'weekly');
+            }
+        }
+        
+        // Open share modal specifically for winning result shares
+        async function openWinningShareModal(shareCopy, topVoters, type) {
+            // Build friend tags from top voters (max 5)
+            const friendTags = topVoters.slice(0, 5).map(voter => {
+                if (typeof voter === 'string') return `@${voter}`;
+                return voter.username ? `@${voter.username}` : '';
+            }).filter(tag => tag).join(' ');
+            
+            const finalCast = friendTags ? `${shareCopy}\n\n${friendTags}` : shareCopy;
+            
+            console.log('📝 [WINNING SHARE] Final cast:', finalCast);
+            
+            try {
+                // Use Farcaster SDK to compose cast
+                if (window.farcasterSDK && window.farcasterSDK.actions) {
+                    await window.farcasterSDK.actions.composeCast({
+                        text: finalCast,
+                        embeds: [MINIAPP_URL + '?source=winning-share&type=' + type],
+                        channelKey: 'zao'
+                    });
+                    console.log('✅ [WINNING SHARE] Shared to Farcaster');
+                } else {
+                    // Fallback: copy to clipboard
+                    await navigator.clipboard.writeText(finalCast);
+                    showToast('success', 'Copied!', 'Share text copied to clipboard');
+                }
+            } catch (error) {
+                console.error('❌ [WINNING SHARE] Failed to share:', error);
+                // Fallback: copy to clipboard
+                try {
+                    await navigator.clipboard.writeText(finalCast);
+                    showToast('info', 'Copied!', 'Share text copied to clipboard');
+                } catch (e) {
+                    showToast('error', 'Share Failed', 'Could not share. Please try again.');
+                }
+            }
+        }
+        
+        // ============================================
+        // END WINNING VOTE SHARE CARDS
         // ============================================
 
         // Toast Notification System
@@ -6108,6 +6442,10 @@
             window.appLifecycle.addInterval(updateCountdown, 1000, 'countdown');
             updateCountdown();
             console.log('✅ Countdown started');
+            
+            // Check if daily voting is already closed and show winning share card
+            updateDailyWinningCard();
+            
             console.log('🎉 ZABAL Live Hub ready!');
             
             // Handle context scroll after everything is initialized
@@ -6344,6 +6682,14 @@
                     .join('');
                 
                 console.log('📊 [WEEKLY SOCIAL] Results loaded from DB:', data.length, 'platforms');
+                
+                // Update winning share card for weekly results
+                if (leadingPlatform) {
+                    const leaderVoterCount = parseInt(leadingPlatform.voter_count) || 0;
+                    updateWeeklyWinningCard(leadingPlatform.platform, leaderVoterCount);
+                } else {
+                    updateWeeklyWinningCard(null, 0);
+                }
                 
             } catch (error) {
                 console.error('❌ [WEEKLY SOCIAL] Error loading results:', error);
