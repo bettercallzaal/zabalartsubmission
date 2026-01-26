@@ -593,12 +593,23 @@
 
         @keyframes unlockFade {
             from {
-                opacity: 0.6;
-                transform: translateY(10px);
+                opacity: 0.7;
+                transform: translateY(8px);
             }
             to {
                 opacity: 1;
                 transform: translateY(0);
+            }
+        }
+
+        /* Motion Safety - Respect user preferences */
+        @media (prefers-reduced-motion: reduce) {
+            *,
+            *::before,
+            *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
             }
         }
 
@@ -2067,7 +2078,7 @@
             grid-template-columns: auto 1fr auto;
             gap: 1.25rem;
             align-items: center;
-            transition: all 0.3s ease;
+            transition: transform 120ms ease, box-shadow 120ms ease, border-color 120ms ease;
             position: relative;
             overflow: hidden;
         }
@@ -2087,7 +2098,8 @@
 
         .mode-card:hover {
             border-color: var(--accent-yellow);
-            transform: translateX(5px);
+            transform: translateY(-2px) scale(1.01);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
         }
 
         .mode-card:hover::before {
@@ -2101,6 +2113,23 @@
 
         .mode-card.leading::before {
             transform: scaleX(1);
+        }
+
+        /* Vote Confirmation Glow */
+        .mode-card.vote-confirmed {
+            animation: voteConfirmGlow 600ms ease-out;
+        }
+
+        @keyframes voteConfirmGlow {
+            0% {
+                box-shadow: 0 0 0 0 rgba(79, 209, 197, 0.6);
+            }
+            50% {
+                box-shadow: 0 0 0 8px rgba(79, 209, 197, 0.3);
+            }
+            100% {
+                box-shadow: 0 0 0 12px rgba(79, 209, 197, 0);
+            }
         }
 
         .mode-icon {
@@ -4161,7 +4190,13 @@
                 // Save to vote history
                 window.dataPersistence?.saveVoteHistory(mode);
                 
-                // Show vote confirmation animation
+                // Show vote confirmation glow animation
+                const votedCard = document.querySelector(`.mode-card[data-mode="${mode}"]`);
+                if (votedCard) {
+                    votedCard.classList.add('vote-confirmed');
+                    setTimeout(() => votedCard.classList.remove('vote-confirmed'), 600);
+                }
+                
                 // Hide loading state
                 window.loadingManager?.hide('vote');
                 
