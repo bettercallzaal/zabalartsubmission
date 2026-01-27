@@ -1626,6 +1626,114 @@
             color: var(--text-white);
         }
 
+        /* Currently Winning Share Section - Live momentum during voting */
+        .currently-winning-section {
+            padding: 30px 20px;
+            background: linear-gradient(180deg, rgba(251, 191, 36, 0.03) 0%, transparent 100%);
+        }
+
+        .currently-winning-card {
+            max-width: 480px;
+            margin: 0 auto 20px;
+            padding: 28px 24px;
+            background: rgba(251, 191, 36, 0.08);
+            border: 1px solid rgba(251, 191, 36, 0.25);
+            border-radius: 16px;
+            text-align: center;
+            animation: currentlyWinningFadeIn 0.5s ease-out;
+        }
+
+        .currently-winning-card.weekly {
+            background: rgba(168, 85, 247, 0.08);
+            border-color: rgba(168, 85, 247, 0.25);
+        }
+
+        @keyframes currentlyWinningFadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .currently-winning-card {
+                animation: none;
+            }
+        }
+
+        .currently-winning-icon {
+            font-size: 2.5rem;
+            margin-bottom: 12px;
+        }
+
+        .currently-winning-title {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #fbbf24;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+        }
+
+        .currently-winning-card.weekly .currently-winning-title {
+            color: #a855f7;
+        }
+
+        .currently-winning-result {
+            font-size: 1rem;
+            color: var(--text-gray);
+            margin-bottom: 8px;
+        }
+
+        .currently-winning-result span {
+            font-weight: 700;
+            color: #fbbf24;
+        }
+
+        .currently-winning-card.weekly .currently-winning-result span {
+            color: #a855f7;
+        }
+
+        .currently-winning-cta {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-bottom: 16px;
+        }
+
+        .currently-winning-share-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 12px 24px;
+            background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+            color: var(--bg-black);
+            font-weight: 700;
+            font-size: 0.95rem;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .currently-winning-share-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 16px rgba(251, 191, 36, 0.4);
+        }
+
+        .currently-winning-card.weekly .currently-winning-share-btn {
+            background: linear-gradient(135deg, #a855f7 0%, #7c3aed 100%);
+            color: white;
+        }
+
+        .currently-winning-card.weekly .currently-winning-share-btn:hover {
+            box-shadow: 0 4px 16px rgba(168, 85, 247, 0.4);
+        }
+
         /* Winning Vote Share Section - Celebration moment after results */
         .winning-share-section {
             padding: 30px 20px;
@@ -3796,6 +3904,37 @@
         </div>
     </section>
 
+    <!-- Currently Winning Share Cards (appear during active voting) -->
+    <section class="currently-winning-section" id="currentlyWinningSection" style="display: none;">
+        <div class="container">
+            <!-- Daily Currently Winning Card (shown during active voting before 5 PM EST) -->
+            <div class="currently-winning-card" id="dailyCurrentlyWinningCard" style="display: none;">
+                <div class="currently-winning-icon">🔥</div>
+                <h3 class="currently-winning-title">Currently Winning</h3>
+                <div class="currently-winning-result">
+                    <span id="dailyCurrentLeaderName">Studio Mode</span> is leading right now
+                </div>
+                <p class="currently-winning-cta">Vote before 5 PM EST</p>
+                <button class="currently-winning-share-btn" onclick="shareCurrentlyWinning('daily')">
+                    Share the Momentum
+                </button>
+            </div>
+
+            <!-- Weekly Currently Winning Card (shown during active weekly voting) -->
+            <div class="currently-winning-card weekly" id="weeklyCurrentlyWinningCard" style="display: none;">
+                <div class="currently-winning-icon">👀</div>
+                <h3 class="currently-winning-title">Currently Winning</h3>
+                <div class="currently-winning-result">
+                    <span id="weeklyCurrentLeaderName">Farcaster</span> is leading the signal this week
+                </div>
+                <p class="currently-winning-cta">Add your vote</p>
+                <button class="currently-winning-share-btn" onclick="shareCurrentlyWinning('weekly')">
+                    Share the Momentum
+                </button>
+            </div>
+        </div>
+    </section>
+
     <!-- Winning Vote Share Cards (appear after results are decided) -->
     <section class="winning-share-section" id="winningShareSection" style="display: none;">
         <div class="container">
@@ -4163,6 +4302,136 @@
             section.style.display = (dailyVisible || weeklyVisible) ? 'block' : 'none';
         }
         
+        // ============================================
+        // CURRENTLY WINNING SHARE CARDS
+        // Shows live momentum during active voting
+        // ============================================
+        
+        // Get current leader from results (returns null if tie or no votes)
+        function getCurrentLeader(results) {
+            if (!results || Object.keys(results).length === 0) return null;
+            
+            const entries = Object.entries(results);
+            if (entries.length === 0) return null;
+            
+            // Find max votes
+            const maxVotes = Math.max(...entries.map(([_, count]) => count));
+            
+            // No votes yet
+            if (maxVotes === 0) return null;
+            
+            // Check for tie
+            const leaders = entries.filter(([_, count]) => count === maxVotes);
+            if (leaders.length > 1) return null; // Tie - don't show
+            
+            return {
+                label: leaders[0][0],
+                votes: leaders[0][1]
+            };
+        }
+        
+        // Update daily currently winning card (during active voting)
+        function updateDailyCurrentlyWinningCard() {
+            const section = document.getElementById('currentlyWinningSection');
+            const card = document.getElementById('dailyCurrentlyWinningCard');
+            const leaderNameEl = document.getElementById('dailyCurrentLeaderName');
+            
+            if (!section || !card || !leaderNameEl) return;
+            
+            // Only show during active voting (NOT after 5 PM EST)
+            if (!isDailyVotingClosed() && currentState !== StreamState.LOCKED) {
+                const leader = getCurrentLeader(votes);
+                
+                if (leader && leader.votes > 0) {
+                    // Get the mode display name
+                    const modeEl = document.querySelector(`[data-mode="${leader.label}"] .mode-name`);
+                    const modeName = modeEl ? modeEl.textContent : leader.label;
+                    
+                    leaderNameEl.textContent = modeName;
+                    card.style.display = 'block';
+                    section.style.display = 'block';
+                    console.log('🔥 [CURRENTLY WINNING] Daily leader card shown:', modeName);
+                } else {
+                    card.style.display = 'none';
+                }
+            } else {
+                // Voting closed - hide currently winning, show final winner instead
+                card.style.display = 'none';
+            }
+            
+            // Check if section should be visible
+            checkCurrentlyWinningSectionVisibility();
+        }
+        
+        // Update weekly currently winning card (during active voting)
+        function updateWeeklyCurrentlyWinningCard(leadingPlatform, voterCount) {
+            const section = document.getElementById('currentlyWinningSection');
+            const card = document.getElementById('weeklyCurrentlyWinningCard');
+            const leaderNameEl = document.getElementById('weeklyCurrentLeaderName');
+            
+            if (!section || !card || !leaderNameEl) return;
+            
+            // Show if there's a leading platform with votes (and no tie)
+            if (leadingPlatform && voterCount > 0) {
+                leaderNameEl.textContent = leadingPlatform;
+                card.style.display = 'block';
+                section.style.display = 'block';
+                console.log('👀 [CURRENTLY WINNING] Weekly leader card shown:', leadingPlatform);
+            } else {
+                card.style.display = 'none';
+            }
+            
+            // Check if section should be visible
+            checkCurrentlyWinningSectionVisibility();
+        }
+        
+        // Check if currently winning section should be visible
+        function checkCurrentlyWinningSectionVisibility() {
+            const section = document.getElementById('currentlyWinningSection');
+            const dailyCard = document.getElementById('dailyCurrentlyWinningCard');
+            const weeklyCard = document.getElementById('weeklyCurrentlyWinningCard');
+            
+            if (!section) return;
+            
+            // Show section if either card is visible
+            const dailyVisible = dailyCard && dailyCard.style.display !== 'none';
+            const weeklyVisible = weeklyCard && weeklyCard.style.display !== 'none';
+            
+            section.style.display = (dailyVisible || weeklyVisible) ? 'block' : 'none';
+        }
+        
+        // Share currently winning result - opens Farcaster compose
+        function shareCurrentlyWinning(type) {
+            console.log('📤 [CURRENTLY WINNING] Sharing momentum:', type);
+            
+            let shareCopy = '';
+            let contextParam = '';
+            
+            if (type === 'daily') {
+                const leader = getCurrentLeader(votes);
+                if (!leader) return;
+                
+                const modeEl = document.querySelector(`[data-mode="${leader.label}"] .mode-name`);
+                const modeName = modeEl ? modeEl.textContent : leader.label;
+                
+                shareCopy = `${modeName} is leading right now 🔥\n\nVote before 5 PM EST → zabal.art`;
+                contextParam = `?share=currently_winning&ref=${leader.label}`;
+            } else if (type === 'weekly') {
+                const leaderNameEl = document.getElementById('weeklyCurrentLeaderName');
+                if (!leaderNameEl) return;
+                
+                const platform = leaderNameEl.textContent;
+                shareCopy = `${platform} is leading the signal this week 👀\n\nAdd your vote → zabal.art`;
+                contextParam = `?share=currently_winning&ref=${platform.toLowerCase()}`;
+            }
+            
+            openWinningShareModal(shareCopy, [], type, contextParam);
+        }
+        
+        // ============================================
+        // END CURRENTLY WINNING SHARE CARDS
+        // ============================================
+        
         // Share the winning result - opens share modal with pre-built copy
         function shareWinningResult(type) {
             console.log('📤 [WINNING SHARE] Sharing result:', type);
@@ -4184,7 +4453,7 @@
         }
         
         // Open share modal specifically for winning result shares
-        async function openWinningShareModal(shareCopy, topVoters, type) {
+        async function openWinningShareModal(shareCopy, topVoters, type, contextParam = null) {
             // Build friend tags from top voters (max 5)
             const friendTags = topVoters.slice(0, 5).map(voter => {
                 if (typeof voter === 'string') return `@${voter}`;
@@ -4195,12 +4464,15 @@
             
             console.log('📝 [WINNING SHARE] Final cast:', finalCast);
             
+            // Use custom context param if provided, otherwise default
+            const embedUrl = contextParam ? MINIAPP_URL + contextParam : MINIAPP_URL + '?source=winning-share&type=' + type;
+            
             try {
                 // Use Farcaster SDK to compose cast
                 if (window.farcasterSDK && window.farcasterSDK.actions) {
                     await window.farcasterSDK.actions.composeCast({
                         text: finalCast,
-                        embeds: [MINIAPP_URL + '?source=winning-share&type=' + type],
+                        embeds: [embedUrl],
                         channelKey: 'zao'
                     });
                     console.log('✅ [WINNING SHARE] Shared to Farcaster');
@@ -4634,6 +4906,9 @@
                 updateVotes();
                 updateLeader();
                 updatePercentageBars();
+                
+                // Update currently winning card during active voting
+                updateDailyCurrentlyWinningCard();
                 
             } catch (err) {
                 console.error('❌ Exception loading votes:', err);
@@ -6670,11 +6945,14 @@
                 
                 console.log('📊 [WEEKLY SOCIAL] Results loaded from DB:', data.length, 'platforms');
                 
-                // Update winning share card for weekly results
+                // Update currently winning card during active voting
                 if (leadingPlatform) {
                     const leaderVoterCount = parseInt(leadingPlatform.voter_count) || 0;
+                    updateWeeklyCurrentlyWinningCard(leadingPlatform.platform, leaderVoterCount);
+                    // Also update final winning card
                     updateWeeklyWinningCard(leadingPlatform.platform, leaderVoterCount);
                 } else {
+                    updateWeeklyCurrentlyWinningCard(null, 0);
                     updateWeeklyWinningCard(null, 0);
                 }
                 
