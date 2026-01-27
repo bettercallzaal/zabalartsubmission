@@ -3273,8 +3273,8 @@
     <!-- Toast Notification Container -->
     <div class="toast-container" id="toastContainer"></div>
 
-    <!-- Header - Collapsible (expanded by default, collapses on scroll or vote) -->
-    <header id="mainHeader" class="expanded">
+    <!-- Header - Collapsible (collapsed by default, user can expand manually) -->
+    <header id="mainHeader" class="collapsed">
         <div class="header-content">
             <a href="index.html" class="logo">ZABAL</a>
             <!-- Header toggle chevron - always visible -->
@@ -4011,12 +4011,11 @@
 
         // ============================================
         // COLLAPSIBLE HEADER UTILITY
-        // Collapses on scroll (40px) or after daily vote
-        // Manual toggle via chevron button
+        // Defaults to collapsed, user can expand manually
+        // Remembers user preference via sessionStorage
         // ============================================
         
-        let headerCollapsed = false;
-        let hasScrolledOnce = false; // Only auto-collapse on first scroll
+        let headerCollapsed = true; // Default collapsed
         
         // Toggle header between expanded/collapsed
         function toggleHeader() {
@@ -4028,53 +4027,42 @@
             if (headerCollapsed) {
                 header.classList.remove('expanded');
                 header.classList.add('collapsed');
+                sessionStorage.setItem('headerState', 'collapsed');
                 console.log('📌 Header collapsed (manual)');
             } else {
                 header.classList.remove('collapsed');
                 header.classList.add('expanded');
+                sessionStorage.setItem('headerState', 'expanded');
                 console.log('📌 Header expanded (manual)');
             }
         }
         
-        // Collapse header programmatically (called after vote)
-        function collapseHeader() {
+        // Initialize header state on page load
+        function initHeaderState() {
             const header = document.getElementById('mainHeader');
-            if (!header || headerCollapsed) return;
+            if (!header) return;
             
-            headerCollapsed = true;
-            header.classList.remove('expanded');
-            header.classList.add('collapsed');
-            console.log('📌 Header collapsed (auto - vote)');
+            // Check if user has a saved preference for this session
+            const savedState = sessionStorage.getItem('headerState');
+            
+            if (savedState === 'expanded') {
+                // User manually expanded it before, respect that
+                headerCollapsed = false;
+                header.classList.remove('collapsed');
+                header.classList.add('expanded');
+                console.log('📌 Header initialized: expanded (user preference)');
+            } else {
+                // Default: collapsed
+                headerCollapsed = true;
+                header.classList.remove('expanded');
+                header.classList.add('collapsed');
+                console.log('📌 Header initialized: collapsed (default)');
+            }
         }
         
-        // Expand header programmatically
-        function expandHeader() {
-            const header = document.getElementById('mainHeader');
-            if (!header || !headerCollapsed) return;
-            
-            headerCollapsed = false;
-            header.classList.remove('collapsed');
-            header.classList.add('expanded');
-            console.log('📌 Header expanded (auto)');
-        }
-        
-        // Auto-collapse on first scroll (40px threshold)
-        function initHeaderScrollCollapse() {
-            let scrollThreshold = 40;
-            
-            window.addEventListener('scroll', function() {
-                // Only trigger on first significant scroll, and only if not already collapsed
-                if (!hasScrolledOnce && !headerCollapsed && window.scrollY > scrollThreshold) {
-                    hasScrolledOnce = true;
-                    collapseHeader();
-                    console.log('📌 Header collapsed (auto - scroll)');
-                }
-            }, { passive: true });
-        }
-        
-        // Initialize header collapse behavior on DOM ready
+        // Initialize header on DOM ready
         document.addEventListener('DOMContentLoaded', function() {
-            initHeaderScrollCollapse();
+            initHeaderState();
             console.log('📌 Collapsible header initialized');
         });
         
@@ -4763,8 +4751,7 @@
                 localStorage.setItem('daily_voted_date', getTodayUTC());
                 unlockWeeklyVoting(isFirstVote); // Show feedback only on first vote
                 
-                // Collapse header after vote to focus on content
-                collapseHeader();
+                // Header already defaults collapsed, no need to collapse after vote
                 
                 userVote = mode;
                 console.log('💾 User vote saved:', mode);
