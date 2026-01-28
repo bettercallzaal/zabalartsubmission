@@ -639,6 +639,19 @@
             line-height: 1.5;
         }
 
+        .weekly-unlock-overlay .unlock-hint {
+            font-size: 0.85rem;
+            color: var(--text-gray);
+            margin-top: 0.5rem;
+        }
+
+        .weekly-reset-note {
+            font-size: 0.8rem !important;
+            color: var(--text-gray) !important;
+            font-style: italic;
+            margin-top: 0.5rem;
+        }
+
         .weekly-unlock-overlay .unlock-cta {
             margin-top: 1rem;
             font-size: 0.9rem;
@@ -2824,6 +2837,18 @@
             color: var(--text-gray);
         }
 
+        .artifacts-tagline {
+            font-size: 1.3rem !important;
+            font-weight: 600;
+            color: var(--text-white) !important;
+            margin-bottom: 0.75rem;
+        }
+
+        .artifacts-proof {
+            font-size: 1rem !important;
+            color: var(--text-secondary) !important;
+        }
+
         .artifacts-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -2945,9 +2970,17 @@
             color: var(--accent-yellow);
         }
 
+        .footer-brand {
+            color: var(--text-white);
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+        }
+
         .footer-tagline {
             color: var(--text-gray);
             font-size: 0.9rem;
+            margin-top: 1.5rem;
         }
 
         /* Mobile Responsive */
@@ -3831,13 +3864,15 @@
         <div class="weekly-unlock-overlay" id="weeklyUnlockOverlay" style="display: none;">
             <div class="lock-icon">🔒</div>
             <h3>Weekly Social Focus</h3>
-            <p>🔒 Vote today to unlock weekly voting</p>
+            <p>Daily voters help shape where the community shows up.</p>
+            <p class="unlock-hint">Vote above to unlock</p>
         </div>
         
         <div class="container">
             <div class="weekly-focus-header">
                 <h2>Weekly Social Focus</h2>
                 <p>Help guide where the community shows up this week.</p>
+                <p class="weekly-reset-note">Weekly signal resets Monday.</p>
             </div>
             
             <div class="focus-category">
@@ -3883,7 +3918,8 @@
         <div class="container">
             <div class="artifacts-header">
                 <h2>Built on ZABAL Streams</h2>
-                <p>This isn't content. It's coordination.</p>
+                <p class="artifacts-tagline">This isn't content. It's coordination.</p>
+                <p class="artifacts-proof">Streams turn into clips, experiments, and real decisions.</p>
             </div>
 
             <div class="artifacts-grid">
@@ -4030,6 +4066,7 @@
     <!-- Footer -->
     <footer>
         <div class="container">
+            <p class="footer-brand">ZABAL is a live coordination layer for creators.</p>
             <div class="footer-links">
                 <a href="https://zao.xyz" target="_blank">ZAO</a>
                 <a href="https://zabal.xyz" target="_blank">ZABAL</a>
