@@ -185,7 +185,8 @@
             --accent-yellow: #e0ddaa;
             --bg-black: #000000;
             --text-white: #ffffff;
-            --text-gray: #a0a0a0;
+            --text-gray: #b8b8b8;
+            --text-secondary: #9a9a9a;
             --border-color: #2a3a47;
             --hover-glow: rgba(224, 221, 170, 0.2);
         }
@@ -251,8 +252,8 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            width: 28px;
-            height: 28px;
+            min-width: 44px;
+            min-height: 44px;
             background: rgba(224, 221, 170, 0.1);
             border: 1px solid rgba(224, 221, 170, 0.2);
             border-radius: 6px;
@@ -329,89 +330,40 @@
             color: var(--accent-yellow);
         }
 
-        /* Vote Power Breakdown Styles */
-        .breakdown-container {
-            margin-top: 20px;
+        nav a:focus-visible {
+            outline: 2px solid var(--accent-yellow);
+            outline-offset: 4px;
+            border-radius: 4px;
+        }
+
+        /* Vote Power (Simplified) */
+        .vote-power-simple {
+            margin-top: 16px;
+            padding: 12px 16px;
             background: rgba(224, 221, 170, 0.05);
-            border: 1px solid rgba(224, 221, 170, 0.2);
-            border-radius: 12px;
-            padding: 16px;
-        }
-
-        .breakdown-microcopy {
-            margin-top: 12px;
-            font-size: 0.8rem;
-            color: var(--text-secondary);
-            font-style: italic;
-            text-align: center;
-        }
-
-        .breakdown-toggle {
-            width: 100%;
-            background: transparent;
-            border: none;
-            cursor: pointer;
+            border: 1px solid rgba(224, 221, 170, 0.15);
+            border-radius: 8px;
             display: flex;
-            justify-content: space-between;
             align-items: center;
-            color: var(--accent-yellow);
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .power-label {
             font-size: 0.85rem;
-            font-weight: 600;
+            color: var(--text-gray);
         }
 
-        .breakdown-toggle-icon {
-            transition: transform 0.3s ease;
-        }
-
-        .breakdown-content {
-            display: none;
-            padding: 0 16px 12px 16px;
-        }
-
-        .breakdown-grid {
-            display: grid;
-            gap: 6px;
-            font-size: 0.8rem;
-        }
-
-        .breakdown-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .breakdown-label {
-            color: var(--text-secondary);
-        }
-
-        .breakdown-value {
-            color: var(--text-primary);
-            font-weight: 600;
-        }
-
-        .breakdown-divider {
-            height: 1px;
-            background: rgba(224, 221, 170, 0.2);
-            margin: 8px 0;
-        }
-
-        .breakdown-final-label {
-            color: var(--accent-yellow);
-            font-weight: 600;
-        }
-
-        .breakdown-final-value {
-            color: var(--accent-yellow);
-            font-weight: 700;
+        .power-value {
             font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--accent-yellow);
         }
 
-        .breakdown-formula {
-            font-size: 0.7rem;
+        .power-hint {
+            font-size: 0.75rem;
             color: var(--text-secondary);
-            margin-top: 6px;
-            text-align: center;
-            opacity: 0.8;
+            margin-left: auto;
         }
 
         /* Weekly Focus Voting Styles */
@@ -500,6 +452,11 @@
             background: rgba(224, 221, 170, 0.1);
             border-color: var(--accent-yellow);
             transform: translateY(-2px);
+        }
+
+        .focus-option-btn:focus-visible {
+            outline: 3px solid var(--accent-yellow);
+            outline-offset: 2px;
         }
 
         .focus-option-btn {
@@ -846,6 +803,76 @@
             transform: translateX(20px);
         }
 
+        /* System Status Message */
+        .system-status-message {
+            position: fixed;
+            top: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 9999;
+            background: linear-gradient(135deg, #ff4444 0%, #cc0000 100%);
+            border: 2px solid #ff6666;
+            border-radius: 12px;
+            padding: 16px 24px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: 0 8px 24px rgba(255, 68, 68, 0.4);
+            max-width: 90%;
+            animation: slideDown 0.3s ease-out;
+        }
+
+        .status-icon {
+            width: 32px;
+            height: 32px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 900;
+            font-size: 1.2rem;
+            color: white;
+            flex-shrink: 0;
+        }
+
+        .status-content {
+            flex: 1;
+        }
+
+        .status-title {
+            font-weight: 700;
+            font-size: 1rem;
+            color: white;
+            margin-bottom: 4px;
+        }
+
+        .status-message {
+            font-size: 0.85rem;
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        /* Offline Banner */
+        .offline-banner {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(135deg, #ff9800 0%, #f57c00 100%);
+            color: white;
+            padding: 12px 20px;
+            text-align: center;
+            font-weight: 600;
+            font-size: 0.9rem;
+            z-index: 10000;
+            display: none;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        .offline-banner.show {
+            display: block;
+        }
+
         /* Toast Notifications */
         .toast-container {
             position: fixed;
@@ -916,9 +943,14 @@
             color: var(--text-gray);
             font-size: 1.2rem;
             cursor: pointer;
-            padding: 4px;
+            padding: 12px;
             line-height: 1;
             transition: color 0.2s;
+            min-width: 44px;
+            min-height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .toast-close:hover {
@@ -1081,11 +1113,17 @@
             background: transparent;
             border: 1px solid var(--border-color);
             color: var(--text-gray);
+            min-height: 44px;
         }
 
         .share-close-btn:hover {
             border-color: var(--accent-yellow);
             color: var(--accent-yellow);
+        }
+
+        .share-action-btn:focus-visible {
+            outline: 3px solid var(--accent-yellow);
+            outline-offset: 2px;
         }
 
         /* User Profile Badge */
@@ -1251,22 +1289,6 @@
             justify-content: space-between;
         }
 
-        .reconnect-btn {
-            background: rgba(224, 221, 170, 0.1);
-            border: 1px solid var(--accent-yellow);
-            color: var(--accent-yellow);
-            padding: 6px 12px;
-            border-radius: 6px;
-            font-size: 0.75rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .reconnect-btn:hover {
-            background: rgba(224, 221, 170, 0.2);
-            transform: scale(1.05);
-        }
         
         .selected-friends-indicator {
             width: 100%;
@@ -1489,151 +1511,6 @@
         .watch-now-btn:hover {
             transform: scale(1.05);
             box-shadow: 0 4px 12px rgba(255, 255, 255, 0.3);
-        }
-
-        /* Live Share Modal */
-        .live-share-modal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.85);
-            display: none;
-            align-items: center;
-            justify-content: center;
-            z-index: 1000;
-            padding: 20px;
-        }
-
-        .live-share-modal.active {
-            display: flex;
-        }
-
-        .live-share-content {
-            background: var(--primary-blue);
-            border: 2px solid var(--accent-yellow);
-            border-radius: 16px;
-            padding: 30px;
-            max-width: 500px;
-            width: 100%;
-            position: relative;
-        }
-
-        .live-share-header {
-            text-align: center;
-            margin-bottom: 25px;
-        }
-
-        .live-share-title {
-            font-size: 1.5rem;
-            font-weight: 900;
-            color: var(--accent-yellow);
-            margin-bottom: 8px;
-        }
-
-        .live-share-subtitle {
-            font-size: 0.9rem;
-            color: var(--text-gray);
-        }
-
-        .platform-links {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            margin-bottom: 25px;
-        }
-
-        .platform-link-card {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            padding: 15px;
-            background: var(--secondary-blue);
-            border: 2px solid var(--border-color);
-            border-radius: 12px;
-            transition: all 0.3s ease;
-        }
-
-        .platform-link-card:hover {
-            border-color: var(--accent-yellow);
-            transform: translateX(4px);
-        }
-
-        .platform-icon {
-            font-size: 2rem;
-        }
-
-        .platform-info {
-            flex: 1;
-        }
-
-        .platform-name {
-            font-size: 1rem;
-            font-weight: 700;
-            color: var(--text-white);
-            margin-bottom: 4px;
-        }
-
-        .platform-url {
-            font-size: 0.85rem;
-            color: var(--text-gray);
-        }
-
-        .platform-btn {
-            padding: 8px 16px;
-            background: var(--accent-yellow);
-            color: var(--bg-black);
-            border: none;
-            border-radius: 6px;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-decoration: none;
-            display: inline-block;
-        }
-
-        .platform-btn:hover {
-            transform: scale(1.05);
-        }
-
-        .live-share-actions {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-
-        .share-live-btn {
-            padding: 15px;
-            background: linear-gradient(135deg, #8a63d2 0%, #7c4dff 100%);
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-weight: 700;
-            font-size: 1rem;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .share-live-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(138, 99, 210, 0.4);
-        }
-
-        .close-live-modal-btn {
-            padding: 12px;
-            background: transparent;
-            color: var(--text-gray);
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .close-live-modal-btn:hover {
-            border-color: var(--accent-yellow);
-            color: var(--text-white);
         }
 
         /* Currently Winning Share Section - Live momentum during voting */
@@ -2170,9 +2047,6 @@
                 font-size: 0.85rem;
             }
 
-            .live-share-content {
-                padding: 20px;
-            }
 
             .vote-day-header {
                 flex-direction: column;
@@ -2183,6 +2057,23 @@
             .vote-day-stats {
                 grid-template-columns: 1fr;
             }
+        }
+
+        /* Skip to content link (accessibility) */
+        .skip-to-content {
+            position: absolute;
+            top: -40px;
+            left: 0;
+            background: var(--accent-yellow);
+            color: var(--primary-blue);
+            padding: 8px 16px;
+            text-decoration: none;
+            font-weight: 700;
+            z-index: 10001;
+        }
+
+        .skip-to-content:focus {
+            top: 0;
         }
 
         /* Smooth scroll behavior */
@@ -2454,6 +2345,17 @@
             transform: scaleX(1);
         }
 
+        /* Keyboard focus styles - WCAG AA compliant */
+        .mode-card:focus-visible {
+            outline: 3px solid var(--accent-yellow);
+            outline-offset: 4px;
+            border-color: var(--accent-yellow);
+        }
+
+        .mode-card:focus-visible::before {
+            transform: scaleX(1);
+        }
+
         .mode-card.leading {
             border-color: var(--accent-yellow);
             background: linear-gradient(135deg, rgba(224, 221, 170, 0.05) 0%, var(--primary-blue) 100%);
@@ -2497,7 +2399,7 @@
 
         .mode-description {
             color: var(--text-gray);
-            font-size: 0.875rem;
+            font-size: 0.9rem;
             line-height: 1.4;
         }
 
@@ -2656,6 +2558,68 @@
             text-align: center;
         }
 
+        /* Voted Status Indicator */
+        .voted-status {
+            display: none;
+            margin-bottom: 20px;
+            padding: 16px 24px;
+            background: rgba(224, 221, 170, 0.1);
+            border: 2px solid var(--accent-yellow);
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        .voted-status.active {
+            display: block;
+        }
+
+        .voted-status-icon {
+            font-size: 1.5rem;
+            margin-bottom: 8px;
+        }
+
+        .voted-status-text {
+            color: var(--accent-yellow);
+            font-weight: 700;
+            font-size: 1.1rem;
+            margin-bottom: 4px;
+        }
+
+        .voted-status-mode {
+            color: var(--text-white);
+            font-size: 0.95rem;
+        }
+
+        .voted-status-actions {
+            margin-top: 12px;
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .voted-status-btn {
+            padding: 8px 20px;
+            background: transparent;
+            border: 1px solid var(--accent-yellow);
+            color: var(--accent-yellow);
+            border-radius: 6px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .voted-status-btn:hover {
+            background: var(--accent-yellow);
+            color: var(--primary-blue);
+        }
+
+        .voted-status-btn:focus-visible {
+            outline: 3px solid var(--accent-yellow);
+            outline-offset: 2px;
+        }
+
         .submit-votes-btn {
             padding: 16px 48px;
             background: linear-gradient(135deg, var(--accent-yellow) 0%, #c9b961 100%);
@@ -2672,6 +2636,11 @@
         .submit-votes-btn:hover:not(:disabled) {
             transform: scale(1.05);
             box-shadow: 0 6px 20px rgba(224, 221, 170, 0.5);
+        }
+
+        .submit-votes-btn:focus-visible {
+            outline: 3px solid var(--accent-yellow);
+            outline-offset: 4px;
         }
 
         .submit-votes-btn:disabled {
@@ -3322,7 +3291,16 @@
     
     <!-- Offline Banner -->
     <div id="offlineBanner" class="offline-banner">
-        ⚠️ You're offline. Some features may not work.
+        You are offline. Voting is disabled until connection is restored.
+    </div>
+    
+    <!-- System Status Message (for Supabase failures, etc) -->
+    <div id="systemStatusMessage" class="system-status-message" style="display: none;">
+        <div class="status-icon">!</div>
+        <div class="status-content">
+            <div class="status-title">System Unavailable</div>
+            <div class="status-message">Voting is temporarily disabled. Please refresh the page.</div>
+        </div>
     </div>
     
     <!-- Toast Notification Container -->
@@ -3423,7 +3401,7 @@
     <div id="nowLiveBanner" class="now-live-banner" style="display: none;">
         <div class="live-pulse"></div>
         <span class="live-text">ZABAL IS LIVE NOW</span>
-        <button class="watch-now-btn" onclick="openLiveShareModal()">Share Stream</button>
+        <button class="watch-now-btn" onclick="shareLiveStreamDirect()">Share Stream</button>
     </div>
 
     <!-- Personal Stats -->
@@ -3452,42 +3430,11 @@
                 </div>
             </div>
             
-            <!-- Vote Power Breakdown -->
-            <div id="votePowerBreakdown" class="breakdown-container">
-                <button onclick="toggleBreakdown()" class="breakdown-toggle">
-                    <span>Why your vote matters →</span>
-                    <span id="breakdownToggleIcon" class="breakdown-toggle-icon">▼</span>
-                </button>
-                <div id="breakdownContent" class="breakdown-content">
-                <div class="breakdown-grid">
-                    <div class="breakdown-row">
-                        <span class="breakdown-label">/zao Channel Posts:</span>
-                        <span id="breakdownZaoPosts" class="breakdown-value">—</span>
-                    </div>
-                    <div class="breakdown-row">
-                        <span class="breakdown-label">Neynar Score:</span>
-                        <span id="breakdownNeynarScore" class="breakdown-value">—</span>
-                    </div>
-                    <div class="breakdown-divider"></div>
-                    <div class="breakdown-row">
-                        <span class="breakdown-label">Base Power:</span>
-                        <span id="breakdownBasePower" class="breakdown-value">—</span>
-                    </div>
-                    <div class="breakdown-row">
-                        <span class="breakdown-label">Quality Multiplier:</span>
-                        <span id="breakdownMultiplier" class="breakdown-value">—</span>
-                    </div>
-                    <div class="breakdown-divider"></div>
-                    <div class="breakdown-row">
-                        <span class="breakdown-final-label">Final Power:</span>
-                        <span id="breakdownFinalPower" class="breakdown-final-value">—</span>
-                    </div>
-                    <div id="breakdownFormula" class="breakdown-formula">
-                        Formula: Base × Multiplier = Final
-                    </div>
-                </div>
-                <p class="breakdown-microcopy">Voting today increases your weekly influence.</p>
-                </div>
+            <!-- Vote Power (Simplified) -->
+            <div id="votePowerDisplay" class="vote-power-simple">
+                <span class="power-label">Your vote power:</span>
+                <span id="simplePowerValue" class="power-value">1.0×</span>
+                <span class="power-hint">Based on community activity</span>
             </div>
             </div>
         </div>
@@ -3584,8 +3531,19 @@
                 </div>
             </div>
 
+            <!-- Voted Status Indicator (shown after voting) -->
+            <div class="voted-status" id="votedStatus">
+                <div class="voted-status-icon">✓</div>
+                <div class="voted-status-text">You Voted Today</div>
+                <div class="voted-status-mode" id="votedStatusMode">Studio Mode</div>
+                <div class="voted-status-actions">
+                    <button class="voted-status-btn" onclick="openShareModal(userVote)">Share Vote</button>
+                    <button class="voted-status-btn" onclick="changeVote()">Change Vote</button>
+                </div>
+            </div>
+
             <!-- Submit Votes Button -->
-            <div class="submit-votes-container">
+            <div class="submit-votes-container" id="submitVotesContainer">
                 <button class="submit-votes-btn" id="submitVotesBtn" onclick="submitVotes()" disabled>
                     <span id="submitBtnText">Select a mode to continue</span>
                 </button>
@@ -3602,44 +3560,6 @@
         </div>
     </section>
 
-    <!-- Live Share Modal -->
-    <div id="liveShareModal" class="live-share-modal">
-        <div class="live-share-content">
-            <div class="live-share-header">
-                <div class="live-share-title">ZABAL IS LIVE</div>
-                <div class="live-share-subtitle">Watch and share the stream</div>
-            </div>
-
-            <div class="platform-links">
-                <div class="platform-link-card">
-                    <div class="platform-icon"></div>
-                    <div class="platform-info">
-                        <div class="platform-name">Twitch</div>
-                        <div class="platform-url">twitch.tv/bettercallzaal</div>
-                    </div>
-                    <a href="https://twitch.tv/bettercallzaal" target="_blank" class="platform-btn">Watch</a>
-                </div>
-
-                <div class="platform-link-card">
-                    <div class="platform-icon"></div>
-                    <div class="platform-info">
-                        <div class="platform-name">Retake.tv</div>
-                        <div class="platform-url">retake.tv/zaal</div>
-                    </div>
-                    <a href="https://retake.tv/zaal" target="_blank" class="platform-btn">Watch</a>
-                </div>
-            </div>
-
-            <div class="live-share-actions">
-                <button class="share-live-btn" onclick="shareLiveStream()">
-                    Share to Farcaster
-                </button>
-                <button class="close-live-modal-btn" onclick="closeLiveShareModal()">
-                    Close
-                </button>
-            </div>
-        </div>
-    </div>
 
     <!-- Share Modal -->
     <div id="shareModal" class="share-modal">
@@ -3658,9 +3578,6 @@
             <div id="friendTagSection" class="friend-tag-section" style="display: none;">
                 <div class="friend-tag-header">
                     Tag Friends
-                    <button class="reconnect-btn" onclick="showInactiveContacts()" title="Reach out to people you haven't talked to in a while">
-                        Reconnect
-                    </button>
                 </div>
                 <div id="friendTagList" class="friend-tag-list"></div>
             </div>
@@ -4493,24 +4410,126 @@
         // Initialize Supabase using config
         
         let supabase;
+        let systemReady = false;
+        
+        // Show system status message (for critical failures)
+        function showSystemStatus(title, message) {
+            const statusEl = document.getElementById('systemStatusMessage');
+            if (statusEl) {
+                statusEl.querySelector('.status-title').textContent = title;
+                statusEl.querySelector('.status-message').textContent = message;
+                statusEl.style.display = 'flex';
+            }
+        }
+        
+        // Hide system status message
+        function hideSystemStatus() {
+            const statusEl = document.getElementById('systemStatusMessage');
+            if (statusEl) {
+                statusEl.style.display = 'none';
+            }
+        }
+        
+        // Disable voting UI until system is ready
+        function disableVotingUI(reason) {
+            const submitBtn = document.getElementById('submitVotesBtn');
+            const submitBtnText = document.getElementById('submitBtnText');
+            const modeCards = document.querySelectorAll('.mode-card');
+            const votedStatus = document.getElementById('votedStatus');
+            
+            if (submitBtn && submitBtnText) {
+                submitBtn.disabled = true;
+                submitBtnText.textContent = reason || 'System unavailable';
+            }
+            
+            modeCards.forEach(card => {
+                card.style.opacity = '0.5';
+                card.style.pointerEvents = 'none';
+            });
+            
+            // Hide voted status if shown
+            if (votedStatus) {
+                votedStatus.style.display = 'none';
+            }
+            
+            // Show inline system status
+            showSystemStatus('System Unavailable', reason || 'Voting is temporarily disabled. Please refresh the page.');
+        }
+        
+        // Enable voting UI when system is ready
+        function enableVotingUI() {
+            const modeCards = document.querySelectorAll('.mode-card');
+            
+            modeCards.forEach(card => {
+                card.style.opacity = '1';
+                card.style.pointerEvents = 'auto';
+            });
+            
+            hideSystemStatus();
+            systemReady = true;
+        }
+        
+        // Offline detection and handling
+        let isOffline = false;
+        
+        function handleOffline() {
+            isOffline = true;
+            const banner = document.getElementById('offlineBanner');
+            if (banner) banner.classList.add('show');
+            
+            // Disable voting UI
+            disableVotingUI('You are offline. Voting requires an internet connection.');
+            
+            console.log('📡 User went offline - voting disabled');
+        }
+        
+        function handleOnline() {
+            isOffline = false;
+            const banner = document.getElementById('offlineBanner');
+            if (banner) banner.classList.remove('show');
+            
+            // Re-enable voting UI if system is ready
+            if (systemReady && supabase) {
+                enableVotingUI();
+            }
+            
+            console.log('📡 User back online - checking system status');
+            
+            // Reload votes to ensure fresh data
+            loadVotes();
+        }
+        
+        // Check if user is offline before vote attempts
+        function checkOnlineStatus() {
+            if (!navigator.onLine) {
+                handleOffline();
+                return false;
+            }
+            return true;
+        }
+        
         try {
             if (!window.supabase) {
                 console.error('❌ Supabase library not loaded');
                 showToast('error', 'Database Error', 'Connection failed. Please refresh the page.');
+                disableVotingUI('Database unavailable');
             } else if (!window.appConfig) {
                 console.error('❌ App configuration not loaded');
                 showToast('error', 'Configuration Error', 'App not configured. Please refresh the page.');
+                disableVotingUI('System not configured');
             } else {
                 supabase = window.supabase.createClient(
                     window.appConfig.SUPABASE_URL,
                     window.appConfig.SUPABASE_ANON_KEY
                 );
                 console.log('✅ Supabase client initialized');
+                systemReady = true;
             }
         } catch (err) {
             console.error('❌ Error initializing Supabase:', err);
             window.errorHandler?.handleError(err, { type: 'database_error', context: 'initialization' });
             showToast('error', 'Database Error', 'Could not connect to database.');
+            disableVotingUI('Connection failed');
         }
 
         // Get Farcaster user context
@@ -4849,6 +4868,8 @@
                     const result = userVoteData[0];
                     if (result.has_voted) {
                         userVote = result.voted_mode;
+                        // Show voted status indicator if user already voted
+                        showVotedStatus(result.voted_mode);
                     }
                 }
                 
@@ -4872,6 +4893,12 @@
         // skipModal parameter prevents opening share modal (used when called from submitVotes)
         window.vote = async function(mode, skipModal = false) {
             console.log('🗳️ Vote button clicked for mode:', mode);
+            
+            // Check online status first
+            if (!checkOnlineStatus()) {
+                console.log('❌ Vote blocked - user is offline');
+                return;
+            }
             
             // Validate input
             try {
@@ -4948,6 +4975,17 @@
                     showToast('error', 'Vote Failed', 'Could not record your vote. Please try again.');
                     window.analytics?.trackError(error, { context: 'vote', mode });
                     window.loadingManager?.hide('vote');
+                    
+                    // Reset UI state on failure
+                    selectedModes = [];
+                    document.querySelectorAll('.mode-card.selected').forEach(card => {
+                        card.classList.remove('selected');
+                    });
+                    document.querySelectorAll('.vote-checkbox-hidden').forEach(checkbox => {
+                        checkbox.checked = false;
+                    });
+                    updateSubmitButton();
+                    
                     return;
                 }
                 
@@ -4983,6 +5021,9 @@
                     setTimeout(() => votedCard.classList.remove('vote-confirmed'), 600);
                 }
                 
+                // Show persistent voted status indicator
+                showVotedStatus(mode);
+                
                 // Show invite nudge (once per UTC day, daily vote only)
                 const INVITE_KEY = 'invite_prompt_shown_date';
                 const today = getTodayUTC();
@@ -4996,16 +5037,7 @@
                 // Hide loading state
                 window.loadingManager?.hide('vote');
                 
-                // Only open share modal if not skipped AND this is first vote of the day
-                if (!skipModal && !data.previous_mode) {
-                    // Check if should auto-share
-                    if (shouldAutoShare(mode)) {
-                        setTimeout(() => shareVote(mode, true), 1000);
-                    } else {
-                        // Open share modal directly after vote
-                        setTimeout(() => openShareModal(mode), 500);
-                    }
-                }
+                // REMOVED: Auto-open share modal - now opt-in via voted status buttons
                 
                 // Only reload votes if not in batch mode (submitVotes will reload once at the end)
                 if (!skipModal) {
@@ -5016,22 +5048,27 @@
                     updateLeader();
                 }
                 
-                // Share modal will open from above logic
-                
             } catch (err) {
-                console.error('❌ Error in vote function:', err);
-                
-                // Hide loading state
+                console.error('❌ Error during vote:', err);
                 window.loadingManager?.hide('vote');
                 
                 // Track error
                 window.analytics?.trackError(err, { context: 'vote', mode });
                 
+                // Reset UI state on error
+                selectedModes = [];
+                document.querySelectorAll('.mode-card.selected').forEach(card => {
+                    card.classList.remove('selected');
+                });
+                document.querySelectorAll('.vote-checkbox-hidden').forEach(checkbox => {
+                    checkbox.checked = false;
+                });
+                updateSubmitButton();
+                
                 showToast('error', 'Vote Failed', 'An error occurred. Please try again.');
             }
         }
 
-        // Share modal functions
         let currentShareMode = null;
         let currentVotedModes = []; // Store all voted modes for sharing
         const MINIAPP_URL = window.appConfig?.MINIAPP_URL || 'https://zabal.art';
@@ -5323,52 +5360,21 @@
             }
         }
         
-        // Update vote power display
+        // Update vote power display (simplified)
         function updateVotePowerDisplay(powerData) {
             const powerEl = document.getElementById('statVotePower');
-            const detailEl = document.getElementById('statVotePowerDetail');
+            const simplePowerEl = document.getElementById('simplePowerValue');
             
             if (powerEl) {
                 powerEl.textContent = `${powerData.power}x`;
             }
             
-            if (detailEl) {
-                let badge = '';
-                if (powerData.zaoCasts >= 50) badge = 'Super Active';
-                else if (powerData.zaoCasts >= 20) badge = 'Very Active';
-                else if (powerData.zaoCasts >= 5) badge = 'Active';
-                else badge = 'Member';
-                
-                let qualityBadge = '';
-                if (powerData.neynarScore >= 0.9) qualityBadge = ' • Elite';
-                else if (powerData.neynarScore >= 0.7) qualityBadge = ' • Quality';
-                
-                detailEl.innerHTML = `${badge}${qualityBadge}<br>${powerData.zaoCasts} /zao posts`;
+            if (simplePowerEl) {
+                simplePowerEl.textContent = `${powerData.power}x`;
             }
             
-            // Update breakdown section
-            const breakdownSection = document.getElementById('votePowerBreakdown');
-            console.log('🔍 Breakdown section found:', breakdownSection ? 'YES' : 'NO');
-            if (breakdownSection) {
-                // Update breakdown values
-                document.getElementById('breakdownZaoPosts').textContent = powerData.zaoCasts;
-                document.getElementById('breakdownNeynarScore').textContent = powerData.neynarScore.toFixed(2);
-                
-                // Calculate base power from zaoCasts
-                let basePower = 1;
-                if (powerData.zaoCasts >= 50) basePower = 4;
-                else if (powerData.zaoCasts >= 20) basePower = 3;
-                else if (powerData.zaoCasts >= 5) basePower = 2;
-                
-                document.getElementById('breakdownBasePower').textContent = `${basePower}x`;
-                document.getElementById('breakdownMultiplier').textContent = `${powerData.multiplier}x`;
-                document.getElementById('breakdownFinalPower').textContent = `${powerData.power}x`;
-                document.getElementById('breakdownFormula').textContent = `${basePower} × ${powerData.multiplier} = ${powerData.power}`;
-                
-                console.log('✅ Breakdown updated:', { zaoCasts: powerData.zaoCasts, neynarScore: powerData.neynarScore, basePower, multiplier: powerData.multiplier, finalPower: powerData.power });
-            } else {
-                console.error('❌ Breakdown section not found in DOM!');
-            }
+            // Update stats summary
+            updateStatsSummary();
         }
         
         // Live stream status
@@ -5400,45 +5406,19 @@
             }
         }
         
-        // Open live share modal
-        window.openLiveShareModal = function() {
-            const modal = document.getElementById('liveShareModal');
-            if (modal) {
-                modal.classList.add('active');
-            }
-        }
-        
-        // Close live share modal
-        window.closeLiveShareModal = function() {
-            const modal = document.getElementById('liveShareModal');
-            if (modal) {
-                modal.classList.remove('active');
-            }
-        }
-        
-        // Share live stream to Farcaster
-        window.shareLiveStream = async function() {
+        // Share live stream directly (no modal)
+        window.shareLiveStreamDirect = async function() {
             const shareText = `ZABAL IS LIVE NOW\n\nJoin the stream and watch us create in real-time!\n\nTwitch: twitch.tv/bettercallzaal\nRetake: retake.tv/zaal\n\nCome hang!`;
-            
-            // Add friend tags if available
-            let friendTags = '';
-            if (bestFriends.length > 0) {
-                const friendsToTag = bestFriends.slice(0, 3).map(f => f.username);
-                friendTags = '\n\n' + friendsToTag.map(u => `@${u}`).join(' ') + ' join me!';
-            }
-            
-            const fullText = shareText + friendTags;
             
             try {
                 await window.farcasterSDK.actions.composeCast({
-                    text: fullText,
+                    text: shareText,
                     embeds: ['https://twitch.tv/bettercallzaal'],
                     channelKey: 'zao'
                 });
                 
                 console.log('✅ Live stream shared to Farcaster');
                 showShareSuccess();
-                setTimeout(() => closeLiveShareModal(), 1500);
             } catch (error) {
                 console.error('❌ Failed to share live stream:', error);
                 showToast('error', 'Share Failed', 'Could not share stream. Please try again.');
@@ -5511,6 +5491,15 @@
             const modal = document.getElementById('shareModal');
             modal.classList.add('active');
             
+            // Enable focus trap for accessibility
+            document.addEventListener('keydown', trapFocus);
+            
+            // Focus first interactive element
+            setTimeout(() => {
+                const firstButton = modal.querySelector('button:not([disabled])');
+                if (firstButton) firstButton.focus();
+            }, 100);
+            
             console.log('🔍 Opening share modal');
             console.log('👥 Best friends count:', bestFriends.length);
             console.log('👑 Top friend:', topFriend);
@@ -5543,6 +5532,40 @@
             const modal = document.getElementById('shareModal');
             if (modal) {
                 modal.classList.remove('active');
+                // Remove focus trap
+                document.removeEventListener('keydown', trapFocus);
+            }
+        }
+        
+        // Focus trap for modals (accessibility)
+        function trapFocus(e) {
+            const modal = document.querySelector('.share-modal.active');
+            if (!modal) return;
+            
+            const focusableElements = modal.querySelectorAll(
+                'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
+            );
+            const firstElement = focusableElements[0];
+            const lastElement = focusableElements[focusableElements.length - 1];
+            
+            // Handle Tab key
+            if (e.key === 'Tab') {
+                if (e.shiftKey) {
+                    if (document.activeElement === firstElement) {
+                        e.preventDefault();
+                        lastElement.focus();
+                    }
+                } else {
+                    if (document.activeElement === lastElement) {
+                        e.preventDefault();
+                        firstElement.focus();
+                    }
+                }
+            }
+            
+            // Handle Escape key
+            if (e.key === 'Escape') {
+                closeShareModal();
             }
         }
         
@@ -5808,100 +5831,6 @@
             updateFriendTagCounter();
         }
 
-        // Get contacts to reconnect with (people you haven't reached out to recently)
-        let reconnectContacts = [];
-        async function loadInactiveContacts() {
-            if (!isAuthenticated || !userFID) return;
-            
-            try {
-                console.log('🔍 Loading reconnect contacts...');
-                
-                // Get user's following list (people they might want to reconnect with)
-                const followingData = await callNeynarAPI('user/following', { fid: userFID, limit: 100 });
-                const following = followingData.users || [];
-                
-                // Filter out self and best friends (to show different people)
-                const bestFriendFids = new Set(bestFriends.map(f => f.fid));
-                reconnectContacts = following.filter(user => 
-                    user.fid !== userFID && !bestFriendFids.has(user.fid)
-                );
-                
-                console.log('💤 Found reconnect contacts:', reconnectContacts.length);
-                
-            } catch (error) {
-                console.error('❌ Error loading reconnect contacts:', error);
-                // Fallback: use following list minus best friends
-                reconnectContacts = [];
-            }
-        }
-        
-        // Get random contacts to reconnect with
-        function getRandomReconnectContacts(count = 5) {
-            if (reconnectContacts.length === 0) return [];
-            
-            // Shuffle and take random contacts
-            const shuffled = [...reconnectContacts].sort(() => Math.random() - 0.5);
-            return shuffled.slice(0, Math.min(count, shuffled.length));
-        }
-        
-        // Show random contacts to reconnect with
-        window.showInactiveContacts = function() {
-            // If no reconnect contacts loaded yet, try to load from following
-            if (reconnectContacts.length === 0) {
-                // Use following list as fallback (excluding best friends)
-                const bestFriendUsernames = new Set(bestFriends.map(f => f.username));
-                reconnectContacts = bestFriends.slice(5); // Show people after top 5 best friends
-            }
-            
-            if (reconnectContacts.length === 0) {
-                showToast('info', 'No More Contacts', 'Try expanding your network on Farcaster! 🌐');
-                return;
-            }
-            
-            const randomContacts = getRandomReconnectContacts(5);
-            
-            if (randomContacts.length === 0) {
-                showToast('info', 'No More Contacts', 'Try expanding your network on Farcaster! 🌐');
-                return;
-            }
-            
-            console.log('💤 Showing reconnect contacts:', randomContacts.map(u => u.username));
-            console.log('✅ Currently selected friends:', selectedFriends);
-            
-            // Temporarily replace friend list with reconnect contacts
-            const list = document.getElementById('friendTagList');
-            if (!list) return;
-            
-            // Show selected count at top if any are selected
-            let headerHtml = '';
-            if (selectedFriends.length > 0) {
-                headerHtml = `<div class="selected-friends-indicator">✓ ${selectedFriends.length} friend${selectedFriends.length > 1 ? 's' : ''} selected</div>`;
-            }
-            
-            list.innerHTML = headerHtml + randomContacts.map((friend, index) => {
-                const isSelected = selectedFriends.includes(friend.username);
-                return `
-                    <div class="friend-tag-item ${isSelected ? 'selected' : ''}" data-username="${friend.username}" data-index="${index}">
-                        <img src="${friend.pfp_url}" class="friend-tag-pfp" alt="${friend.username}">
-                        <span class="friend-tag-username">@${friend.username}</span>
-                        <span class="inactive-badge">💬</span>
-                    </div>
-                `;
-            }).join('');
-            
-            // Add back to normal friends button
-            list.innerHTML += `<div class="show-more-friends" onclick="displayFriendTags()">← Back to Best Friends</div>`;
-            
-            // Add click listeners
-            document.querySelectorAll('.friend-tag-item').forEach(item => {
-                item.addEventListener('click', function() {
-                    toggleFriendTag(this.dataset.username, this);
-                });
-            });
-            
-            updateFriendTagCounter();
-            showToast('success', 'Reconnect! 💬', `Here are ${randomContacts.length} friend${randomContacts.length > 1 ? 's' : ''} to reach out to`);
-        }
 
         // Display top friend invitation
         function displayTopFriendInvite() {
@@ -6090,6 +6019,54 @@
                     btnText.textContent = 'Lock In Your Choice';
                 }
             }
+        }
+
+        // Show voted status indicator
+        function showVotedStatus(mode) {
+            const votedStatus = document.getElementById('votedStatus');
+            const votedStatusMode = document.getElementById('votedStatusMode');
+            const submitContainer = document.getElementById('submitVotesContainer');
+            
+            if (votedStatus && votedStatusMode && submitContainer) {
+                // Update mode name
+                const modeNames = {
+                    studio: 'Studio Mode',
+                    market: 'Market Mode',
+                    social: 'Social Mode',
+                    battle: 'Battle Mode'
+                };
+                votedStatusMode.textContent = modeNames[mode] || mode;
+                
+                // Show voted status, hide submit button
+                votedStatus.classList.add('active');
+                submitContainer.style.display = 'none';
+                
+                // Clear any selected mode cards
+                selectedModes = [];
+                document.querySelectorAll('.mode-card.selected').forEach(card => {
+                    card.classList.remove('selected');
+                });
+                document.querySelectorAll('.vote-checkbox-hidden').forEach(checkbox => {
+                    checkbox.checked = false;
+                });
+            }
+        }
+
+        // Hide voted status and show submit button (for changing vote)
+        function hideVotedStatus() {
+            const votedStatus = document.getElementById('votedStatus');
+            const submitContainer = document.getElementById('submitVotesContainer');
+            
+            if (votedStatus && submitContainer) {
+                votedStatus.classList.remove('active');
+                submitContainer.style.display = 'block';
+            }
+        }
+
+        // Change vote - allow user to select different mode
+        window.changeVote = function() {
+            hideVotedStatus();
+            showToast('info', 'Change Your Vote', 'Select a different mode to update your vote');
         }
 
         window.submitVotes = async function() {
@@ -6686,6 +6663,15 @@
         async function initialize() {
             console.log('🚀 Initializing app...');
             
+            // Set up offline/online event listeners
+            window.addEventListener('offline', handleOffline);
+            window.addEventListener('online', handleOnline);
+            
+            // Check initial online status
+            if (!navigator.onLine) {
+                handleOffline();
+            }
+            
             // Parse URL context early (before clearing)
             const urlContext = parseAndHandleURLContext();
             
@@ -7186,19 +7172,6 @@
             }
         }
 
-        // Toggle vote power breakdown
-        window.toggleBreakdown = function() {
-            const content = document.getElementById('breakdownContent');
-            const icon = document.getElementById('breakdownToggleIcon');
-            
-            if (content.style.display === 'none' || content.style.display === '') {
-                content.style.display = 'block';
-                icon.textContent = '▲';
-            } else {
-                content.style.display = 'none';
-                icon.textContent = '▼';
-            }
-        }
         
         // Toggle vote history accordion
         window.toggleVoteHistory = function() {
@@ -7274,15 +7247,51 @@
         });
     </script>
 
-    <!-- OnChat Widget -->
+    <!-- OnChat Widget (lazy-loaded) -->
     <div id="onchat-widget"></div>
-    <script src="https://onchat.sebayaki.com/widget.js"></script>
     <script>
-      OnChat.mount('#onchat-widget', {
-          channel: 'zabal',
-          hideMobileTabs: true,
-          hideBrand: true
+        // Lazy-load OnChat widget on first user interaction
+        let onChatLoaded = false;
+        
+        function loadOnChat() {
+            if (onChatLoaded) return;
+            onChatLoaded = true;
+            
+            console.log('📱 Loading OnChat widget...');
+            
+            const script = document.createElement('script');
+            script.src = 'https://onchat.sebayaki.com/widget.js';
+            script.onload = function() {
+                if (window.OnChat) {
+                    OnChat.mount('#onchat-widget', {
+                        channel: 'zabal',
+                        hideMobileTabs: true,
+                        hideBrand: true
+                    });
+                    console.log('✅ OnChat widget loaded');
+                }
+            };
+            script.onerror = function() {
+                console.warn('⚠️ OnChat widget failed to load - chat unavailable');
+            };
+            document.body.appendChild(script);
+        }
+        
+        // Load on first interaction (click, scroll, or after 5 seconds)
+        const interactionEvents = ['click', 'scroll', 'touchstart', 'keydown'];
+        const loadOnInteraction = () => {
+            loadOnChat();
+            interactionEvents.forEach(event => {
+                document.removeEventListener(event, loadOnInteraction);
+            });
+        };
+        
+        interactionEvents.forEach(event => {
+            document.addEventListener(event, loadOnInteraction, { once: true, passive: true });
         });
+        
+        // Fallback: load after 5 seconds if no interaction
+        setTimeout(loadOnChat, 5000);
     </script>
 </body>
 </html>
