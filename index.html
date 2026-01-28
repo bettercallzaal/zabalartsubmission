@@ -4222,10 +4222,47 @@
         let dailyTopVoters = []; // Max 5 voters to tag
         let weeklyTopVoters = []; // Max 5 voters to tag
         
-        // Check if daily voting is closed (past 5 PM EST)
+        // ============================================
+        // DAILY VOTING PHASE - SINGLE SOURCE OF TRUTH
+        // Centralizes all time-based voting logic
+        // ============================================
+        
+        // Dev hooks for testing (only active when explicitly set)
+        window.__ZABAL_DEV__ = window.__ZABAL_DEV__ || {
+            forceDailyPhase: null, // 'active' | 'closed'
+            forceLeader: null
+        };
+        
+        // Get current daily voting phase (single authority for time logic)
+        function getDailyVotingPhase(now = new Date()) {
+            // Dev override (testing only)
+            if (window.__ZABAL_DEV__.forceDailyPhase) {
+                const forced = window.__ZABAL_DEV__.forceDailyPhase;
+                console.log('🔧 [DEV] Forcing daily phase:', forced);
+                return {
+                    phase: forced === 'active' ? 'active' : 'closed',
+                    isActive: forced === 'active',
+                    isClosed: forced === 'closed',
+                    closesAt: forced === 'active' ? calculateLockTime() : null,
+                    timezone: 'EST'
+                };
+            }
+            
+            const estNow = getESTDate(now);
+            const isClosed = estNow.getHours() >= 17; // 5 PM EST or later
+            
+            return {
+                phase: isClosed ? 'closed' : 'active',
+                isActive: !isClosed,
+                isClosed: isClosed,
+                closesAt: isClosed ? null : calculateLockTime(),
+                timezone: 'EST'
+            };
+        }
+        
+        // Legacy wrapper (keep for backwards compatibility during migration)
         function isDailyVotingClosed() {
-            const estNow = getESTDate();
-            return estNow.getHours() >= 17; // 5 PM EST or later
+            return getDailyVotingPhase().isClosed;
         }
         
         // Update daily winning share card visibility
@@ -4404,8 +4441,7 @@
         function shareCurrentlyWinning(type) {
             console.log('📤 [CURRENTLY WINNING] Sharing momentum:', type);
             
-            let shareCopy = '';
-            let contextParam = '';
+            let context = {};
             
             if (type === 'daily') {
                 const leader = getCurrentLeader(votes);
@@ -4414,18 +4450,30 @@
                 const modeEl = document.querySelector(`[data-mode="${leader.label}"] .mode-name`);
                 const modeName = modeEl ? modeEl.textContent : leader.label;
                 
-                shareCopy = `${modeName} is leading right now 🔥\n\nVote before 5 PM EST → zabal.art`;
-                contextParam = `?share=currently_winning&ref=${leader.label}`;
+                context = {
+                    winnerName: modeName,
+                    winnerRef: leader.label,
+                    voteType: 'daily',
+                    topVoters: []
+                };
             } else if (type === 'weekly') {
                 const leaderNameEl = document.getElementById('weeklyCurrentLeaderName');
                 if (!leaderNameEl) return;
                 
                 const platform = leaderNameEl.textContent;
-                shareCopy = `${platform} is leading the signal this week 👀\n\nAdd your vote → zabal.art`;
-                contextParam = `?share=currently_winning&ref=${platform.toLowerCase()}`;
+                
+                context = {
+                    winnerName: platform,
+                    winnerRef: platform.toLowerCase(),
+                    voteType: 'weekly',
+                    topVoters: []
+                };
             }
             
-            openWinningShareModal(shareCopy, [], type, contextParam);
+            const payload = buildSharePayload('currently_winning', context);
+            if (!payload) return;
+            
+            openWinningShareModal(payload.text, payload.mentions, type, payload.contextParam);
         }
         
         // ============================================
@@ -4437,18 +4485,22 @@
             console.log('📤 [WINNING SHARE] Sharing result:', type);
             
             if (type === 'daily' && dailyWinner) {
-                // Build daily share copy
-                const shareCopy = `${dailyWinner} won today's stream.\nThanks to everyone who voted 👀\nJoin tomorrow → zabal.art`;
+                const payload = buildSharePayload('daily_winner', {
+                    winnerName: dailyWinner,
+                    topVoters: dailyTopVoters
+                });
                 
-                // Open share modal with the winning mode
-                openWinningShareModal(shareCopy, dailyTopVoters, 'daily');
+                if (!payload) return;
+                openWinningShareModal(payload.text, payload.mentions, 'daily');
                 
             } else if (type === 'weekly' && weeklyWinner) {
-                // Build weekly share copy
-                const shareCopy = `${weeklyWinner} is where the ZABAL community showed up this week.\nAppreciate everyone who voted 💛\nJoin the signal → zabal.art`;
+                const payload = buildSharePayload('weekly_winner', {
+                    winnerName: weeklyWinner,
+                    topVoters: weeklyTopVoters
+                });
                 
-                // Open share modal with the winning platform
-                openWinningShareModal(shareCopy, weeklyTopVoters, 'weekly');
+                if (!payload) return;
+                openWinningShareModal(payload.text, payload.mentions, 'weekly');
             }
         }
         
@@ -5102,6 +5154,124 @@
         let currentVotedModes = []; // Store all voted modes for sharing
         const MINIAPP_URL = window.appConfig?.MINIAPP_URL || 'https://zabal.art';
         const SONGJAM_URL = window.appConfig?.SONGJAM_URL || 'https://www.songjam.space/zabal';
+        
+        // ============================================
+        // SHARE PAYLOAD BUILDER - SINGLE SOURCE OF TRUTH
+        // All share copy, tags, embeds, and params flow through here
+        // ============================================
+        
+        // Allowed share moments (validation)
+        const ALLOWED_SHARE_MOMENTS = new Set([
+            'daily_vote',
+            'weekly_vote',
+            'currently_winning',
+            'daily_winner',
+            'weekly_winner',
+            'live_now'
+        ]);
+        
+        /**
+         * Build share payload for any sharing moment
+         * @param {string} moment - One of ALLOWED_SHARE_MOMENTS
+         * @param {object} context - Moment-specific data
+         * @returns {object} { text, embeds, mentions, contextParam }
+         */
+        function buildSharePayload(moment, context = {}) {
+            // Validate moment
+            if (!ALLOWED_SHARE_MOMENTS.has(moment)) {
+                console.error('❌ [SHARE] Invalid moment:', moment);
+                return null;
+            }
+            
+            console.log('📦 [SHARE] Building payload for:', moment, context);
+            
+            let text = '';
+            let embeds = [];
+            let mentions = [];
+            let contextParam = '';
+            
+            switch (moment) {
+                case 'daily_vote':
+                    const modes = context.modes || [];
+                    const modeNames = modes.map(m => {
+                        const el = document.querySelector(`[data-mode="${m}"] .mode-name`);
+                        return el ? el.textContent : m;
+                    });
+                    
+                    text = `Just voted ${modeNames.join(', ')} on ZABAL 🎨\n\nJoin me → zabal.art`;
+                    embeds = [MINIAPP_URL + '?share=daily_vote'];
+                    mentions = context.selectedFriends || [];
+                    contextParam = '?share=daily_vote';
+                    break;
+                    
+                case 'weekly_vote':
+                    const platform = context.platform || '';
+                    text = `Backing ${platform} for ZABAL this week 💛\n\nWhat's your signal? → zabal.art`;
+                    embeds = [MINIAPP_URL + '?share=weekly_vote'];
+                    mentions = context.selectedFriends || [];
+                    contextParam = '?share=weekly_vote';
+                    break;
+                    
+                case 'currently_winning':
+                    const winnerName = context.winnerName || '';
+                    const voteType = context.voteType || 'daily';
+                    
+                    if (voteType === 'daily') {
+                        text = `${winnerName} is leading right now 🔥\n\nVote before 5 PM EST → zabal.art`;
+                        contextParam = `?share=currently_winning&ref=${context.winnerRef || ''}`;
+                    } else {
+                        text = `${winnerName} is leading the signal this week 👀\n\nAdd your vote → zabal.art`;
+                        contextParam = `?share=currently_winning&ref=${context.winnerRef || ''}`;
+                    }
+                    
+                    embeds = [MINIAPP_URL + contextParam];
+                    mentions = context.topVoters || [];
+                    break;
+                    
+                case 'daily_winner':
+                    const dailyWinnerName = context.winnerName || '';
+                    text = `${dailyWinnerName} won today's stream.\nThanks to everyone who voted 👀\nJoin tomorrow → zabal.art`;
+                    embeds = [MINIAPP_URL + '?share=daily_winner'];
+                    mentions = context.topVoters || [];
+                    contextParam = '?share=daily_winner';
+                    break;
+                    
+                case 'weekly_winner':
+                    const weeklyWinnerName = context.winnerName || '';
+                    text = `${weeklyWinnerName} is where the ZABAL community showed up this week.\nAppreciate everyone who voted 💛\nJoin the signal → zabal.art`;
+                    embeds = [MINIAPP_URL + '?share=weekly_winner'];
+                    mentions = context.topVoters || [];
+                    contextParam = '?share=weekly_winner';
+                    break;
+                    
+                case 'live_now':
+                    text = `ZABAL is live! 🔴\n\nCome watch us build → zabal.art`;
+                    embeds = [MINIAPP_URL + '?share=live_now'];
+                    mentions = context.selectedFriends || [];
+                    contextParam = '?share=live_now';
+                    break;
+            }
+            
+            // Build mention tags (max 5)
+            const mentionTags = mentions.slice(0, 5).map(m => {
+                if (typeof m === 'string') return `@${m}`;
+                return m.username ? `@${m.username}` : '';
+            }).filter(tag => tag).join(' ');
+            
+            // Append mentions to text if present
+            const finalText = mentionTags ? `${text}\n\n${mentionTags}` : text;
+            
+            const payload = {
+                text: finalText,
+                embeds,
+                mentions,
+                contextParam,
+                moment
+            };
+            
+            console.log('✅ [SHARE] Payload built:', payload);
+            return payload;
+        }
         
         async function callNeynarAPI(endpoint, params = {}) {
             // Try serverless function first
