@@ -5003,13 +5003,11 @@
                 const validatedFID = window.Validator.validateFID(userFID);
                 
                 // Calculate vote power SERVER-SIDE via serverless function
-                console.log('🎯 [DAILY VOTE] Calculating vote power server-side...');
                 let votePowerData;
                 try {
                     const vpResponse = await fetch(`/api/calculate-vote-power?fid=${validatedFID}`);
                     if (vpResponse.ok) {
                         votePowerData = await vpResponse.json();
-                        console.log('✅ [DAILY VOTE] Vote power calculated:', votePowerData);
                         
                         // Cache the result in database
                         await supabase.rpc('update_vote_power_cache', {
@@ -5027,8 +5025,6 @@
                     votePowerData = { power: 1 };
                 }
                 
-                console.log('📤 [DAILY VOTE] Calling upsert_daily_vote RPC:', { fid: validatedFID, mode });
-                
                 // Call UPSERT RPC (vote_power read from cache server-side)
                 const { data, error } = await supabase.rpc('upsert_daily_vote', {
                     p_fid: validatedFID,
@@ -5043,22 +5039,17 @@
                     return;
                 }
                 
-                console.log('📥 [DAILY VOTE] RPC response:', data);
-                
                 // Show appropriate feedback based on vote state
                 const isFirstVote = !data.previous_mode;
                 
                 if (data.previous_mode && data.changed) {
-                    console.log('🔄 [DAILY VOTE] Vote changed from', data.previous_mode, 'to', data.new_mode);
                     showToast('success', 'Vote Updated', `Now voting for ${data.new_mode}`);
                 } else if (!data.previous_mode) {
-                    console.log('✅ [DAILY VOTE] First vote recorded for', data.new_mode);
                     showToast('success', 'Vote Recorded', `Voting for ${data.new_mode}`);
                 }
                 // No toast for same-mode confirmation - avoid spam
                 
                 // Always unlock weekly voting after any daily vote
-                console.log('🔓 [DAILY VOTE] Unlocking weekly voting');
                 localStorage.setItem('daily_voted_today', 'true');
                 localStorage.setItem('daily_voted_date', getTodayUTC());
                 unlockWeeklyVoting(isFirstVote); // Show feedback only on first vote
@@ -5066,7 +5057,6 @@
                 // Header already defaults collapsed, no need to collapse after vote
                 
                 userVote = mode;
-                console.log('💾 User vote saved:', mode);
                 
                 // Track vote in analytics
                 window.analytics?.trackVote(mode);
@@ -5096,23 +5086,18 @@
                 
                 // Only open share modal if not skipped AND this is first vote of the day
                 if (!skipModal && !data.previous_mode) {
-                    console.log('🎉 [DAILY VOTE] First vote - opening share modal');
                     // Check if should auto-share
                     if (shouldAutoShare(mode)) {
-                        console.log('🔄 Auto-sharing vote...');
                         setTimeout(() => shareVote(mode, true), 1000);
                     } else {
                         // Open share modal directly after vote
                         setTimeout(() => openShareModal(mode), 500);
                     }
-                } else if (!skipModal && data.previous_mode) {
-                    console.log('🔁 [DAILY VOTE] Vote change - skipping share modal');
                 }
                 
                 // Only reload votes if not in batch mode (submitVotes will reload once at the end)
                 if (!skipModal) {
                     await loadVotes();
-                    console.log('✅ Vote complete and counts updated!');
                     
                     // Force update the UI
                     updateVotes();
@@ -6160,7 +6145,6 @@
         let selectedModes = [];
 
         window.toggleModeSelection = function(mode) {
-            console.log('🖱️ [USER FLOW] Card clicked:', mode);
             
             const card = document.querySelector(`.mode-card[data-mode="${mode}"]`);
             const checkbox = card.querySelector('.vote-checkbox-hidden');
@@ -6191,19 +6175,10 @@
             
             if (btn) {
                 btn.disabled = selectedModes.length === 0;
-                if (selectedModes.length > 0) {
-                    console.log('✅ [USER FLOW] Submit button ENABLED -', selectedModes.length, 'mode(s) selected');
-                } else {
-                    console.log('🔒 [USER FLOW] Submit button DISABLED - no selections');
-                }
             }
-            
-            console.log('📊 Selected modes:', selectedModes);
         }
 
         window.submitVotes = async function() {
-            console.log('🗳️ [USER FLOW] Submit button clicked');
-            console.log('🗳️ Submitting votes for modes:', selectedModes);
             
             // Validate modes
             let validatedModes;
@@ -6256,9 +6231,6 @@
                 selectedModes = [];
                 document.querySelectorAll('.vote-checkbox').forEach(cb => cb.checked = false);
                 updateSubmitButton();
-                
-                console.log('✅ [USER FLOW] All votes submitted successfully');
-                console.log('📤 [USER FLOW] Opening share modal with modes:', votedModes);
                 
                 // Open share modal with all voted modes
                 setTimeout(() => openShareModal(votedModes), 500);
@@ -6888,7 +6860,6 @@
             const weekNum = Math.ceil((((utcDate - yearStart) / 86400000) + 1) / 7);
             
             const weekKey = `${utcDate.getUTCFullYear()}-W${String(weekNum).padStart(2, '0')}`;
-            console.log('📅 [WEEKLY SOCIAL] Current week key:', weekKey);
             return weekKey;
         }
         
@@ -6899,19 +6870,16 @@
         // Submit weekly social vote (single-select only) - DB-backed
         window.submitWeeklySocialVote = async function(platform) {
             try {
-                console.log('🗳️ [WEEKLY SOCIAL] Vote button clicked for:', platform);
                 
                 // CRITICAL: Check if weekly voting is locked (gating)
                 const section = document.getElementById('weeklyFocusSection');
                 if (section?.classList.contains('locked')) {
-                    console.log('🔒 [WEEKLY SOCIAL] Voting locked - user must vote daily first');
                     return; // Silent fail - no error toast (UX gating, not error)
                 }
                 
                 // Check if user is authenticated
                 if (!isAuthenticated || !userFID) {
                     showToast('error', 'Authentication Required', 'Please connect your Farcaster account to vote');
-                    console.log('❌ [WEEKLY SOCIAL] Not authenticated');
                     return;
                 }
                 
@@ -6928,13 +6896,11 @@
                 const validatedFID = window.Validator.validateFID(userFID);
                 
                 // Calculate vote power SERVER-SIDE via serverless function
-                console.log('🎯 [WEEKLY SOCIAL] Calculating vote power server-side...');
                 let votePowerData;
                 try {
                     const vpResponse = await fetch(`/api/calculate-vote-power?fid=${validatedFID}`);
                     if (vpResponse.ok) {
                         votePowerData = await vpResponse.json();
-                        console.log('✅ [WEEKLY SOCIAL] Vote power calculated:', votePowerData);
                         
                         // Cache the result in database
                         await supabase.rpc('update_vote_power_cache', {
@@ -6962,8 +6928,6 @@
                 };
                 const normalizedPlatform = platformMap[platform] || platform.toLowerCase();
                 
-                console.log('📤 [WEEKLY SOCIAL] Calling submit_weekly_social_vote RPC:', { fid: validatedFID, platform: normalizedPlatform });
-                
                 // Call Supabase RPC to submit vote (vote_power read from cache server-side)
                 const { data, error } = await supabase.rpc('submit_weekly_social_vote', {
                     user_fid: validatedFID,
@@ -6984,8 +6948,6 @@
                     showToast('error', 'Submission Failed', error.message || 'Could not submit vote. Please try again.');
                     return;
                 }
-                
-                console.log('📥 [WEEKLY SOCIAL] RPC response:', data);
                 
                 // Check if RPC call was successful
                 if (!data || !data.success) {
@@ -7011,7 +6973,6 @@
                 showWeeklySocialVotedState(platform);
                 
                 // Open share modal on every weekly vote
-                console.log('🎉 [WEEKLY SOCIAL] Opening share modal');
                 setTimeout(() => {
                     openShareModal([platform], true); // true = isWeeklyVote
                 }, 500);
@@ -7118,8 +7079,7 @@
             if (stateEl && platformEl) {
                 platformEl.textContent = `Your choice: ${platform}`;
                 stateEl.style.display = 'flex';
-                console.log('✅ [WEEKLY SOCIAL] Showing voted state for:', platform);
-            }
+            }            
         }
         
         // Initialize weekly social voting - DB-backed
