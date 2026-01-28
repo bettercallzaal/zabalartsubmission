@@ -181,7 +181,7 @@
 
         /* Hero Section */
         .hero {
-            min-height: 100vh;
+            min-height: 70vh;
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -261,7 +261,7 @@
 
         /* Section Styles */
         section {
-            padding: 80px 20px;
+            padding: 60px 20px;
         }
 
         section h2 {
@@ -302,7 +302,6 @@
         /* ZABAL Links Section */
         .zabal-links {
             background: linear-gradient(180deg, var(--bg-black) 0%, #0a0a0a 100%);
-            padding: 60px 20px;
         }
 
         .zabal-links h2 {
@@ -657,7 +656,7 @@
         footer {
             background: var(--bg-black);
             border-top: 1px solid var(--border-color);
-            padding: 60px 20px 40px;
+            padding: 60px 20px;
             text-align: center;
         }
 
@@ -724,6 +723,35 @@
         }
 
 
+        /* FAQ Styles */
+        .faq {
+            background: var(--bg-black);
+        }
+
+        .faq-container {
+            max-width: 800px;
+            margin: 2rem auto 0;
+        }
+
+        .faq-item {
+            margin-bottom: 1.5rem;
+            padding: 1.5rem;
+            background: var(--primary-blue);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+        }
+
+        .faq-item h3 {
+            color: var(--accent-yellow);
+            margin-bottom: 0.75rem;
+            font-size: 1.2rem;
+        }
+
+        .faq-item p {
+            color: var(--text-gray);
+            line-height: 1.8;
+        }
+
         /* Responsive Design */
         @media (max-width: 768px) {
             header {
@@ -738,8 +766,12 @@
                 display: none;
             }
 
+            .hero {
+                min-height: 60vh;
+            }
+
             section {
-                padding: 60px 20px;
+                padding: 50px 20px;
             }
 
             .types-grid {
@@ -760,7 +792,11 @@
 
         @media (max-width: 480px) {
             .hero {
-                min-height: 80vh;
+                min-height: 50vh;
+            }
+
+            section {
+                padding: 40px 20px;
             }
 
             .types-grid {
@@ -802,74 +838,14 @@
     <section class="hero">
         <div class="hero-content">
             <h1>Submit Your Work</h1>
-            <h2>Share Your Creative Work</h2>
-            <p>Share your work inspired by the ZABAL ecosystem.</p>
-        </div>
-    </section>
-
-    <!-- Stats Section - Temporarily Hidden -->
-    <!-- <section class="stats-section">
-        <div class="container">
-            <div class="stats-grid">
-                <div class="stat-item">
-                    <span class="stat-number" data-target="250">0</span>
-                    <span class="stat-label">Total Submissions</span>
-                </div>
-                <div class="stat-item">
-                    <span class="stat-number" data-target="85">0</span>
-                    <span class="stat-label">Active Creators</span>
-                </div>
-                <div class="stat-item">
-                    <span class="stat-number" data-target="42">0</span>
-                    <span class="stat-label">Hours Streamed</span>
-                </div>
-                <div class="stat-item">
-                    <span class="stat-number" data-target="500">0</span>
-                    <span class="stat-label">Community Members</span>
-                </div>
-            </div>
-        </div>
-    </section> -->
-
-    <!-- ZABAL Links Section -->
-    <section class="zabal-links">
-        <div class="container">
-            <h2>ZABAL Ecosystem</h2>
-            <div class="links-grid">
-                <div class="link-card">
-                    <div class="link-icon"></div>
-                    <h3>Songjam Leaderboard</h3>
-                    <p>Track top creators and compete on the ZABAL Songjam leaderboard</p>
-                    <a href="https://www.songjam.space/zabal" target="_blank" class="link-button">
-                        Visit Leaderboard →
-                    </a>
-                </div>
-                <div class="link-card">
-                    <div class="link-icon"></div>
-                    <h3>Incented Campaign</h3>
-                    <p>Join the ZABAL incented campaign and earn rewards for participation</p>
-                    <a href="https://incented.zabal.art" target="_blank" class="link-button">
-                        Join Campaign →
-                    </a>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- About Section -->
-    <section class="explanation">
-        <div class="container">
-            <h2>About ZABAL.art</h2>
-            <p>
-                ZABAL.art is a creative submission hub for the ZABAL ecosystem. We welcome all types of submissions including artwork, music, videos, graphics, memes, writings, creative code, Farcaster content, photography, and more. This page serves as a growing gallery of creator contributions around ZABAL, showcasing the diverse talent and creativity of our community.
-            </p>
+            <p>Share art, music, videos, writing, or creative work with the ZABAL community.</p>
         </div>
     </section>
 
     <!-- Submission Types Section -->
     <section class="submission-types">
         <div class="container">
-            <h2>What We Accept</h2>
+            <h2>What You Can Submit</h2>
             <div class="types-grid">
                 <div class="type-card">
                     <h3>Art</h3>
@@ -905,19 +881,6 @@
         </div>
     </section>
 
-    <!-- Submission Form Section -->
-    <section class="submission-form">
-        <div class="container">
-            <h2>Submit Your Work</h2>
-            <div class="form-intro">
-                <p>Share your creation with the ZABAL ecosystem.</p>
-            </div>
-            <div class="tally-container">
-                <iframe data-tally-src="https://tally.so/embed/5BXeqv?hideTitle=1&transparentBackground=1&dynamicHeight=1" loading="lazy" width="100%" height="500" frameborder="0" marginheight="0" marginwidth="0" title="ZABAL.art Submission Portal"></iframe>
-            </div>
-        </div>
-    </section>
-
     <!-- Guidelines Section -->
     <section class="guidelines">
         <div class="container">
@@ -931,52 +894,69 @@
         </div>
     </section>
 
-    <!-- FAQ Section -->
-    <section class="faq" style="background: var(--bg-black); padding: 80px 20px;">
+    <!-- Submission Form Section -->
+    <section class="submission-form">
         <div class="container">
-            <h2>Frequently Asked Questions</h2>
-            <div style="max-width: 800px; margin: 2rem auto 0;">
-                <div class="faq-item" style="margin-bottom: 1.5rem; padding: 1.5rem; background: var(--primary-blue); border: 1px solid var(--border-color); border-radius: 8px;">
-                    <h3 style="color: var(--accent-yellow); margin-bottom: 0.75rem; font-size: 1.2rem;">What types of submissions are accepted?</h3>
-                    <p style="color: var(--text-gray); line-height: 1.8;">We accept all forms of creative work including artwork, music, remixes, videos, photography, memes, essays, creative code, Farcaster casts, and more. If it's inspired by the ZABAL ecosystem, we want to see it!</p>
+            <h2>Submit Your Work</h2>
+            <div class="tally-container">
+                <iframe data-tally-src="https://tally.so/embed/5BXeqv?hideTitle=1&transparentBackground=1&dynamicHeight=1" loading="lazy" width="100%" height="500" frameborder="0" marginheight="0" marginwidth="0" title="ZABAL.art Submission Portal"></iframe>
+            </div>
+        </div>
+    </section>
+
+    <!-- After You Submit Section -->
+    <section class="what-next">
+        <div class="container">
+            <h2>After You Submit</h2>
+            <ul class="next-list">
+                <li>Your submission posts to the ZABAL Discord immediately</li>
+                <li>The ZABAL team reviews submissions on a rolling basis</li>
+                <li>Featured works appear on ZABAL.art — you'll be notified</li>
+                <li>You retain all rights — credit always stays with you</li>
+            </ul>
+        </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <section class="faq">
+        <div class="container">
+            <h2>Questions</h2>
+            <div class="faq-container">
+                <div class="faq-item">
+                    <h3>What file formats work?</h3>
+                    <p>Images (JPG, PNG, GIF), audio (MP3, WAV), video (MP4, MOV), PDFs, and zip files. Other formats? Ask in Discord.</p>
                 </div>
-                <div class="faq-item" style="margin-bottom: 1.5rem; padding: 1.5rem; background: var(--primary-blue); border: 1px solid var(--border-color); border-radius: 8px;">
-                    <h3 style="color: var(--accent-yellow); margin-bottom: 0.75rem; font-size: 1.2rem;">Do I retain rights to my work?</h3>
-                    <p style="color: var(--text-gray); line-height: 1.8;">Yes! You retain all rights to your work. Credit always stays with the creator. We may showcase selected works on ZABAL.art and in community content, but ownership remains with you.</p>
+                <div class="faq-item">
+                    <h3>Can I submit multiple works?</h3>
+                    <p>Yes. Share as many as you want.</p>
                 </div>
-                <div class="faq-item" style="margin-bottom: 1.5rem; padding: 1.5rem; background: var(--primary-blue); border: 1px solid var(--border-color); border-radius: 8px;">
-                    <h3 style="color: var(--accent-yellow); margin-bottom: 0.75rem; font-size: 1.2rem;">How long does the review process take?</h3>
-                    <p style="color: var(--text-gray); line-height: 1.8;">Submissions are posted to our Discord immediately for community review. The ZABAL team reviews submissions on a rolling basis. Selected works will be featured on ZABAL.art and you'll be notified.</p>
-                </div>
-                <div class="faq-item" style="margin-bottom: 1.5rem; padding: 1.5rem; background: var(--primary-blue); border: 1px solid var(--border-color); border-radius: 8px;">
-                    <h3 style="color: var(--accent-yellow); margin-bottom: 0.75rem; font-size: 1.2rem;">Can I submit multiple works?</h3>
-                    <p style="color: var(--text-gray); line-height: 1.8;">Absolutely! We encourage multiple submissions. Share all your ZABAL-inspired creations with the community.</p>
-                </div>
-                <div class="faq-item" style="margin-bottom: 1.5rem; padding: 1.5rem; background: var(--primary-blue); border: 1px solid var(--border-color); border-radius: 8px;">
-                    <h3 style="color: var(--accent-yellow); margin-bottom: 0.75rem; font-size: 1.2rem;">What file formats are supported?</h3>
-                    <p style="color: var(--text-gray); line-height: 1.8;">We accept images (JPG, PNG, GIF), audio files (MP3, WAV), videos (MP4, MOV), PDFs, and zip files. If you have a different format, reach out to us on Discord.</p>
-                </div>
-                <div class="faq-item" style="margin-bottom: 1.5rem; padding: 1.5rem; background: var(--primary-blue); border: 1px solid var(--border-color); border-radius: 8px;">
-                    <h3 style="color: var(--accent-yellow); margin-bottom: 0.75rem; font-size: 1.2rem;">Is there any compensation for submissions?</h3>
-                    <p style="color: var(--text-gray); line-height: 1.8;">While we can't guarantee compensation, contributors may be highlighted in future ZABAL content and community posts. Selected creators may receive recognition and potential opportunities within the ZABAL ecosystem.</p>
+                <div class="faq-item">
+                    <h3>Do I keep rights to my work?</h3>
+                    <p>Yes. You own your work. We may showcase it on ZABAL.art and in community content, but ownership stays with you.</p>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- What Happens Next Section -->
-    <section class="what-next">
+    <!-- ZABAL Links Section -->
+    <section class="zabal-links">
         <div class="container">
-            <h2>What Happens Next?</h2>
-            <ul class="next-list">
-                <li>Your submission is automatically posted to the ZABAL Discord community for review</li>
-                <li>Selected works may be showcased on ZABAL.art</li>
-                <li>Contributors may be highlighted in future content or ZABAL community posts</li>
-                <li>Credit always stays with the creator</li>
-            </ul>
-            <div style="text-align: center; margin-top: 2rem; padding: 1.5rem; background: var(--primary-blue); border: 2px solid var(--border-color); border-radius: 8px;">
-                <p style="color: var(--text-gray); margin-bottom: 1rem;">Want to see your submission and connect with other creators?</p>
-                <a href="https://www.thezao.com/nexus" target="_blank" style="display: inline-block; padding: 12px 24px; background: var(--accent-yellow); color: var(--bg-black); text-decoration: none; border-radius: 6px; font-weight: 700; transition: all 0.3s ease;">Visit ZAO Nexus</a>
+            <h2>ZABAL Ecosystem</h2>
+            <div class="links-grid">
+                <div class="link-card">
+                    <h3>Songjam Leaderboard</h3>
+                    <p>Track top creators and compete on the ZABAL Songjam leaderboard</p>
+                    <a href="https://www.songjam.space/zabal" target="_blank" class="link-button">
+                        Visit Leaderboard →
+                    </a>
+                </div>
+                <div class="link-card">
+                    <h3>Incented Campaign</h3>
+                    <p>Join the ZABAL incented campaign and earn rewards for participation</p>
+                    <a href="https://incented.zabal.art" target="_blank" class="link-button">
+                        Join Campaign →
+                    </a>
+                </div>
             </div>
         </div>
     </section>
@@ -1008,78 +988,6 @@
             var s=d.createElement("script");s.src=w;s.onload=v;d.body.appendChild(s);
         }
 
-        // Animated Counter
-        const animateCounter = (element) => {
-            const target = parseInt(element.getAttribute('data-target'));
-            const duration = 2000; // 2 seconds
-            const increment = target / (duration / 16); // 60fps
-            let current = 0;
-
-            const updateCounter = () => {
-                current += increment;
-                if (current < target) {
-                    element.textContent = Math.floor(current);
-                    requestAnimationFrame(updateCounter);
-                } else {
-                    element.textContent = target;
-                }
-            };
-
-            updateCounter();
-        };
-
-        // Intersection Observer for counter animation
-        const observerOptions = {
-            threshold: 0.5
-        };
-
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    const counters = entry.target.querySelectorAll('.stat-number');
-                    counters.forEach(counter => {
-                        if (counter.textContent === '0') {
-                            animateCounter(counter);
-                        }
-                    });
-                    observer.unobserve(entry.target);
-                }
-            });
-        }, observerOptions);
-
-        const statsSection = document.querySelector('.stats-section');
-        if (statsSection) {
-            observer.observe(statsSection);
-        }
-
-        // Twitch Stream Status Checker
-        const checkStreamStatus = async () => {
-            const streamStatus = document.getElementById('streamStatus');
-            const streamText = streamStatus.querySelector('.stream-text');
-            
-            try {
-                // Using Twitch API - Replace with your actual implementation
-                // For now, this is a placeholder that checks every 60 seconds
-                // You'll need to set up a backend endpoint or use Twitch API directly
-                
-                // Placeholder: Randomly show live status for demo (remove in production)
-                const isLive = false; // Set to true when actually streaming
-                
-                if (isLive) {
-                    streamStatus.classList.add('live');
-                    streamText.textContent = 'LIVE NOW';
-                } else {
-                    streamStatus.classList.remove('live');
-                    streamText.textContent = 'Offline';
-                }
-            } catch (error) {
-                console.error('Error checking stream status:', error);
-            }
-        };
-
-        // Check stream status on load and every 60 seconds
-        checkStreamStatus();
-        setInterval(checkStreamStatus, 60000);
     </script>
 </body>
 </html>
