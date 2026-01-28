@@ -3426,25 +3426,25 @@
 
     <!-- Mobile Menu -->
     <div class="mobile-menu" id="mobileMenu">
-        <a href="index.html" class="active">🗳️ Vote</a>
-        <a href="chat.html">💬 Chat</a>
-        <a href="submissions.html">📤 Submit</a>
-        <a href="gallery.html">🔍 Research</a>
-        <a href="https://www.thezao.com/nexus" target="_blank">🌐 ZAO Nexus</a>
+        <a href="index.html" class="active">Vote</a>
+        <a href="chat.html">Chat</a>
+        <a href="submissions.html">Submit</a>
+        <a href="gallery.html">Research</a>
+        <a href="https://www.thezao.com/nexus" target="_blank">ZAO Nexus</a>
     </div>
 
     <!-- Now Live Banner -->
     <div id="nowLiveBanner" class="now-live-banner" style="display: none;">
         <div class="live-pulse"></div>
-        <span class="live-text">🔴 ZABAL IS LIVE NOW!</span>
-        <button class="watch-now-btn" onclick="openLiveShareModal()">📺 Share Stream</button>
+        <span class="live-text">ZABAL IS LIVE NOW</span>
+        <button class="watch-now-btn" onclick="openLiveShareModal()">Share Stream</button>
     </div>
 
     <!-- Personal Stats -->
     <section class="container" style="padding-top: 70px;">
         <div id="personalStats" class="personal-stats">
             <div class="stats-header" onclick="toggleStatsExpand()" style="cursor: pointer;">
-                <span class="stats-summary" id="statsSummary">You've voted 0 times · Influence 1×</span>
+                <span class="stats-summary" id="statsSummary">Your impact: 0 votes cast · 1× power</span>
                 <span class="stats-toggle-icon" id="statsToggleIcon">▼</span>
             </div>
             <div class="stats-grid" id="statsGrid" style="display: none;">
@@ -3469,7 +3469,7 @@
             <!-- Vote Power Breakdown -->
             <div id="votePowerBreakdown" class="breakdown-container">
                 <button onclick="toggleBreakdown()" class="breakdown-toggle">
-                    <span>How influence works →</span>
+                    <span>Why your vote matters →</span>
                     <span id="breakdownToggleIcon" class="breakdown-toggle-icon">▼</span>
                 </button>
                 <div id="breakdownContent" class="breakdown-content">
@@ -3523,38 +3523,33 @@
     <!-- Stream Wheel Section -->
     <section class="wheel-section" id="wheel">
         <div class="container">
-            <div class="wheel-header">
-                <h2>Vote on Today's Stream Focus</h2>
-                <p>Choose what Zaal creates live today. Voting closes at 5 PM EST.</p>
-            </div>
-
-            <div class="wheel-container">
+            <div class="mode-cards-grid">
                 <!-- Studio Mode -->
                 <div class="mode-card leading selectable-card" data-mode="studio" onclick="toggleModeSelection('studio')">
                     <input type="checkbox" class="vote-checkbox-hidden" data-mode="studio">
-                    <div class="mode-icon">🎨</div>
+                    <div class="mode-icon"></div>
                     <div class="mode-info">
                         <div class="mode-name">Studio Mode</div>
-                        <div class="mode-description">We create live. Music, art, experiments.</div>
+                        <div class="mode-description">Deep work. Long-form creation.</div>
                     </div>
                     <div class="mode-votes">
                         <span class="vote-count" data-votes="studio">42</span>
                         <span class="vote-label">Votes</span>
-                        <div class="leading-badge">🏆 Leading</div>
+                        <div class="leading-badge">Leading</div>
                         <div class="vote-percentage-bar">
                             <div class="vote-percentage-fill" data-percentage="studio" style="width: 0%"></div>
                         </div>
-                        <div class="selection-indicator">✓ Selected</div>
+                        <div class="selection-indicator">Selected</div>
                     </div>
                 </div>
 
                 <!-- Market Mode -->
                 <div class="mode-card selectable-card" data-mode="market" onclick="toggleModeSelection('market')">
                     <input type="checkbox" class="vote-checkbox-hidden" data-mode="market">
-                    <div class="mode-icon">📊</div>
+                    <div class="mode-icon"></div>
                     <div class="mode-info">
                         <div class="mode-name">Market Mode</div>
-                        <div class="mode-description">We analyze culture. Trends, tokens, movements.</div>
+                        <div class="mode-description">Fast decisions. Community-driven.</div>
                     </div>
                     <div class="mode-votes">
                         <span class="vote-count" data-votes="market">28</span>
@@ -3562,17 +3557,17 @@
                         <div class="vote-percentage-bar">
                             <div class="vote-percentage-fill" data-percentage="market" style="width: 0%"></div>
                         </div>
-                        <div class="selection-indicator">✓ Selected</div>
+                        <div class="selection-indicator">Selected</div>
                     </div>
                 </div>
 
                 <!-- Social Mode -->
                 <div class="mode-card selectable-card" data-mode="social" onclick="toggleModeSelection('social')">
                     <input type="checkbox" class="vote-checkbox-hidden" data-mode="social">
-                    <div class="mode-icon">🌐</div>
+                    <div class="mode-icon"></div>
                     <div class="mode-info">
                         <div class="mode-name">Social Mode</div>
-                        <div class="mode-description">We break algorithms. Farcaster, X, distribution.</div>
+                        <div class="mode-description">Engagement-first. Interactive.</div>
                     </div>
                     <div class="mode-votes">
                         <span class="vote-count" data-votes="social">35</span>
@@ -3580,17 +3575,17 @@
                         <div class="vote-percentage-bar">
                             <div class="vote-percentage-fill" data-percentage="social" style="width: 0%"></div>
                         </div>
-                        <div class="selection-indicator">✓ Selected</div>
+                        <div class="selection-indicator">Selected</div>
                     </div>
                 </div>
 
                 <!-- Battle Mode -->
                 <div class="mode-card selectable-card" data-mode="battle" onclick="toggleModeSelection('battle')">
                     <input type="checkbox" class="vote-checkbox-hidden" data-mode="battle">
-                    <div class="mode-icon">⚔️</div>
+                    <div class="mode-icon"></div>
                     <div class="mode-info">
                         <div class="mode-name">Battle Mode</div>
-                        <div class="mode-description">We trade music live. WaveWarZ, submissions, discovery.</div>
+                        <div class="mode-description">High stakes. Competitive energy.</div>
                     </div>
                     <div class="mode-votes">
                         <span class="vote-count" data-votes="battle">31</span>
@@ -3598,7 +3593,7 @@
                         <div class="vote-percentage-bar">
                             <div class="vote-percentage-fill" data-percentage="battle" style="width: 0%"></div>
                         </div>
-                        <div class="selection-indicator">✓ Selected</div>
+                        <div class="selection-indicator">Selected</div>
                     </div>
                 </div>
             </div>
@@ -3625,13 +3620,13 @@
     <div id="liveShareModal" class="live-share-modal">
         <div class="live-share-content">
             <div class="live-share-header">
-                <div class="live-share-title">🔴 ZABAL IS LIVE!</div>
+                <div class="live-share-title">ZABAL IS LIVE</div>
                 <div class="live-share-subtitle">Watch and share the stream</div>
             </div>
 
             <div class="platform-links">
                 <div class="platform-link-card">
-                    <div class="platform-icon">📺</div>
+                    <div class="platform-icon"></div>
                     <div class="platform-info">
                         <div class="platform-name">Twitch</div>
                         <div class="platform-url">twitch.tv/bettercallzaal</div>
@@ -3745,6 +3740,7 @@
     <!-- Today/Yesterday Section -->
     <section class="stream-history">
         <div class="container">
+            <h2 class="section-label" style="text-align: center; font-size: 1.5rem; font-weight: 700; margin-bottom: 2rem; color: var(--text-white);">Recent Outcomes</h2>
             <div class="history-grid">
                 <div class="history-card">
                     <span class="history-label">Today</span>
@@ -3760,7 +3756,7 @@
                     <div class="history-mode">Battle Mode</div>
                     <p class="history-description">Won with 38 votes</p>
                     <a href="https://twitch.tv/bettercallzaal/videos" target="_blank" class="history-link">
-                        Watch replay →
+                        See what happened →
                     </a>
                 </div>
             </div>
@@ -3771,17 +3767,17 @@
     <section class="weekly-focus-section" id="weeklyFocusSection">
         <!-- Lock Overlay (shown when locked) -->
         <div class="weekly-unlock-overlay" id="weeklyUnlockOverlay" style="display: none;">
-            <div class="lock-icon">🔒</div>
-            <h3>Weekly Social Focus</h3>
-            <p>Daily voters help shape where the community shows up.</p>
+            <div class="lock-icon"></div>
+            <h3>Where We Show Up This Week</h3>
+            <p>Vote daily to help decide where we focus.</p>
             <p class="unlock-hint">Vote above to unlock</p>
         </div>
         
         <div class="container">
             <div class="weekly-focus-header">
-                <h2>Weekly Social Focus</h2>
-                <p>Help guide where the community shows up this week.</p>
-                <p class="weekly-reset-note">Weekly signal resets Monday.</p>
+                <h2>Where We Show Up This Week</h2>
+                <p>Pick the platform Zaal prioritizes this week.</p>
+                <p class="weekly-reset-note">Resets every Monday.</p>
             </div>
             
             <div class="focus-category">
@@ -3792,19 +3788,19 @@
                 
                 <div class="focus-options" id="socialFocusOptions">
                     <button class="focus-option-btn" onclick="submitWeeklySocialVote('X (Twitter)')">
-                        🐦 X (Twitter)
+                        X (Twitter)
                     </button>
                     <button class="focus-option-btn" onclick="submitWeeklySocialVote('Farcaster')">
-                        🟣 Farcaster
+                        Farcaster
                     </button>
                     <button class="focus-option-btn" onclick="submitWeeklySocialVote('TikTok')">
-                        🎵 TikTok
+                        TikTok
                     </button>
                     <button class="focus-option-btn" onclick="submitWeeklySocialVote('YouTube')">
-                        📺 YouTube
+                        YouTube
                     </button>
                     <button class="focus-option-btn" onclick="submitWeeklySocialVote('Instagram')">
-                        📸 Instagram
+                        Instagram
                     </button>
                 </div>
                 
@@ -3827,7 +3823,7 @@
         <div class="container">
             <!-- Daily Currently Winning Card (shown during active voting before 5 PM EST) -->
             <div class="currently-winning-card" id="dailyCurrentlyWinningCard" style="display: none;">
-                <div class="currently-winning-icon">🔥</div>
+                <div class="currently-winning-icon"></div>
                 <h3 class="currently-winning-title">Currently Winning</h3>
                 <div class="currently-winning-result">
                     <span id="dailyCurrentLeaderName">Studio Mode</span> is leading right now
@@ -3840,7 +3836,7 @@
 
             <!-- Weekly Currently Winning Card (shown during active weekly voting) -->
             <div class="currently-winning-card weekly" id="weeklyCurrentlyWinningCard" style="display: none;">
-                <div class="currently-winning-icon">👀</div>
+                <div class="currently-winning-icon"></div>
                 <h3 class="currently-winning-title">Currently Winning</h3>
                 <div class="currently-winning-result">
                     <span id="weeklyCurrentLeaderName">Farcaster</span> is leading the signal this week
@@ -3858,7 +3854,7 @@
         <div class="container">
             <!-- Daily Winning Share Card (shown after 5 PM EST when voting closes) -->
             <div class="winning-share-card" id="dailyWinningCard" style="display: none;">
-                <div class="winning-share-icon">🏆</div>
+                <div class="winning-share-icon"></div>
                 <h3 class="winning-share-title">Today's stream is set.</h3>
                 <div class="winning-share-result">
                     <span id="dailyWinnerName">Studio Mode</span> won
@@ -3876,7 +3872,7 @@
 
             <!-- Weekly Winning Share Card (shown when there's a leading platform) -->
             <div class="winning-share-card weekly" id="weeklyWinningCard" style="display: none;">
-                <div class="winning-share-icon">🌐</div>
+                <div class="winning-share-icon"></div>
                 <h3 class="winning-share-title">This week's signal is clear.</h3>
                 <div class="winning-share-result">
                     <span id="weeklyWinnerName">Farcaster</span> is where the community showed up
@@ -3900,7 +3896,7 @@
             <div class="vote-history-accordion">
                 <button class="accordion-header" onclick="toggleVoteHistory()">
                     <div class="accordion-title">
-                        <span class="accordion-icon">📊</span>
+                        <span class="accordion-icon"></span>
                         <div class="accordion-text">
                             <h3>Recent Voting Activity</h3>
                             <p>See who voted for what over the past week</p>
@@ -7200,7 +7196,7 @@
             const votePower = document.getElementById('statVotePower')?.textContent || '1×';
             
             if (summary) {
-                summary.textContent = `You've voted ${totalVotes} times · Influence ${votePower}`;
+                summary.textContent = `Your impact: ${totalVotes} votes cast · ${votePower} power`;
             }
         }
 
