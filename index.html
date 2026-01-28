@@ -125,9 +125,9 @@
     <link rel="dns-prefetch" href="https://zabal.art">
     
     <!-- Farcaster Mini App Embed Meta Tag -->
-    <meta name="fc:miniapp" content='{"version":"1","imageUrl":"https://zabal.art/assets/preview.png","button":{"title":"🎨 Vote Now","action":{"type":"launch_frame","name":"ZABAL Live Hub","url":"https://zabal.art","splashImageUrl":"https://zabal.art/assets/splash.png","splashBackgroundColor":"#141e27"}}}' />
+    <meta name="fc:miniapp" content='{"version":"1","imageUrl":"https://zabal.art/assets/preview.png","button":{"title":"Vote Now","action":{"type":"launch_frame","name":"ZABAL Live Hub","url":"https://zabal.art","splashImageUrl":"https://zabal.art/assets/splash.png","splashBackgroundColor":"#141e27"}}}' />
     <!-- For backward compatibility -->
-    <meta name="fc:frame" content='{"version":"1","imageUrl":"https://zabal.art/assets/preview.png","button":{"title":"🎨 Vote Now","action":{"type":"launch_frame","name":"ZABAL Live Hub","url":"https://zabal.art","splashImageUrl":"https://zabal.art/assets/splash.png","splashBackgroundColor":"#141e27"}}}' />
+    <meta name="fc:frame" content='{"version":"1","imageUrl":"https://zabal.art/assets/preview.png","button":{"title":"Vote Now","action":{"type":"launch_frame","name":"ZABAL Live Hub","url":"https://zabal.art","splashImageUrl":"https://zabal.art/assets/splash.png","splashBackgroundColor":"#141e27"}}}' />
     
     <script src="https://unpkg.com/@supabase/supabase-js@2.39.0/dist/umd/supabase.js"></script>
     <!-- Farcaster Mini App SDK - CDN version for better compatibility -->
@@ -3635,7 +3635,7 @@
                 </div>
 
                 <div class="platform-link-card">
-                    <div class="platform-icon">🎬</div>
+                    <div class="platform-icon"></div>
                     <div class="platform-info">
                         <div class="platform-name">Retake.tv</div>
                         <div class="platform-url">retake.tv/zaal</div>
@@ -3646,7 +3646,7 @@
 
             <div class="live-share-actions">
                 <button class="share-live-btn" onclick="shareLiveStream()">
-                    🟣 Share to Farcaster
+                    Share to Farcaster
                 </button>
                 <button class="close-live-modal-btn" onclick="closeLiveShareModal()">
                     Close
@@ -3671,9 +3671,9 @@
             <!-- Friend Tagging Section -->
             <div id="friendTagSection" class="friend-tag-section" style="display: none;">
                 <div class="friend-tag-header">
-                    👥 Tag Friends
+                    Tag Friends
                     <button class="reconnect-btn" onclick="showInactiveContacts()" title="Reach out to people you haven't talked to in a while">
-                        💤 Reconnect
+                        Reconnect
                     </button>
                 </div>
                 <div id="friendTagList" class="friend-tag-list"></div>
@@ -3681,19 +3681,19 @@
 
             <!-- Top Friend Invitation -->
             <div id="topFriendInvite" class="top-friend-invite" style="display: none;">
-                <div class="invite-header">💬 Invite Your Top Friend</div>
+                <div class="invite-header">Invite Your Top Friend</div>
                 <div id="topFriendCard" class="top-friend-card"></div>
                 <button class="invite-friend-btn" onclick="inviteTopFriend()">
-                    📨 Invite to Vote
+                    Invite to Vote
                 </button>
             </div>
             
             <div class="share-buttons">
                 <button class="share-action-btn share-farcaster-btn" onclick="shareVote(currentVotedModes)">
-                    🟣 Share to Farcaster
+                    Share to Farcaster
                 </button>
                 <button class="share-action-btn challenge-friends-btn" onclick="challengeFriends()" style="display: none;">
-                    ⚔️ Challenge Friends
+                    Challenge Friends
                 </button>
                 <button class="share-action-btn share-close-btn" onclick="closeShareModal()">
                     Close
@@ -3702,7 +3702,7 @@
 
             <!-- Share Settings -->
             <div class="settings-section">
-                <div class="settings-title">⚙️ Share Preferences</div>
+                <div class="settings-title">Share Preferences</div>
                 
                 <div class="setting-item">
                     <div class="setting-label">
@@ -4010,7 +4010,7 @@
                 heroCTA.href = '#wheel';
                 countdown.style.display = 'inline-flex';
             } else if (currentState === StreamState.LIVE) {
-                heroState.textContent = '🔴 Live Now';
+                heroState.textContent = 'Live Now';
                 heroState.className = 'hero-state live';
                 const leader = getLeader();
                 const modeName = document.querySelector(`[data-mode="${leader}"] .mode-name`).textContent;
@@ -4719,10 +4719,10 @@
             });
             
             const modeEmojis = {
-                studio: '🎬',
-                market: '🛒',
-                social: '🌐',
-                battle: '⚔️'
+                studio: '',
+                market: '',
+                social: '',
+                battle: ''
             };
             
             const modeNames = {
@@ -4765,7 +4765,7 @@
                     day: 'numeric' 
                 });
                 
-                if (isToday) dateLabel = '🔴 Today - ' + dateLabel;
+                if (isToday) dateLabel = 'Today - ' + dateLabel;
                 else if (isYesterday) dateLabel = 'Yesterday - ' + dateLabel;
                 
                 html += `
@@ -5094,7 +5094,7 @@
                         return el ? el.textContent : m;
                     });
                     
-                    text = `Just voted ${modeNames.join(', ')} on ZABAL 🎨\n\nJoin me → zabal.art`;
+                    text = `Just voted ${modeNames.join(', ')} on ZABAL\n\nJoin me → zabal.art`;
                     embeds = [MINIAPP_URL + '?share=daily_vote'];
                     mentions = context.selectedFriends || [];
                     contextParam = '?share=daily_vote';
@@ -5113,10 +5113,10 @@
                     const voteType = context.voteType || 'daily';
                     
                     if (voteType === 'daily') {
-                        text = `${winnerName} is leading right now 🔥\n\nVote before 5 PM EST → zabal.art`;
+                        text = `${winnerName} is leading right now\n\nVote before 5 PM EST → zabal.art`;
                         contextParam = `?share=currently_winning&ref=${context.winnerRef || ''}`;
                     } else {
-                        text = `${winnerName} is leading the signal this week 👀\n\nAdd your vote → zabal.art`;
+                        text = `${winnerName} is leading the signal this week\n\nAdd your vote → zabal.art`;
                         contextParam = `?share=currently_winning&ref=${context.winnerRef || ''}`;
                     }
                     
@@ -5126,7 +5126,7 @@
                     
                 case 'daily_winner':
                     const dailyWinnerName = context.winnerName || '';
-                    text = `${dailyWinnerName} won today's stream.\nThanks to everyone who voted 👀\nJoin tomorrow → zabal.art`;
+                    text = `${dailyWinnerName} won today's stream.\nThanks to everyone who voted\nJoin tomorrow → zabal.art`;
                     embeds = [MINIAPP_URL + '?share=daily_winner'];
                     mentions = context.topVoters || [];
                     contextParam = '?share=daily_winner';
@@ -5141,7 +5141,7 @@
                     break;
                     
                 case 'live_now':
-                    text = `ZABAL is live! 🔴\n\nCome watch us build → zabal.art`;
+                    text = `ZABAL is live!\n\nCome watch us build → zabal.art`;
                     embeds = [MINIAPP_URL + '?share=live_now'];
                     mentions = context.selectedFriends || [];
                     contextParam = '?share=live_now';
@@ -5432,7 +5432,7 @@
         
         // Share live stream to Farcaster
         window.shareLiveStream = async function() {
-            const shareText = `🔴 ZABAL IS LIVE NOW! 🎨\n\nJoin the stream and watch us create in real-time!\n\n📺 Twitch: twitch.tv/bettercallzaal\n🎬 Retake: retake.tv/zaal\n\nCome hang! 👇`;
+            const shareText = `ZABAL IS LIVE NOW\n\nJoin the stream and watch us create in real-time!\n\nTwitch: twitch.tv/bettercallzaal\nRetake: retake.tv/zaal\n\nCome hang!`;
             
             // Add friend tags if available
             let friendTags = '';
@@ -5975,10 +5975,10 @@
         // Challenge friends
         window.challengeFriends = async function() {
             const modeEmojis = {
-                studio: '🎬',
-                market: '🛒',
-                social: '🌐',
-                battle: '⚔️'
+                studio: '',
+                market: '',
+                social: '',
+                battle: ''
             };
             
             const modeNames = {
