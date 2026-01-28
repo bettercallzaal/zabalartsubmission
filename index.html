@@ -335,11 +335,19 @@
             background: rgba(224, 221, 170, 0.05);
             border: 1px solid rgba(224, 221, 170, 0.2);
             border-radius: 12px;
+            padding: 16px;
+        }
+
+        .breakdown-microcopy {
+            margin-top: 12px;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            font-style: italic;
+            text-align: center;
         }
 
         .breakdown-toggle {
             width: 100%;
-            padding: 12px 16px;
             background: transparent;
             border: none;
             cursor: pointer;
@@ -2224,10 +2232,29 @@
         .stats-header {
             display: flex;
             align-items: center;
-            gap: 12px;
-            margin-bottom: 16px;
-            padding-bottom: 12px;
-            border-bottom: 1px solid var(--border-color);
+            justify-content: space-between;
+            padding: 12px 0;
+            transition: all 0.2s ease;
+        }
+
+        .stats-header:hover {
+            opacity: 0.8;
+        }
+
+        .stats-summary {
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--text-gray);
+        }
+
+        .stats-toggle-icon {
+            font-size: 0.7rem;
+            color: var(--text-secondary);
+            transition: transform 0.2s ease;
+        }
+
+        .stats-toggle-icon.expanded {
+            transform: rotate(180deg);
         }
 
         .stats-title {
@@ -2240,6 +2267,9 @@
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
             gap: 16px;
+            margin-top: 16px;
+            padding-top: 16px;
+            border-top: 1px solid var(--border-color);
         }
 
         .stat-item {
@@ -3471,10 +3501,11 @@
     <!-- Personal Stats -->
     <section class="container" style="padding-top: 70px;">
         <div id="personalStats" class="personal-stats">
-            <div class="stats-header">
-                <span class="stats-title">📊 Your Stats</span>
+            <div class="stats-header" onclick="toggleStatsExpand()" style="cursor: pointer;">
+                <span class="stats-summary" id="statsSummary">You've voted 0 times · Influence 1×</span>
+                <span class="stats-toggle-icon" id="statsToggleIcon">▼</span>
             </div>
-            <div class="stats-grid">
+            <div class="stats-grid" id="statsGrid" style="display: none;">
                 <div class="stat-item">
                     <span class="stat-value" id="statTotalVotes">0</span>
                     <span class="stat-label">Total Votes</span>
@@ -3496,7 +3527,7 @@
             <!-- Vote Power Breakdown -->
             <div id="votePowerBreakdown" class="breakdown-container">
                 <button onclick="toggleBreakdown()" class="breakdown-toggle">
-                    <span>Vote Power Breakdown</span>
+                    <span>How influence works →</span>
                     <span id="breakdownToggleIcon" class="breakdown-toggle-icon">▼</span>
                 </button>
                 <div id="breakdownContent" class="breakdown-content">
@@ -3527,7 +3558,9 @@
                         Formula: Base × Multiplier = Final
                     </div>
                 </div>
+                <p class="breakdown-microcopy">Voting today increases your weekly influence.</p>
                 </div>
+            </div>
             </div>
         </div>
     </section>
@@ -3539,7 +3572,7 @@
         <p class="hero-subtitle" id="heroSubtitle">Show up early. Influence the outcome.</p>
         
         <div class="countdown" id="countdown">
-            <span class="countdown-label">Voting ends in</span>
+            <span class="countdown-label">Closes at 5 PM EST in</span>
             <span class="countdown-time" id="countdownTime">2:34:12</span>
         </div>
 
@@ -3631,7 +3664,7 @@
             <!-- Submit Votes Button -->
             <div class="submit-votes-container">
                 <button class="submit-votes-btn" id="submitVotesBtn" onclick="submitVotes()" disabled>
-                    Submit Votes (<span id="selectedCount">0</span> selected)
+                    <span id="submitBtnText">Select a mode to continue</span>
                 </button>
             </div>
             
@@ -4069,8 +4102,8 @@
             if (currentState === StreamState.DECIDING) {
                 heroState.textContent = 'Voting Open';
                 heroState.className = 'hero-state deciding';
-                heroTitle.textContent = "Vote for Today's Stream";
-                heroSubtitle.textContent = "Voting closes at 5 PM EST when Zaal gets home.";
+                heroTitle.textContent = "You're Picking Today's Stream";
+                heroSubtitle.textContent = "Your vote determines what Zaal builds live today.";
                 // CTA removed
                 countdown.style.display = 'inline-flex';
             } else if (currentState === StreamState.LOCKED) {
@@ -6167,14 +6200,16 @@
 
         function updateSubmitButton() {
             const btn = document.getElementById('submitVotesBtn');
-            const countSpan = document.getElementById('selectedCount');
+            const btnText = document.getElementById('submitBtnText');
             
-            if (countSpan) {
-                countSpan.textContent = selectedModes.length;
-            }
-            
-            if (btn) {
-                btn.disabled = selectedModes.length === 0;
+            if (btn && btnText) {
+                if (selectedModes.length === 0) {
+                    btn.disabled = true;
+                    btnText.textContent = 'Select a mode to continue';
+                } else {
+                    btn.disabled = false;
+                    btnText.textContent = 'Lock In Your Choice';
+                }
             }
         }
 
@@ -7247,16 +7282,43 @@
         // END WEEKLY SOCIAL FOCUS VOTING LOGIC
         // ============================================
         
+        // Toggle stats section expansion
+        window.toggleStatsExpand = function() {
+            const grid = document.getElementById('statsGrid');
+            const icon = document.getElementById('statsToggleIcon');
+            
+            if (grid.style.display === 'none') {
+                grid.style.display = 'grid';
+                icon.classList.add('expanded');
+            } else {
+                grid.style.display = 'none';
+                icon.classList.remove('expanded');
+            }
+        }
+
+        // Update stats summary line
+        function updateStatsSummary() {
+            const summary = document.getElementById('statsSummary');
+            const totalVotes = document.getElementById('statTotalVotes')?.textContent || '0';
+            const votePower = document.getElementById('statVotePower')?.textContent || '1×';
+            
+            if (summary) {
+                summary.textContent = `You've voted ${totalVotes} times · Influence ${votePower}`;
+            }
+        }
+
         // Toggle vote power breakdown
         window.toggleBreakdown = function() {
             const content = document.getElementById('breakdownContent');
             const icon = document.getElementById('breakdownToggleIcon');
             
-            if (!content || !icon) return;
-            
-            const isHidden = content.style.display === 'none';
-            content.style.display = isHidden ? 'block' : 'none';
-            icon.style.transform = isHidden ? 'rotate(180deg)' : 'rotate(0deg)';
+            if (content.style.display === 'none' || content.style.display === '') {
+                content.style.display = 'block';
+                icon.textContent = '▲';
+            } else {
+                content.style.display = 'none';
+                icon.textContent = '▼';
+            }
         }
         
         // Toggle vote history accordion
