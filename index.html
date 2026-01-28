@@ -2481,14 +2481,7 @@
         }
 
         .mode-icon {
-            font-size: 2.25rem;
-            width: 60px;
-            height: 60px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: rgba(0, 0, 0, 0.3);
-            border-radius: 10px;
+            display: none;
         }
 
         .mode-info {
@@ -3039,11 +3032,7 @@
             }
 
             .mode-icon {
-                margin: 0 auto;
-                width: 28px;
-                height: 28px;
-                font-size: 1.1rem;
-                border-radius: 4px;
+                display: none;
             }
 
             .mode-name {
@@ -3263,10 +3252,7 @@
             }
 
             .mode-icon {
-                width: 26px;
-                height: 26px;
-                font-size: 1rem;
-                border-radius: 3px;
+                display: none;
             }
 
             .mode-name {
@@ -3737,32 +3723,6 @@
         </div>
     </div>
 
-    <!-- Today/Yesterday Section -->
-    <section class="stream-history">
-        <div class="container">
-            <h2 class="section-label" style="text-align: center; font-size: 1.5rem; font-weight: 700; margin-bottom: 2rem; color: var(--text-white);">Recent Outcomes</h2>
-            <div class="history-grid">
-                <div class="history-card">
-                    <span class="history-label">Today</span>
-                    <div class="history-mode" id="todayMode">Studio Mode</div>
-                    <p class="history-description" id="todayDesc">Leading with 42 votes</p>
-                    <a href="#wheel" class="history-link">
-                        Change it →
-                    </a>
-                </div>
-
-                <div class="history-card">
-                    <span class="history-label">Yesterday</span>
-                    <div class="history-mode">Battle Mode</div>
-                    <p class="history-description">Won with 38 votes</p>
-                    <a href="https://twitch.tv/bettercallzaal/videos" target="_blank" class="history-link">
-                        See what happened →
-                    </a>
-                </div>
-            </div>
-        </div>
-    </section>
-
     <!-- Weekly Social Focus Voting -->
     <section class="weekly-focus-section" id="weeklyFocusSection">
         <!-- Lock Overlay (shown when locked) -->
@@ -3914,6 +3874,32 @@
                             <div class="loading-votes">Loading vote history...</div>
                         </div>
                     </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Today/Yesterday Section -->
+    <section class="stream-history">
+        <div class="container">
+            <h2 class="section-label" style="text-align: center; font-size: 1.5rem; font-weight: 700; margin-bottom: 2rem; color: var(--text-white);">Recent Outcomes</h2>
+            <div class="history-grid">
+                <div class="history-card">
+                    <span class="history-label">Today</span>
+                    <div class="history-mode" id="todayMode">Studio Mode</div>
+                    <p class="history-description" id="todayDesc">Leading with 42 votes</p>
+                    <a href="#wheel" class="history-link">
+                        Change it →
+                    </a>
+                </div>
+
+                <div class="history-card">
+                    <span class="history-label">Yesterday</span>
+                    <div class="history-mode">Battle Mode</div>
+                    <p class="history-description">Won with 38 votes</p>
+                    <a href="https://twitch.tv/bettercallzaal/videos" target="_blank" class="history-link">
+                        See what happened →
+                    </a>
                 </div>
             </div>
         </div>
