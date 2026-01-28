@@ -33,20 +33,15 @@
     <!-- CRITICAL: Call ready() when DOM is loaded -->
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            console.log('🎯 DOM loaded, attempting to dismiss splash...');
-            
             // Method 1: Direct postMessage
             if (window.parent && window.parent.postMessage) {
                 window.parent.postMessage({ type: 'ready' }, '*');
-                console.log('📤 Sent ready postMessage to parent');
             }
             
             // Method 2: Try SDK if available
             if (window.sdk && window.sdk.actions && window.sdk.actions.ready) {
-                window.sdk.actions.ready().then(function() {
-                    console.log('✅ SDK ready() succeeded');
-                }).catch(function(err) {
-                    console.log('⚠️ SDK ready() failed:', err);
+                window.sdk.actions.ready().catch(function(err) {
+                    // Silent fail - splash will timeout
                 });
             }
         });
@@ -142,10 +137,7 @@
         if (window.miniapp && window.miniapp.sdk) {
             window.farcasterSDK = window.miniapp.sdk;
             window.farcasterSDKLoaded = true;
-            console.log('✅ Farcaster SDK loaded from CDN');
             window.dispatchEvent(new Event('farcasterSDKReady'));
-        } else {
-            console.warn('⚠️ Farcaster SDK not found on window.miniapp');
         }
     </script>
     <script>
@@ -154,8 +146,6 @@
         
         setTimeout(() => {
             if (!window.splashDismissed) {
-                console.log('🚨 FORCING splash screen removal after 1s timeout');
-                
                 // Try multiple methods to hide splash screen
                 const splashSelectors = [
                     '.fc-splash-screen',
@@ -180,7 +170,6 @@
                 
                 // Mark as dismissed
                 window.splashDismissed = true;
-                console.log('✅ Splash screen forcefully removed');
             }
         }, 1000);
     </script>
@@ -4167,12 +4156,10 @@
                 header.classList.remove('expanded');
                 header.classList.add('collapsed');
                 sessionStorage.setItem('headerState', 'collapsed');
-                console.log('📌 Header collapsed (manual)');
             } else {
                 header.classList.remove('collapsed');
                 header.classList.add('expanded');
                 sessionStorage.setItem('headerState', 'expanded');
-                console.log('📌 Header expanded (manual)');
             }
         }
         
@@ -4189,20 +4176,17 @@
                 headerCollapsed = false;
                 header.classList.remove('collapsed');
                 header.classList.add('expanded');
-                console.log('📌 Header initialized: expanded (user preference)');
             } else {
                 // Default: collapsed
                 headerCollapsed = true;
                 header.classList.remove('expanded');
                 header.classList.add('collapsed');
-                console.log('📌 Header initialized: collapsed (default)');
             }
         }
         
         // Initialize header on DOM ready
         document.addEventListener('DOMContentLoaded', function() {
             initHeaderState();
-            console.log('📌 Collapsible header initialized');
         });
         
         // ============================================
@@ -4238,7 +4222,6 @@
             // Dev override (testing only)
             if (window.__ZABAL_DEV__.forceDailyPhase) {
                 const forced = window.__ZABAL_DEV__.forceDailyPhase;
-                console.log('🔧 [DEV] Forcing daily phase:', forced);
                 return {
                     phase: forced === 'active' ? 'active' : 'closed',
                     isActive: forced === 'active',
@@ -4286,7 +4269,6 @@
                     
                     card.style.display = 'block';
                     section.style.display = 'block';
-                    console.log('🏆 [WINNING SHARE] Daily winner card shown:', modeName);
                 } else {
                     card.style.display = 'none';
                 }
@@ -4314,7 +4296,6 @@
                 
                 card.style.display = 'block';
                 section.style.display = 'block';
-                console.log('🌐 [WINNING SHARE] Weekly leader card shown:', leadingPlatform);
             } else {
                 card.style.display = 'none';
                 weeklyWinner = null;
@@ -4387,7 +4368,6 @@
                     leaderNameEl.textContent = modeName;
                     card.style.display = 'block';
                     section.style.display = 'block';
-                    console.log('🔥 [CURRENTLY WINNING] Daily leader card shown:', modeName);
                 } else {
                     card.style.display = 'none';
                 }
@@ -4413,7 +4393,6 @@
                 leaderNameEl.textContent = leadingPlatform;
                 card.style.display = 'block';
                 section.style.display = 'block';
-                console.log('👀 [CURRENTLY WINNING] Weekly leader card shown:', leadingPlatform);
             } else {
                 card.style.display = 'none';
             }
@@ -4439,7 +4418,6 @@
         
         // Share currently winning result - opens Farcaster compose
         function shareCurrentlyWinning(type) {
-            console.log('📤 [CURRENTLY WINNING] Sharing momentum:', type);
             
             let context = {};
             
@@ -4482,7 +4460,6 @@
         
         // Share the winning result - opens share modal with pre-built copy
         function shareWinningResult(type) {
-            console.log('📤 [WINNING SHARE] Sharing result:', type);
             
             if (type === 'daily' && dailyWinner) {
                 const payload = buildSharePayload('daily_winner', {
@@ -4514,8 +4491,6 @@
             
             const finalCast = friendTags ? `${shareCopy}\n\n${friendTags}` : shareCopy;
             
-            console.log('📝 [WINNING SHARE] Final cast:', finalCast);
-            
             // Use custom context param if provided, otherwise default
             const embedUrl = contextParam ? MINIAPP_URL + contextParam : MINIAPP_URL + '?source=winning-share&type=' + type;
             
@@ -4527,14 +4502,13 @@
                         embeds: [embedUrl],
                         channelKey: 'zao'
                     });
-                    console.log('✅ [WINNING SHARE] Shared to Farcaster');
                 } else {
                     // Fallback: copy to clipboard
                     await navigator.clipboard.writeText(finalCast);
                     showToast('success', 'Copied!', 'Share text copied to clipboard');
                 }
             } catch (error) {
-                console.error('❌ [WINNING SHARE] Failed to share:', error);
+                log.error('winning-share:failed', error);
                 // Fallback: copy to clipboard
                 try {
                     await navigator.clipboard.writeText(finalCast);
@@ -4581,11 +4555,30 @@
         }
 
         /* ==============================================
+           LOGGING UTILITY
+        ============================================== */
+
+        // Lightweight logger - production-silent happy paths
+        const log = {
+            debug: (...args) => {
+                if (location.hostname === 'localhost' || location.hostname === '127.0.0.1') {
+                    console.debug('[ZABAL]', ...args);
+                }
+            },
+            warn: (...args) => console.warn('[ZABAL]', ...args),
+            error: (...args) => console.error('[ZABAL]', ...args)
+        };
+
+        // Global error handler
+        window.addEventListener('error', (e) => {
+            log.error('unhandled', e.error || e.message);
+        });
+
+        /* ==============================================
            DATABASE & AUTHENTICATION
         ============================================== */
 
         // Initialize Supabase using config
-        console.log('🎪 ZABAL Live Hub - Initializing Supabase...');
         
         let supabase;
         try {
