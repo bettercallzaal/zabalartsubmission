@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Custom Leaderboards - Empire Builder Style</title>
+    <link rel="icon" type="image/png" href="favicon-32x32.png" sizes="32x32">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            background: white;
+            border-radius: 12px;
+            padding: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .tab {
+            flex: 1;
+            padding: 15px 20px;
+            background: transparent;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            color: #666;
+        }
+
+        .tab.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+
+        .tab:hover:not(.active) {
+            background: #f5f5f5;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .card {
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .card h2 {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            color: #667eea;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #555;
+        }
+
+        .char-count {
+            font-size: 0.85rem;
+            color: #999;
+            margin-left: 5px;
+        }
+
+        .form-group input[type="text"],
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 14px 32px;
+            font-size: 1rem;
+            font-weight: 600;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(102, 126, 234, 0.5);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            box-shadow: 0 4px 12px rgba(108, 117, 125, 0.4);
+        }
+
+        .btn-danger {
+            background: #dc3545;
+            box-shadow: 0 4px 12px rgba(220, 53, 69, 0.4);
+        }
+
+        .leaderboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 20px;
+        }
+
+        .leaderboard-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            transition: transform 0.2s, box-shadow 0.2s;
+            cursor: pointer;
+        }
+
+        .leaderboard-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+        }
+
+        .leaderboard-card h3 {
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 1.2rem;
+        }
+
+        .leaderboard-card p {
+            color: #666;
+            margin-bottom: 15px;
+            font-size: 0.9rem;
+        }
+
+        .leaderboard-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.85rem;
+            color: #999;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .badge-votes {
+            background: #e3f2fd;
+            color: #1976d2;
+        }
+
+        .badge-holdings {
+            background: #f3e5f5;
+            color: #7b1fa2;
+        }
+
+        .badge-activity {
+            background: #e8f5e9;
+            color: #388e3c;
+        }
+
+        .badge-custom {
+            background: #fff3e0;
+            color: #f57c00;
+        }
+
+        .message {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .message.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .message.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #999;
+        }
+
+        .loading-spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #999;
+        }
+
+        .empty-state-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+        }
+
+        .code-block {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 20px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            overflow-x: auto;
+            margin: 20px 0;
+        }
+
+        .code-block pre {
+            margin: 0;
+        }
+
+        @media (max-width: 768px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .leaderboard-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .tabs {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🏆 Custom Leaderboards</h1>
+            <p>Empire Builder-Style Leaderboard Management</p>
+        </div>
+
+        <div class="tabs">
+            <button class="tab active" onclick="switchTab('create')">Create Leaderboard</button>
+            <button class="tab" onclick="switchTab('manage')">Manage Leaderboards</button>
+            <button class="tab" onclick="switchTab('api')">API Documentation</button>
+        </div>
+
+        <!-- Create Leaderboard Tab -->
+        <div id="create-tab" class="tab-content active">
+            <div class="card">
+                <h2>Create New Leaderboard</h2>
+                <div id="create-message"></div>
+                
+                <form id="create-form">
+                    <div class="form-group">
+                        <label for="name">
+                            Leaderboard Name
+                            <span class="char-count" id="name-count">0/50</span>
+                        </label>
+                        <input 
+                            type="text" 
+                            id="name" 
+                            name="name" 
+                            placeholder="e.g., Top ZABAL Voters"
+                            maxlength="50"
+                            required
+                        >
+                    </div>
+
+                    <div class="form-group">
+                        <label for="description">
+                            Description
+                            <span class="char-count" id="desc-count">0/200</span>
+                        </label>
+                        <textarea 
+                            id="description" 
+                            name="description" 
+                            placeholder="Brief description of what this leaderboard tracks"
+                            maxlength="200"
+                            required
+                        ></textarea>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="empire-address">Empire Address (Token Contract)</label>
+                            <input 
+                                type="text" 
+                                id="empire-address" 
+                                name="empire_address" 
+                                placeholder="0x..."
+                                required
+                            >
+                        </div>
+
+                        <div class="form-group">
+                            <label for="metric-type">Metric Type</label>
+                            <select id="metric-type" name="metric_type" required>
+                                <option value="">Select metric type...</option>
+                                <option value="votes">Votes (auto-synced)</option>
+                                <option value="holdings">Token Holdings</option>
+                                <option value="activity">Activity Score</option>
+                                <option value="custom">Custom Metric</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="icon-url">Icon URL (Optional)</label>
+                            <input 
+                                type="text" 
+                                id="icon-url" 
+                                name="icon_url" 
+                                placeholder="https://..."
+                            >
+                        </div>
+
+                        <div class="form-group">
+                            <label for="reset-frequency">Reset Frequency</label>
+                            <select id="reset-frequency" name="reset_frequency">
+                                <option value="never">Never</option>
+                                <option value="daily">Daily</option>
+                                <option value="weekly">Weekly</option>
+                                <option value="monthly">Monthly</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="api-endpoint">Custom API Endpoint (Optional)</label>
+                        <input 
+                            type="text" 
+                            id="api-endpoint" 
+                            name="api_endpoint" 
+                            placeholder="https://api.example.com/scores"
+                        >
+                    </div>
+
+                    <button type="submit" class="btn">Create Leaderboard</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Manage Leaderboards Tab -->
+        <div id="manage-tab" class="tab-content">
+            <div class="card">
+                <h2>Your Leaderboards</h2>
+                <div id="leaderboards-list">
+                    <div class="loading">
+                        <div class="loading-spinner"></div>
+                        <p>Loading leaderboards...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- API Documentation Tab -->
+        <div id="api-tab" class="tab-content">
+            <div class="card">
+                <h2>API Documentation</h2>
+                
+                <h3 style="margin-top: 30px;">Create Leaderboard</h3>
+                <p><strong>POST</strong> <code>/api/custom-leaderboards/apiLeaderboards</code></p>
+                <div class="code-block"><pre>{
+  "name": "ZABAL Voters",
+  "description": "Top voters in the community",
+  "empire_address": "0x...",
+  "metric_type": "votes",
+  "icon_url": "https://...",
+  "reset_frequency": "never"
+}</pre></div>
+
+                <h3 style="margin-top: 30px;">Submit Score</h3>
+                <p><strong>POST</strong> <code>/api/custom-leaderboards/submitScore</code></p>
+                <div class="code-block"><pre>{
+  "leaderboard_id": "uuid",
+  "fid": 12345,
+  "username": "zaal",
+  "address": "0x...",
+  "score": 42,
+  "metadata": {}
+}</pre></div>
+
+                <h3 style="margin-top: 30px;">Get Leaderboard</h3>
+                <p><strong>GET</strong> <code>/api/custom-leaderboards/apiLeaderboards?id=uuid&limit=100</code></p>
+                <div class="code-block"><pre>{
+  "success": true,
+  "data": {
+    "id": "uuid",
+    "name": "ZABAL Voters",
+    "entries": [
+      {
+        "rank": 1,
+        "fid": 12345,
+        "username": "zaal",
+        "score": 42
+      }
+    ]
+  }
+}</pre></div>
+
+                <h3 style="margin-top: 30px;">JavaScript Example</h3>
+                <div class="code-block"><pre>// Create leaderboard
+const response = await fetch('/api/custom-leaderboards/apiLeaderboards', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({
+    name: 'My Leaderboard',
+    description: 'Track top performers',
+    empire_address: '0x...',
+    metric_type: 'votes'
+  })
+});
+
+const result = await response.json();
+console.log('Leaderboard created:', result.data);
+
+// Submit score
+await fetch('/api/custom-leaderboards/submitScore', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({
+    leaderboard_id: result.data.id,
+    fid: 12345,
+    score: 100
+  })
+});</pre></div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        const API_BASE = '/api/custom-leaderboards';
+
+        // Character counters
+        document.getElementById('name').addEventListener('input', (e) => {
+            document.getElementById('name-count').textContent = `${e.target.value.length}/50`;
+        });
+
+        document.getElementById('description').addEventListener('input', (e) => {
+            document.getElementById('desc-count').textContent = `${e.target.value.length}/200`;
+        });
+
+        // Tab switching
+        window.switchTab = (tabName) => {
+            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            
+            event.target.classList.add('active');
+            document.getElementById(`${tabName}-tab`).classList.add('active');
+
+            if (tabName === 'manage') {
+                loadLeaderboards();
+            }
+        };
+
+        // Create leaderboard form
+        document.getElementById('create-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const formData = new FormData(e.target);
+            const data = Object.fromEntries(formData.entries());
+
+            try {
+                const response = await fetch(`${API_BASE}/apiLeaderboards`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    showMessage('create-message', 'Leaderboard created successfully!', 'success');
+                    e.target.reset();
+                    document.getElementById('name-count').textContent = '0/50';
+                    document.getElementById('desc-count').textContent = '0/200';
+                } else {
+                    showMessage('create-message', result.error || 'Failed to create leaderboard', 'error');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showMessage('create-message', 'Failed to create leaderboard', 'error');
+            }
+        });
+
+        // Load leaderboards
+        async function loadLeaderboards() {
+            const container = document.getElementById('leaderboards-list');
+            container.innerHTML = '<div class="loading"><div class="loading-spinner"></div><p>Loading...</p></div>';
+
+            try {
+                const response = await fetch(`${API_BASE}/apiLeaderboards`);
+                const result = await response.json();
+
+                if (result.success && result.data.length > 0) {
+                    renderLeaderboards(result.data);
+                } else {
+                    container.innerHTML = `
+                        <div class="empty-state">
+                            <div class="empty-state-icon">📊</div>
+                            <h3>No leaderboards yet</h3>
+                            <p>Create your first leaderboard to get started!</p>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                container.innerHTML = '<div class="message error">Failed to load leaderboards</div>';
+            }
+        }
+
+        function renderLeaderboards(leaderboards) {
+            const container = document.getElementById('leaderboards-list');
+            const html = `
+                <div class="leaderboard-grid">
+                    ${leaderboards.map(lb => `
+                        <div class="leaderboard-card" onclick="viewLeaderboard('${lb.id}')">
+                            <h3>${lb.name}</h3>
+                            <p>${lb.description}</p>
+                            <div class="leaderboard-meta">
+                                <span class="badge badge-${lb.metric_type}">${lb.metric_type}</span>
+                                <span>${new Date(lb.created_at).toLocaleDateString()}</span>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+            container.innerHTML = html;
+        }
+
+        window.viewLeaderboard = (id) => {
+            window.location.href = `/leaderboard.html?custom=${id}`;
+        };
+
+        function showMessage(containerId, message, type) {
+            const container = document.getElementById(containerId);
+            container.innerHTML = `<div class="message ${type}">${message}</div>`;
+            setTimeout(() => {
+                container.innerHTML = '';
+            }, 5000);
+        }
+    </script>
+</body>
+</html>
