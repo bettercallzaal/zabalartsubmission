@@ -624,22 +624,34 @@
         }
 
         async function loadLeaderboard() {
+            console.log('🔍 Loading leaderboard from:', `${API_ENDPOINT}?limit=100`);
             try {
                 const response = await fetch(`${API_ENDPOINT}?limit=100`);
+                console.log('📡 Response status:', response.status);
+                
                 const result = await response.json();
+                console.log('✅ API Response:', result);
+                console.log('📊 Data length:', result.data?.length || 0);
+                console.log('📈 Full data:', result.data);
 
                 if (result.success && result.data.length > 0) {
+                    console.log('✅ Rendering leaderboard with', result.data.length, 'entries');
                     renderLeaderboard(result.data);
                 } else {
+                    console.log('⚠️ No data found, rendering empty state');
+                    console.log('Success:', result.success, 'Data length:', result.data?.length);
                     renderEmptyState();
                 }
             } catch (error) {
-                console.error('Error loading leaderboard:', error);
+                console.error('❌ Error loading leaderboard:', error);
+                console.error('Error details:', error.message, error.stack);
                 renderError();
             }
         }
 
         function renderLeaderboard(data) {
+            console.log('🎨 Rendering leaderboard table with', data.length, 'entries');
+            console.log('First entry:', data[0]);
             const html = `
                 <table class="leaderboard-table">
                     <thead>
@@ -670,9 +682,11 @@
                 </table>
             `;
             leaderboardContent.innerHTML = html;
+            console.log('✅ Leaderboard rendered successfully');
         }
 
         function renderEmptyState() {
+            console.log('📭 Rendering empty state');
             leaderboardContent.innerHTML = `
                 <div class="empty-state">
                     <div class="empty-state-icon">📊</div>
@@ -683,6 +697,7 @@
         }
 
         function renderError() {
+            console.error('❌ Rendering error state');
             leaderboardContent.innerHTML = `
                 <div class="error">
                     Failed to load leaderboard. Please try again later.
@@ -690,8 +705,11 @@
             `;
         }
 
+        console.log('🚀 Initializing leaderboard page');
+        console.log('API Endpoint:', API_ENDPOINT);
         loadLeaderboard();
         setInterval(loadLeaderboard, 30000);
+        console.log('⏰ Auto-refresh set to 30 seconds');
     </script>
 </body>
 </html>

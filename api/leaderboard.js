@@ -16,13 +16,17 @@ export default async function handler(req, res) {
   }
 
   try {
+    console.log('🔍 Leaderboard API called:', req.method, req.query);
+    
     const supabaseUrl = process.env.VITE_SUPABASE_URL;
     const supabaseKey = process.env.VITE_SUPABASE_ANON_KEY;
 
     if (!supabaseUrl || !supabaseKey) {
+      console.error('❌ Missing Supabase credentials');
       throw new Error('Missing Supabase credentials');
     }
 
+    console.log('✅ Supabase client created');
     const supabase = createClient(supabaseUrl, supabaseKey);
 
     if (req.method === 'GET') {
@@ -30,11 +34,16 @@ export default async function handler(req, res) {
 
       // If FID is provided, get user rank
       if (fid) {
+        console.log('📊 Getting user rank for FID:', fid);
         const { data: rankData, error: rankError } = await supabase
           .rpc('get_user_rank', { user_fid: parseInt(fid) });
 
-        if (rankError) throw rankError;
+        if (rankError) {
+          console.error('❌ Error getting user rank:', rankError);
+          throw rankError;
+        }
 
+        console.log('✅ User rank data:', rankData);
         return res.status(200).json({
           success: true,
           data: rankData && rankData.length > 0 ? rankData[0] : null
@@ -42,10 +51,17 @@ export default async function handler(req, res) {
       }
 
       // Get leaderboard data
+      console.log('📊 Fetching leaderboard with limit:', limit);
       const { data: leaderboardData, error: leaderboardError } = await supabase
         .rpc('get_leaderboard', { limit_count: parseInt(limit) });
 
-      if (leaderboardError) throw leaderboardError;
+      if (leaderboardError) {
+        console.error('❌ Error fetching leaderboard:', leaderboardError);
+        throw leaderboardError;
+      }
+
+      console.log('✅ Raw leaderboard data:', leaderboardData);
+      console.log('📈 Number of entries:', leaderboardData?.length || 0);
 
       // Format data to match expected API structure (address and score fields)
       const formattedData = leaderboardData.map((entry, index) => ({
@@ -57,6 +73,8 @@ export default async function handler(req, res) {
         streak: entry.streak,
         lastVote: entry.last_vote
       }));
+
+      console.log('✅ Formatted data:', formattedData);
 
       return res.status(200).json({
         success: true,
@@ -90,6 +108,8 @@ export default async function handler(req, res) {
         });
       }
 
+      console.log('💾 Updating leaderboard config:', { name, description, icon_url });
+      
       const { data, error } = await supabase
         .from('leaderboard_config')
         .update({
@@ -101,7 +121,12 @@ export default async function handler(req, res) {
         .eq('is_active', true)
         .select();
 
-      if (error) throw error;
+      if (error) {
+        console.error('❌ Error updating config:', error);
+        throw error;
+      }
+
+      console.log('✅ Config updated:', data);
 
       return res.status(200).json({
         success: true,
