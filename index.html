@@ -3319,6 +3319,7 @@
                 <a href="chat.html">Chat</a>
                 <a href="submissions.html">Submit</a>
                 <a href="gallery.html">Research</a>
+                <a href="https://www.empirebuilder.world/empire/0xbB48f19B0494Ff7C1fE5Dc2032aeEE14312f0b07">Empire Builder</a>
                 <a href="https://www.thezao.com/nexus" target="_blank">ZAO Nexus</a>
             </nav>
             <button class="hamburger" onclick="toggleMobileMenu()" aria-label="Menu">
@@ -3394,6 +3395,7 @@
         <a href="chat.html">Chat</a>
         <a href="submissions.html">Submit</a>
         <a href="gallery.html">Research</a>
+        <a href="https://www.empirebuilder.world/empire/0xbB48f19B0494Ff7C1fE5Dc2032aeEE14312f0b07">Empire Builder</a>
         <a href="https://www.thezao.com/nexus" target="_blank">ZAO Nexus</a>
     </div>
 
@@ -7247,51 +7249,5 @@
         });
     </script>
 
-    <!-- OnChat Widget (lazy-loaded) -->
-    <div id="onchat-widget"></div>
-    <script>
-        // Lazy-load OnChat widget on first user interaction
-        let onChatLoaded = false;
-        
-        function loadOnChat() {
-            if (onChatLoaded) return;
-            onChatLoaded = true;
-            
-            console.log('📱 Loading OnChat widget...');
-            
-            const script = document.createElement('script');
-            script.src = 'https://onchat.sebayaki.com/widget.js';
-            script.onload = function() {
-                if (window.OnChat) {
-                    OnChat.mount('#onchat-widget', {
-                        channel: 'zabal',
-                        hideMobileTabs: true,
-                        hideBrand: true
-                    });
-                    console.log('✅ OnChat widget loaded');
-                }
-            };
-            script.onerror = function() {
-                console.warn('⚠️ OnChat widget failed to load - chat unavailable');
-            };
-            document.body.appendChild(script);
-        }
-        
-        // Load on first interaction (click, scroll, or after 5 seconds)
-        const interactionEvents = ['click', 'scroll', 'touchstart', 'keydown'];
-        const loadOnInteraction = () => {
-            loadOnChat();
-            interactionEvents.forEach(event => {
-                document.removeEventListener(event, loadOnInteraction);
-            });
-        };
-        
-        interactionEvents.forEach(event => {
-            document.addEventListener(event, loadOnInteraction, { once: true, passive: true });
-        });
-        
-        // Fallback: load after 5 seconds if no interaction
-        setTimeout(loadOnChat, 5000);
-    </script>
 </body>
 </html>
