@@ -3422,7 +3422,7 @@
                 </div>
                 <div class="stat-item">
                     <span class="stat-value" id="statStreak">0</span>
-                    <span class="stat-label">Day Streak</span>
+                    <span class="stat-label">Week Streak</span>
                 </div>
                 <div class="stat-item">
                     <span class="stat-value" id="statFavoriteMode">—</span>
@@ -3538,7 +3538,7 @@
             <!-- Voted Status Indicator (shown after voting) -->
             <div class="voted-status" id="votedStatus">
                 <div class="voted-status-icon">✓</div>
-                <div class="voted-status-text">You Voted Today</div>
+                <div class="voted-status-text">You Voted This Week</div>
                 <div class="voted-status-mode" id="votedStatusMode">Studio Mode</div>
                 <div class="voted-status-actions">
                     <button class="voted-status-btn" onclick="openShareModal(userVote)">Share Vote</button>
@@ -3546,12 +3546,7 @@
                 </div>
             </div>
 
-            <!-- Submit Votes Button -->
-            <div class="submit-votes-container" id="submitVotesContainer">
-                <button class="submit-votes-btn" id="submitVotesBtn" onclick="submitVotes()" disabled>
-                    <span id="submitBtnText">Select a mode to continue</span>
-                </button>
-            </div>
+            <!-- Submit button removed - voting is now instant on mode card click -->
             
             <!-- Post-Vote Invite Nudge (hidden by default) -->
             <div id="inviteNudge" class="invite-nudge hidden">
@@ -4890,7 +4885,7 @@
         }
 
         /* ==============================================
-           DAILY VOTING LOGIC
+           WEEKLY VOTING LOGIC (Monday 5pm ET)
         ============================================== */
 
         // Vote function with database - exposed to global scope for onclick handlers
@@ -4968,8 +4963,8 @@
                     votePowerData = { power: 1 };
                 }
                 
-                // Call UPSERT RPC (vote_power read from cache server-side)
-                const { data, error } = await supabase.rpc('upsert_daily_vote', {
+                // Call UPSERT RPC for weekly voting (vote_power read from cache server-side)
+                const { data, error } = await supabase.rpc('upsert_weekly_vote', {
                     p_fid: validatedFID,
                     p_mode: mode
                 });
@@ -5003,9 +4998,9 @@
                 }
                 // No toast for same-mode confirmation - avoid spam
                 
-                // Always unlock weekly voting after any daily vote
-                localStorage.setItem('daily_voted_today', 'true');
-                localStorage.setItem('daily_voted_date', getTodayUTC());
+                // Mark as voted this week
+                localStorage.setItem('weekly_voted_this_week', 'true');
+                localStorage.setItem('weekly_voted_date', getCurrentWeekMonday());
                 unlockWeeklyVoting(isFirstVote); // Show feedback only on first vote
                 
                 // Header already defaults collapsed, no need to collapse after vote
@@ -7042,6 +7037,17 @@
             return now.toISOString().split('T')[0];
         }
         
+        // Get Monday of current week in ET timezone (YYYY-MM-DD format)
+        function getCurrentWeekMonday() {
+            const now = new Date();
+            const et = new Date(now.toLocaleString("en-US", {timeZone: "America/New_York"}));
+            const dayOfWeek = et.getDay(); // 0 = Sunday, 1 = Monday
+            const diff = dayOfWeek === 0 ? -6 : 1 - dayOfWeek; // If Sunday, go back 6 days
+            const monday = new Date(et);
+            monday.setDate(et.getDate() + diff);
+            return monday.toISOString().split('T')[0];
+        }
+        
         // Lock weekly voting section
         function lockWeeklyVoting() {
             const section = document.getElementById('weeklyFocusSection');
@@ -7093,14 +7099,14 @@
         async function checkDailyVoteStatus() {
             try {
                 // 1. Check localStorage first (instant)
-                const localVoted = localStorage.getItem('daily_voted_today') === 'true';
-                const votedDate = localStorage.getItem('daily_voted_date');
-                const today = getTodayUTC();
+                const localVoted = localStorage.getItem('weekly_voted_this_week') === 'true';
+                const votedDate = localStorage.getItem('weekly_voted_date');
+                const currentWeekMonday = getCurrentWeekMonday();
                 
-                console.log('🔍 [WEEKLY GATING] Checking daily vote status:', { localVoted, votedDate, today });
+                console.log('🔍 [WEEKLY GATING] Checking weekly vote status:', { localVoted, votedDate, currentWeekMonday });
                 
                 // If localStorage says voted today, trust it (instant unlock)
-                if (localVoted && votedDate === today) {
+                if (localVoted && votedDate === currentWeekMonday) {
                     console.log('✅ [WEEKLY GATING] localStorage confirms vote today - instant unlock');
                     return true;
                 }
