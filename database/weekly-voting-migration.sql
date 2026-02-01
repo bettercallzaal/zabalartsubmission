@@ -50,14 +50,15 @@ BEGIN
     ORDER BY voted_at DESC
     LIMIT 1;
     
-    -- Insert or update vote for this week
+    -- Delete any existing vote for this week (if changing vote)
+    DELETE FROM votes
+    WHERE fid = p_fid
+      AND voted_at >= v_current_week
+      AND voted_at < v_current_week + INTERVAL '7 days';
+    
+    -- Insert new vote for this week
     INSERT INTO votes (fid, username, mode, vote_power, voted_at)
-    VALUES (p_fid, v_username, p_mode, v_vote_power, NOW())
-    ON CONFLICT (fid, DATE_TRUNC('week', voted_at AT TIME ZONE 'America/New_York')::DATE + INTERVAL '1 day')
-    DO UPDATE SET
-        mode = p_mode,
-        vote_power = v_vote_power,
-        voted_at = NOW();
+    VALUES (p_fid, v_username, p_mode, v_vote_power, NOW());
     
     -- Return results
     RETURN QUERY
