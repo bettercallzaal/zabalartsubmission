@@ -181,9 +181,15 @@ $$ LANGUAGE plpgsql;
 -- Drop old daily constraint if exists
 ALTER TABLE votes DROP CONSTRAINT IF EXISTS votes_fid_date_key;
 
--- Add weekly constraint
-ALTER TABLE votes ADD CONSTRAINT votes_fid_week_key 
-UNIQUE (fid, (DATE_TRUNC('week', voted_at AT TIME ZONE 'America/New_York')::DATE + INTERVAL '1 day'));
+-- Drop old weekly index if exists
+DROP INDEX IF EXISTS idx_votes_fid_week;
+
+-- Create unique index for weekly voting (one vote per week per user)
+-- This prevents duplicate votes in the same week
+CREATE UNIQUE INDEX idx_votes_fid_week ON votes (
+    fid, 
+    (DATE_TRUNC('week', voted_at AT TIME ZONE 'America/New_York')::DATE + INTERVAL '1 day')
+);
 
 -- 7. Verification queries
 -- Check current week
