@@ -3284,6 +3284,7 @@
     <script src="js/state-manager.js"></script>
     <script src="js/database.js"></script>
     <script src="js/api-throttle.js"></script>
+    <script src="js/share-messages.js"></script>
 </head>
 <body>
     <!-- Skip to content link for accessibility -->
@@ -6153,7 +6154,15 @@
                 
                 const emoji = platformEmojis[platform] || '📱';
                 
-                let castText = `${emoji} I voted for ${platform} as ZABAL's social focus this week!\n\nWhere should we focus community engagement?\n\nVote now 👇`;
+                // Use dynamic message generator for varied messages
+                const messageGen = new window.ShareMessageGenerator();
+                const userStreak = window.StateManager?.get('auth.streak') || 0;
+                const isFirst = userStreak === 0;
+                
+                let castText = messageGen.generateWeeklySocialMessage(platform, {
+                    streak: userStreak,
+                    isFirstVote: isFirst
+                });
                 
                 // Add friend tags if selected
                 let friendTags = '';
@@ -6233,23 +6242,43 @@
             // Check for milestone
             const isMilestone = checkMilestone(totalVotes);
             
-            // Create engaging personalized message based on voted modes
+            // Use dynamic message generator for varied, personalized messages
+            const messageGen = new window.ShareMessageGenerator();
+            const userStreak = window.StateManager?.get('auth.streak') || 0;
+            const userVotePower = window.StateManager?.get('auth.votePower') || 1;
+            const isFirstVote = userStreak === 0;
+            
             let castText;
             let callToAction;
             
-            // Create voted modes text
-            const votedModesText = votedModes.map(m => `${modeEmojis[m]} ${modeNames[m]}`).join(' + ');
-            const isMultiVote = votedModes.length > 1;
-            
-            if (isMilestone) {
-                castText = `🎉 WE HIT ${totalVotes} VOTES!\n\nJust voted ${votedModesText}${isMultiVote ? ' (multi-vote!)' : ''}\n\n${standings}\n\nJoin the celebration! 🎊`;
-                callToAction = 'Vote & celebrate with us! 👇';
-            } else if (votedModes.includes(leader)) {
-                castText = `${modeEmojis[leader]} ${modeNames[leader]} IS WINNING! 👑\n\nI voted: ${votedModesText}${isMultiVote ? ' 🎯' : ''}\n\n${standings}\n\n`;
-                callToAction = 'Help us dominate! Vote now 👇';
+            // For single mode votes, use personalized templates
+            if (votedModes.length === 1) {
+                const mode = votedModes[0];
+                castText = messageGen.generateVoteMessage(mode, {
+                    streak: userStreak,
+                    votePower: userVotePower,
+                    isFirstVote: isFirstVote
+                });
+                
+                // Add current standings
+                const votedModesText = votedModes.map(m => `${modeEmojis[m]} ${modeNames[m]}`).join(' + ');
+                castText += `\n\nCurrent standings:\n${standings}`;
+                callToAction = '';
             } else {
-                castText = `Voted ${votedModesText} on ZABAL!${isMultiVote ? ' 🎯' : ''} 🎨\n\n${standings}\n\n`;
-                callToAction = 'Your turn! Vote now 👇';
+                // Multi-vote: use existing logic with slight variation
+                const votedModesText = votedModes.map(m => `${modeEmojis[m]} ${modeNames[m]}`).join(' + ');
+                const isMultiVote = votedModes.length > 1;
+                
+                if (isMilestone) {
+                    castText = `🎉 WE HIT ${totalVotes} VOTES!\n\nJust voted ${votedModesText}${isMultiVote ? ' (multi-vote!)' : ''}\n\n${standings}\n\nJoin the celebration! 🎊`;
+                    callToAction = 'Vote & celebrate with us! 👇';
+                } else if (votedModes.includes(leader)) {
+                    castText = `${modeEmojis[leader]} ${modeNames[leader]} IS WINNING! 👑\n\nI voted: ${votedModesText}${isMultiVote ? ' 🎯' : ''}\n\n${standings}\n\n`;
+                    callToAction = 'Help us dominate! Vote now 👇';
+                } else {
+                    castText = `Voted ${votedModesText} on ZABAL!${isMultiVote ? ' 🎯' : ''} 🎨\n\n${standings}\n\n`;
+                    callToAction = 'Your turn! Vote now 👇';
+                }
             }
             
             // Add @zaal mention with stream suggestion
