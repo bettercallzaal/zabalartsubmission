@@ -669,8 +669,13 @@
                                     ${entry.rank === 1 ? '🥇' : entry.rank === 2 ? '🥈' : entry.rank === 3 ? '🥉' : entry.rank}
                                 </td>
                                 <td>
-                                    <div class="username">${entry.username}</div>
-                                    <div class="address">FID: ${entry.fid}</div>
+                                    <div style="display: flex; align-items: center; gap: 12px;">
+                                        ${entry.pfp_url ? `<img src="${entry.pfp_url}" alt="${entry.username}" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover;">` : ''}
+                                        <div>
+                                            <div class="username">${entry.username || `User ${entry.fid}`}</div>
+                                            <div class="address">FID: ${entry.fid}</div>
+                                        </div>
+                                    </div>
                                 </td>
                                 <td class="score">${entry.score}</td>
                                 <td>

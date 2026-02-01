@@ -69,6 +69,7 @@ export default async function handler(req, res) {
         address: entry.fid.toString(),
         fid: entry.fid,
         username: entry.username || `User ${entry.fid}`,
+        pfp_url: entry.pfp_url,
         score: entry.score,
         streak: entry.streak,
         lastVote: entry.last_vote
