@@ -4983,7 +4983,6 @@
                     document.querySelectorAll('.vote-checkbox-hidden').forEach(checkbox => {
                         checkbox.checked = false;
                     });
-                    updateSubmitButton();
                     
                     return;
                 }
@@ -5062,7 +5061,6 @@
                 document.querySelectorAll('.vote-checkbox-hidden').forEach(checkbox => {
                     checkbox.checked = false;
                 });
-                updateSubmitButton();
                 
                 showToast('error', 'Vote Failed', 'An error occurred. Please try again.');
             }
@@ -6001,11 +5999,13 @@
                 checkbox.checked = true;
                 console.log('✅ Selected mode:', mode);
             }
-            
-            updateSubmitButton();
         }
 
-        function updateSubmitButton() {
+        // updateSubmitButton removed - no longer needed with instant voting
+        function updateSubmitButton_DEPRECATED() {
+            // This function is deprecated and should not be called
+            return;
+            
             const btn = document.getElementById('submitVotesBtn');
             const btnText = document.getElementById('submitBtnText');
             
@@ -6120,7 +6120,6 @@
                 // Clear selections
                 selectedModes = [];
                 document.querySelectorAll('.vote-checkbox').forEach(cb => cb.checked = false);
-                updateSubmitButton();
                 
                 // Open share modal with all voted modes
                 setTimeout(() => openShareModal(votedModes), 500);
