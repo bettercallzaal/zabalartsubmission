@@ -6404,28 +6404,9 @@
                 }
             });
 
-            console.log('🔘 Updating vote button states...');
-            document.querySelectorAll('.vote-button').forEach(btn => {
-                btn.disabled = false;
-                // Show different text based on authentication
-                btn.textContent = isAuthenticated ? 'Vote' : '🔒 Login to Vote';
-            });
-
+            // Vote button logic removed - using instant voting on card click
             if (userVote) {
                 console.log('👤 User has voted for:', userVote);
-                const votedCard = document.querySelector(`[data-mode="${userVote}"]`);
-                if (votedCard) {
-                    const btn = votedCard.querySelector('.vote-button');
-                    if (btn) {
-                        // Keep button enabled - allow vote changes
-                        btn.textContent = 'Voted ✓';
-                        console.log('✅ Marked', userVote, 'as voted (still clickable)');
-                    } else {
-                        console.warn('⚠️ Vote button not found for:', userVote);
-                    }
-                } else {
-                    console.warn('⚠️ Could not find card for mode:', userVote);
-                }
             } else {
                 console.log('👤 User has not voted yet');
             }
