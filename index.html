@@ -666,6 +666,226 @@
             }
         }
 
+        /* Vote Comments Section */
+        .vote-comments-section {
+            padding: 60px 20px;
+            background: linear-gradient(180deg, rgba(10, 10, 10, 0.5) 0%, rgba(20, 30, 39, 0.8) 100%);
+        }
+
+        .comments-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .comments-header h2 {
+            font-size: clamp(1.8rem, 5vw, 2.5rem);
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--text-white) 0%, var(--accent-yellow) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 0.5rem;
+        }
+
+        .comments-header p {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+        }
+
+        .add-comment-form {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .comment-textarea {
+            width: 100%;
+            min-height: 100px;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 1rem;
+            color: var(--text-white);
+            font-size: 0.95rem;
+            font-family: inherit;
+            resize: vertical;
+            margin-bottom: 0.75rem;
+        }
+
+        .comment-textarea:focus {
+            outline: none;
+            border-color: var(--accent-yellow);
+            box-shadow: 0 0 0 2px rgba(224, 221, 170, 0.1);
+        }
+
+        .comment-textarea::placeholder {
+            color: var(--text-gray);
+        }
+
+        .comment-form-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .char-count {
+            font-size: 0.85rem;
+            color: var(--text-gray);
+        }
+
+        .submit-comment-btn {
+            background: var(--accent-yellow);
+            color: var(--bg-dark);
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .submit-comment-btn:hover {
+            background: #f5f0c0;
+            transform: translateY(-2px);
+        }
+
+        .submit-comment-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .comment-filters {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 2rem;
+            overflow-x: auto;
+            padding-bottom: 0.5rem;
+        }
+
+        .filter-tab {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--text-secondary);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+        }
+
+        .filter-tab:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .filter-tab.active {
+            background: var(--accent-yellow);
+            color: var(--bg-dark);
+            border-color: var(--accent-yellow);
+        }
+
+        .comments-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .comment-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 1.25rem;
+            transition: all 0.2s ease;
+        }
+
+        .comment-card:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(255, 255, 255, 0.15);
+        }
+
+        .comment-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.75rem;
+        }
+
+        .comment-user {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .comment-username {
+            font-weight: 700;
+            color: var(--text-white);
+            font-size: 0.95rem;
+        }
+
+        .comment-mode-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 0.25rem 0.5rem;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .comment-time {
+            font-size: 0.8rem;
+            color: var(--text-gray);
+        }
+
+        .comment-text {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+
+        .comments-loading {
+            text-align: center;
+            padding: 2rem;
+            color: var(--text-gray);
+        }
+
+        .comments-empty {
+            text-align: center;
+            padding: 3rem 1rem;
+            color: var(--text-gray);
+        }
+
+        .comments-empty-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        @media (max-width: 768px) {
+            .vote-comments-section {
+                padding: 40px 16px;
+            }
+
+            .comment-filters {
+                gap: 0.25rem;
+            }
+
+            .filter-tab {
+                padding: 0.4rem 0.75rem;
+                font-size: 0.85rem;
+            }
+
+            .comment-card {
+                padding: 1rem;
+            }
+        }
 
         /* Live State Hero */
         .live-hero {
@@ -3447,9 +3667,9 @@
 
     <!-- Live State Hero -->
     <section class="live-hero">
-        <div class="hero-state deciding" id="heroState">Stream Being Decided</div>
-        <h1 class="hero-title" id="heroTitle">Today's Stream Is Being Decided</h1>
-        <p class="hero-subtitle" id="heroSubtitle">Show up early. Influence the outcome.</p>
+        <div class="hero-state deciding" id="heroState">Vote Daily for Monday's Stream</div>
+        <h1 class="hero-title" id="heroTitle">Vote Every Day for Monday's Stream</h1>
+        <p class="hero-subtitle" id="heroSubtitle">Cast your vote daily. The most popular mode by Monday 5pm ET becomes the stream.</p>
         
         <div class="countdown" id="countdown">
             <span class="countdown-label">Closes at 5 PM EST in</span>
@@ -3652,9 +3872,9 @@
         
         <div class="container">
             <div class="weekly-focus-header">
-                <h2>Where We Show Up This Week</h2>
-                <p>Pick the platform Zaal prioritizes this week.</p>
-                <p class="weekly-reset-note">Resets every Monday.</p>
+                <h2>Vote Daily for This Week's Social Focus</h2>
+                <p>Cast your vote every day to help decide which platform ZABAL prioritizes this week.</p>
+                <p class="weekly-reset-note">Most popular platform by Monday becomes the weekly focus. Resets every Monday.</p>
             </div>
             
             <div class="focus-category">
@@ -3691,6 +3911,56 @@
                         You're backing <strong id="weeklySocialVotedPlatform"></strong> this week.
                     </div>
                 </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Vote Comments Section -->
+    <section class="vote-comments-section" id="voteCommentsSection">
+        <div class="container">
+            <div class="comments-header">
+                <h2>Why Did You Vote?</h2>
+                <p>Share your reasoning with the community</p>
+            </div>
+            
+            <!-- Add Comment Form -->
+            <div class="add-comment-form" id="addCommentForm">
+                <textarea 
+                    id="commentInput" 
+                    class="comment-textarea" 
+                    placeholder="Why did you vote for this mode? (max 500 characters)"
+                    maxlength="500"
+                ></textarea>
+                <div class="comment-form-footer">
+                    <span class="char-count" id="charCount">0/500</span>
+                    <button class="submit-comment-btn" id="submitCommentBtn" onclick="submitComment()">
+                        Post Comment
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Filter Tabs -->
+            <div class="comment-filters">
+                <button class="filter-tab active" data-mode="all" onclick="filterComments('all')">
+                    All Comments
+                </button>
+                <button class="filter-tab" data-mode="studio" onclick="filterComments('studio')">
+                    🎬 Studio
+                </button>
+                <button class="filter-tab" data-mode="market" onclick="filterComments('market')">
+                    🛒 Market
+                </button>
+                <button class="filter-tab" data-mode="social" onclick="filterComments('social')">
+                    🌐 Social
+                </button>
+                <button class="filter-tab" data-mode="battle" onclick="filterComments('battle')">
+                    ⚔️ Battle
+                </button>
+            </div>
+            
+            <!-- Comments Display -->
+            <div class="comments-list" id="commentsList">
+                <div class="comments-loading">Loading comments...</div>
             </div>
         </div>
     </section>
@@ -5001,6 +5271,7 @@
                 // Mark as voted this week
                 localStorage.setItem('weekly_voted_this_week', 'true');
                 localStorage.setItem('weekly_voted_date', getCurrentWeekMonday());
+                localStorage.setItem('userVoteMode', mode); // Store vote mode for comments
                 unlockWeeklyVoting(isFirstVote); // Show feedback only on first vote
                 
                 // Header already defaults collapsed, no need to collapse after vote
@@ -6728,6 +6999,10 @@
             }
             console.log('✅ Weekly social voting initialized');
             
+            // Initialize comments section
+            await initializeComments();
+            console.log('✅ Comments section initialized');
+            
             // Refresh votes every 30 seconds (using lifecycle manager)
             window.appLifecycle.addInterval(loadVotes, 30000, 'vote-refresh');
             console.log('✅ Vote refresh interval set (30s)');
@@ -7164,6 +7439,221 @@
         
         // ============================================
         // END WEEKLY SOCIAL FOCUS VOTING LOGIC
+        // ============================================
+        
+        // ============================================
+        // VOTE COMMENTS LOGIC
+        // ============================================
+        
+        let currentCommentFilter = 'all';
+        let allComments = [];
+        
+        // Initialize comments section
+        async function initializeComments() {
+            console.log('💬 [COMMENTS] Initializing...');
+            
+            // Set up character counter
+            const commentInput = document.getElementById('commentInput');
+            const charCount = document.getElementById('charCount');
+            
+            if (commentInput && charCount) {
+                commentInput.addEventListener('input', () => {
+                    const length = commentInput.value.length;
+                    charCount.textContent = `${length}/500`;
+                    
+                    // Update button state
+                    const submitBtn = document.getElementById('submitCommentBtn');
+                    if (submitBtn) {
+                        submitBtn.disabled = length === 0 || !isAuthenticated;
+                    }
+                });
+            }
+            
+            // Load comments
+            await loadComments();
+            
+            // Refresh comments every 30 seconds
+            window.appLifecycle.addInterval(loadComments, 30000, 'comments-refresh');
+            console.log('✅ [COMMENTS] Initialized');
+        }
+        
+        // Submit comment
+        window.submitComment = async function() {
+            const commentInput = document.getElementById('commentInput');
+            const submitBtn = document.getElementById('submitCommentBtn');
+            
+            if (!commentInput || !submitBtn) return;
+            
+            const comment = commentInput.value.trim();
+            
+            if (!comment) {
+                showToast('error', 'Empty Comment', 'Please write something before posting.');
+                return;
+            }
+            
+            if (!isAuthenticated || !userFID) {
+                showToast('error', 'Not Authenticated', 'Please log in to post comments.');
+                return;
+            }
+            
+            // Get user's current vote mode
+            const userVoteMode = userVote || localStorage.getItem('userVoteMode');
+            
+            if (!userVoteMode) {
+                showToast('error', 'Vote First', 'Please vote for a mode before commenting.');
+                return;
+            }
+            
+            try {
+                submitBtn.disabled = true;
+                submitBtn.textContent = 'Posting...';
+                
+                const { data, error } = await supabase.rpc('upsert_vote_comment', {
+                    p_fid: userFID,
+                    p_username: username || `User ${userFID}`,
+                    p_comment: comment,
+                    p_vote_mode: userVoteMode
+                });
+                
+                if (error) {
+                    console.error('❌ [COMMENTS] Error:', error);
+                    showToast('error', 'Comment Failed', 'Could not post comment. Please try again.');
+                    return;
+                }
+                
+                if (data && data[0]) {
+                    const result = data[0];
+                    if (result.success) {
+                        showToast('success', 'Comment Posted', result.message);
+                        commentInput.value = '';
+                        document.getElementById('charCount').textContent = '0/500';
+                        
+                        // Reload comments
+                        await loadComments();
+                    } else {
+                        showToast('error', 'Comment Failed', result.message);
+                    }
+                }
+                
+            } catch (error) {
+                console.error('❌ [COMMENTS] Error submitting:', error);
+                showToast('error', 'Submission Failed', 'Could not post comment. Please try again.');
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Post Comment';
+            }
+        }
+        
+        // Load comments
+        async function loadComments() {
+            try {
+                if (!supabase) return;
+                
+                const { data, error } = await supabase.rpc('get_recent_comments', {
+                    p_limit: 50
+                });
+                
+                if (error) {
+                    console.error('❌ [COMMENTS] Error loading:', error);
+                    return;
+                }
+                
+                allComments = data || [];
+                displayComments();
+                
+            } catch (error) {
+                console.error('❌ [COMMENTS] Error:', error);
+            }
+        }
+        
+        // Filter comments
+        window.filterComments = function(mode) {
+            currentCommentFilter = mode;
+            
+            // Update active tab
+            document.querySelectorAll('.filter-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelector(`[data-mode="${mode}"]`)?.classList.add('active');
+            
+            displayComments();
+        }
+        
+        // Display comments
+        function displayComments() {
+            const commentsList = document.getElementById('commentsList');
+            if (!commentsList) return;
+            
+            // Filter comments
+            const filtered = currentCommentFilter === 'all' 
+                ? allComments 
+                : allComments.filter(c => c.vote_mode === currentCommentFilter);
+            
+            if (filtered.length === 0) {
+                commentsList.innerHTML = `
+                    <div class="comments-empty">
+                        <div class="comments-empty-icon">💬</div>
+                        <p>No comments yet. Be the first to share why you voted!</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            // Render comments
+            commentsList.innerHTML = filtered.map(comment => {
+                const modeEmojis = {
+                    studio: '🎬',
+                    market: '🛒',
+                    social: '🌐',
+                    battle: '⚔️'
+                };
+                
+                const modeNames = {
+                    studio: 'Studio',
+                    market: 'Market',
+                    social: 'Social',
+                    battle: 'Battle'
+                };
+                
+                const timeAgo = getTimeAgo(new Date(comment.created_at));
+                
+                return `
+                    <div class="comment-card">
+                        <div class="comment-header">
+                            <div class="comment-user">
+                                <span class="comment-username">${escapeHtml(comment.username)}</span>
+                                <span class="comment-mode-badge">
+                                    ${modeEmojis[comment.vote_mode]} ${modeNames[comment.vote_mode]}
+                                </span>
+                            </div>
+                            <span class="comment-time">${timeAgo}</span>
+                        </div>
+                        <div class="comment-text">${escapeHtml(comment.comment)}</div>
+                    </div>
+                `;
+            }).join('');
+        }
+        
+        // Helper: Get time ago string
+        function getTimeAgo(date) {
+            const seconds = Math.floor((new Date() - date) / 1000);
+            
+            if (seconds < 60) return 'just now';
+            if (seconds < 3600) return `${Math.floor(seconds / 60)}m ago`;
+            if (seconds < 86400) return `${Math.floor(seconds / 3600)}h ago`;
+            if (seconds < 604800) return `${Math.floor(seconds / 86400)}d ago`;
+            return `${Math.floor(seconds / 604800)}w ago`;
+        }
+        
+        // Helper: Escape HTML
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+        
+        // ============================================
+        // END VOTE COMMENTS LOGIC
         // ============================================
         
         // Toggle stats section expansion
