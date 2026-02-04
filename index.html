@@ -1216,6 +1216,102 @@
             }
         }
 
+        /* Floating Share Button */
+        .floating-share-button {
+            position: fixed;
+            bottom: 80px;
+            right: 20px;
+            z-index: 9999;
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            animation: slideInUp 0.3s ease-out;
+        }
+
+        .floating-share-button.fade-out {
+            animation: fadeOut 0.3s ease-out forwards;
+        }
+
+        .share-btn-primary {
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
+            transition: all 0.2s ease;
+        }
+
+        .share-btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(99, 102, 241, 0.6);
+        }
+
+        .share-btn-primary:active {
+            transform: translateY(0);
+        }
+
+        .share-icon {
+            font-size: 18px;
+        }
+
+        .share-btn-close {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            font-size: 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+
+        .share-btn-close:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeOut {
+            to {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .floating-share-button {
+                bottom: 20px;
+                right: 10px;
+                left: 10px;
+                justify-content: center;
+            }
+
+            .share-btn-primary {
+                flex: 1;
+                justify-content: center;
+            }
+        }
+
         /* Share Modal */
         .share-modal {
             display: none;
@@ -4623,7 +4719,7 @@
         // ============================================
 
         // Toast Notification System
-        function showToast(type, title, message, duration = 4000) {
+        function showToast(type, title, message, duration = 4000, callback = null) {
             const container = document.getElementById('toastContainer');
             if (!container) return;
 
@@ -4645,6 +4741,11 @@
             `;
 
             container.appendChild(toast);
+
+            // Execute callback after toast is shown
+            if (callback && typeof callback === 'function') {
+                setTimeout(callback, 500);
+            }
 
             // Auto-remove after duration
             setTimeout(() => {
@@ -5274,9 +5375,16 @@
                 const isFirstVote = !data.previous_mode;
                 
                 if (data.previous_mode && data.changed) {
-                    showToast('success', 'Vote Updated', `Now voting for ${data.new_mode}`);
+                    showToast('success', 'Vote Updated', `Now voting for ${data.new_mode}`, 3000, () => {
+                        showShareButton('stream', mode);
+                    });
                 } else if (!data.previous_mode) {
-                    showToast('success', 'Vote Recorded', `Voting for ${data.new_mode}`);
+                    showToast('success', 'Vote Recorded', `Voting for ${data.new_mode}`, 3000, () => {
+                        showShareButton('stream', mode);
+                    });
+                } else {
+                    // Same vote confirmation - still show share option
+                    showShareButton('stream', mode);
                 }
                 // No toast for same-mode confirmation - avoid spam
                 
@@ -5291,9 +5399,6 @@
                 
                 // Unlock weekly voting (with feedback)
                 unlockWeeklyVoting(true);
-                
-                // Check if all actions are complete to trigger share
-                checkAndTriggerShareModal();
                 
                 // Header already defaults collapsed, no need to collapse after vote
                 
@@ -6573,10 +6678,13 @@
             // Check if multi-vote for mentions
             const isMultiVote = votedModes.length > 1;
             
-            // Add @zaal mention with stream suggestion
-            const zaalMention = isMultiVote 
-                ? `\n\n@zaal I think you should do a ${votedModes.map(m => modeNames[m]).join(' + ')} combo stream! 🎨`
-                : `\n\n@zaal I think you should do a ${modeNames[votedModes[0]]} stream for your next stream! 🎨`;
+            // Add @zaal mention with stream suggestion (only if we have valid modes)
+            let zaalMention = '';
+            if (votedModes.length > 0 && votedModes[0] && modeNames[votedModes[0]]) {
+                zaalMention = isMultiVote 
+                    ? `\n\n@zaal I think you should do a ${votedModes.map(m => modeNames[m]).join(' + ')} combo stream! 🎨`
+                    : `\n\n@zaal I think you should do a ${modeNames[votedModes[0]]} stream for your next stream! 🎨`;
+            }
             
             // Add friend tags if selected
             let friendTags = '';
@@ -7163,13 +7271,19 @@
                 // Show appropriate feedback based on vote state
                 if (data.previous_platform && data.changed) {
                     console.log('🔄 [WEEKLY SOCIAL] Vote changed from', data.previous_platform, 'to', data.new_platform);
-                    showToast('success', 'Vote Changed', `Changed from ${data.previous_platform} to ${data.new_platform}`);
+                    showToast('success', 'Vote Changed', `Changed from ${data.previous_platform} to ${data.new_platform}`, 3000, () => {
+                        showShareButton('social', platform);
+                    });
                 } else if (data.previous_platform && !data.changed) {
                     console.log('✅ [WEEKLY SOCIAL] Vote confirmed for', data.new_platform);
-                    showToast('info', 'Vote Confirmed', `Still voting for ${data.new_platform}`);
+                    showToast('info', 'Vote Confirmed', `Still voting for ${data.new_platform}`, 3000, () => {
+                        showShareButton('social', platform);
+                    });
                 } else {
                     console.log('✅ [WEEKLY SOCIAL] First vote recorded for', data.new_platform);
-                    showToast('success', 'Vote Recorded', `Voted for ${data.new_platform}`);
+                    showToast('success', 'Vote Recorded', `Voted for ${data.new_platform}`, 3000, () => {
+                        showShareButton('social', platform);
+                    });
                 }
                 
                 // Update UI (but don't disable cards)
@@ -7178,9 +7292,6 @@
                 
                 // Track social vote completion
                 localStorage.setItem('completed_social_vote', platform);
-                
-                // Check if all actions are complete to trigger share
-                checkAndTriggerShareModal();
                 
             } catch (error) {
                 console.error('❌ [WEEKLY SOCIAL] Error submitting vote:', error);
@@ -7401,7 +7512,62 @@
             }
         }
         
-        // Check if all 3 actions are complete and trigger share modal
+        // Show optional share button after vote actions
+        function showShareButton(actionType, value) {
+            const container = document.getElementById('toastContainer');
+            if (!container) return;
+            
+            // Remove any existing share buttons
+            const existingBtn = document.getElementById('floatingShareBtn');
+            if (existingBtn) existingBtn.remove();
+            
+            const shareBtn = document.createElement('div');
+            shareBtn.id = 'floatingShareBtn';
+            shareBtn.className = 'floating-share-button';
+            shareBtn.innerHTML = `
+                <button onclick="handleShareClick('${actionType}', '${value}')" class="share-btn-primary">
+                    <span class="share-icon">🚀</span>
+                    Share to Farcaster
+                </button>
+                <button onclick="document.getElementById('floatingShareBtn').remove()" class="share-btn-close">
+                    ×
+                </button>
+            `;
+            
+            document.body.appendChild(shareBtn);
+            
+            // Auto-remove after 10 seconds
+            setTimeout(() => {
+                if (shareBtn.parentElement) {
+                    shareBtn.classList.add('fade-out');
+                    setTimeout(() => shareBtn.remove(), 300);
+                }
+            }, 10000);
+        }
+        
+        // Handle share button click
+        window.handleShareClick = function(actionType, value) {
+            // Remove the floating button
+            const btn = document.getElementById('floatingShareBtn');
+            if (btn) btn.remove();
+            
+            // Trigger appropriate share based on action type
+            if (actionType === 'stream') {
+                // Share stream vote
+                window.shareVote(value, false);
+            } else if (actionType === 'social') {
+                // Share social vote
+                window.isWeeklyVote = true;
+                window.shareVote(value, false);
+            } else if (actionType === 'comment') {
+                // Share with comment context
+                const mode = localStorage.getItem('userVoteMode') || 'social';
+                window.shareVote(mode, false);
+            }
+        };
+        
+        // DEPRECATED: Check if all 3 actions are complete and trigger share modal
+        // Now using optional share buttons instead
         function checkAndTriggerShareModal() {
             const streamVote = localStorage.getItem('completed_stream_vote');
             const socialVote = localStorage.getItem('completed_social_vote');
@@ -7440,10 +7606,9 @@
                 localStorage.removeItem('completed_social_vote');
                 localStorage.removeItem('completed_comment');
                 
-                // Trigger share modal with custom message
-                setTimeout(() => {
-                    openShareModalWithCustomMessage(customMessage);
-                }, 500);
+                // DEPRECATED: No longer auto-triggering share modal
+                // Users can now share via optional buttons after each action
+                console.log('ℹ️ All actions complete. Users can share via optional buttons.');
             }
         }
         
@@ -7620,7 +7785,9 @@
                 if (data && data[0]) {
                     const result = data[0];
                     if (result.success) {
-                        showToast('success', 'Comment Posted', result.message);
+                        showToast('success', 'Comment Posted', result.message, 3000, () => {
+                            showShareButton('comment', comment);
+                        });
                         
                         // Track comment completion
                         localStorage.setItem('completed_comment', comment);
@@ -7630,9 +7797,6 @@
                         
                         // Reload comments
                         await loadComments();
-                        
-                        // Check if all actions are complete to trigger share
-                        checkAndTriggerShareModal();
                     } else {
                         showToast('error', 'Comment Failed', result.message);
                     }
