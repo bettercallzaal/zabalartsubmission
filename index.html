@@ -5268,6 +5268,9 @@
                 }
                 // No toast for same-mode confirmation - avoid spam
                 
+                // Get current week Monday for localStorage
+                const currentWeekMonday = getCurrentWeekMonday();
+                
                 // Store vote in localStorage for instant UI feedback
                 localStorage.setItem('weekly_voted_this_week', 'true');
                 localStorage.setItem('weekly_voted_date', currentWeekMonday);
