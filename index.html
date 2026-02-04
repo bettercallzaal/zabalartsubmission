@@ -5268,11 +5268,17 @@
                 }
                 // No toast for same-mode confirmation - avoid spam
                 
-                // Mark as voted this week
+                // Store vote in localStorage for instant UI feedback
                 localStorage.setItem('weekly_voted_this_week', 'true');
-                localStorage.setItem('weekly_voted_date', getCurrentWeekMonday());
+                localStorage.setItem('weekly_voted_date', currentWeekMonday);
                 localStorage.setItem('userVoteMode', mode); // Store vote mode for comments
-                unlockWeeklyVoting(isFirstVote); // Show feedback only on first vote
+                localStorage.setItem('completed_stream_vote', mode); // Track stream vote completion
+                
+                // Unlock weekly voting (with feedback)
+                unlockWeeklyVoting(true);
+                
+                // Check if all actions are complete to trigger share
+                checkAndTriggerShareModal();
                 
                 // Header already defaults collapsed, no need to collapse after vote
                 
@@ -5956,9 +5962,6 @@
             console.log('📡 Loading best friends for FID:', fid);
             
             try {
-                // Load inactive contacts in parallel
-                loadInactiveContacts();
-                
                 const data = await callNeynarAPI('user/best_friends', { fid, limit: 50 });
                 
                 console.log('📥 Neynar response:', data);
@@ -7155,10 +7158,11 @@
                 await loadWeeklySocialResults();
                 showWeeklySocialVotedState(platform);
                 
-                // Open share modal on every weekly vote
-                setTimeout(() => {
-                    openShareModal([platform], true); // true = isWeeklyVote
-                }, 500);
+                // Track social vote completion
+                localStorage.setItem('completed_social_vote', platform);
+                
+                // Check if all actions are complete to trigger share
+                checkAndTriggerShareModal();
                 
             } catch (error) {
                 console.error('❌ [WEEKLY SOCIAL] Error submitting vote:', error);
@@ -7379,9 +7383,82 @@
             }
         }
         
+        // Check if all 3 actions are complete and trigger share modal
+        function checkAndTriggerShareModal() {
+            const streamVote = localStorage.getItem('completed_stream_vote');
+            const socialVote = localStorage.getItem('completed_social_vote');
+            const comment = localStorage.getItem('completed_comment');
+            
+            console.log('🎯 [SHARE CHECK] Actions status:', { streamVote, socialVote, comment });
+            
+            // All 3 actions must be complete
+            if (streamVote && socialVote && comment) {
+                console.log('✅ [SHARE CHECK] All actions complete - triggering share modal');
+                
+                // Build custom share message
+                const modeEmojis = {
+                    studio: '🎬',
+                    market: '🛒',
+                    social: '🌐',
+                    battle: '⚔️'
+                };
+                
+                const platformEmojis = {
+                    farcaster: '🟣',
+                    twitter: '🐦',
+                    youtube: '📺',
+                    tiktok: '🎵',
+                    instagram: '📸'
+                };
+                
+                const streamEmoji = modeEmojis[streamVote] || '';
+                const socialEmoji = platformEmojis[socialVote.toLowerCase()] || '';
+                
+                // Format: zm I voted for [emoji] [mode] for stream, [emoji] [platform] for social media, and commented "[comment]"
+                const customMessage = `zm I voted for ${streamEmoji} ${streamVote} for stream, ${socialEmoji} ${socialVote} for social media, and commented "${comment}"`;
+                
+                // Clear completion flags
+                localStorage.removeItem('completed_stream_vote');
+                localStorage.removeItem('completed_social_vote');
+                localStorage.removeItem('completed_comment');
+                
+                // Trigger share modal with custom message
+                setTimeout(() => {
+                    openShareModalWithCustomMessage(customMessage);
+                }, 500);
+            }
+        }
+        
+        // Open share modal with custom message
+        function openShareModalWithCustomMessage(customMessage) {
+            const modal = document.getElementById('shareModal');
+            if (!modal) return;
+            
+            console.log('📤 Opening share modal with custom message:', customMessage);
+            
+            // Set custom message in the share text area if it exists
+            const shareTextArea = modal.querySelector('textarea');
+            if (shareTextArea) {
+                shareTextArea.value = customMessage;
+            }
+            
+            // Show modal
+            modal.style.display = 'flex';
+            
+            // Trigger Farcaster share composer if available
+            if (window.farcasterSDK?.actions?.openComposer) {
+                window.farcasterSDK.actions.openComposer({
+                    text: customMessage,
+                    embeds: ['https://zabal.art']
+                });
+            }
+        }
+        
         // Check if user has voted today (hybrid: localStorage + DB)
         async function checkDailyVoteStatus() {
             try {
+                const today = getTodayUTC();
+                
                 // 1. Check localStorage first (instant)
                 const localVoted = localStorage.getItem('weekly_voted_this_week') === 'true';
                 const votedDate = localStorage.getItem('weekly_voted_date');
@@ -7525,11 +7602,18 @@
                     const result = data[0];
                     if (result.success) {
                         showToast('success', 'Comment Posted', result.message);
+                        
+                        // Track comment completion
+                        localStorage.setItem('completed_comment', comment);
+                        
                         commentInput.value = '';
                         document.getElementById('charCount').textContent = '0/500';
                         
                         // Reload comments
                         await loadComments();
+                        
+                        // Check if all actions are complete to trigger share
+                        checkAndTriggerShareModal();
                     } else {
                         showToast('error', 'Comment Failed', result.message);
                     }
