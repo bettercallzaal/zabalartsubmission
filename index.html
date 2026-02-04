@@ -5106,9 +5106,9 @@
             }
             
             try {
-                // Get today's vote totals
+                // Get this week's vote totals
                 const { data, error } = await supabase
-                    .rpc('get_todays_votes');
+                    .rpc('get_this_weeks_votes');
                 
                 if (error) {
                     log.error('loadVotes:rpc-failed', error);
@@ -5124,7 +5124,8 @@
                 // Update with database values
                 if (data) {
                     data.forEach(row => {
-                        votes[row.mode] = parseInt(row.total_votes) || 0;
+                        // get_this_weeks_votes returns vote_count and total_power
+                        votes[row.mode] = parseInt(row.vote_count) || 0;
                     });
                 }
                 
