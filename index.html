@@ -1312,6 +1312,69 @@
             }
         }
 
+        /* Friend Selection in Share Modal */
+        .friend-selection-section {
+            margin: 20px 0;
+        }
+
+        .friend-selection-header {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-gray);
+            margin-bottom: 12px;
+        }
+
+        .friend-selection-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 10px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .friend-checkbox {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px;
+            background: var(--secondary-blue);
+            border: 2px solid transparent;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .friend-checkbox:hover {
+            border-color: var(--primary-purple);
+            background: rgba(99, 102, 241, 0.1);
+        }
+
+        .friend-checkbox input[type="checkbox"] {
+            margin: 0;
+            cursor: pointer;
+        }
+
+        .friend-checkbox input[type="checkbox"]:checked + .friend-avatar {
+            border-color: var(--primary-purple);
+        }
+
+        .friend-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            border: 2px solid transparent;
+            transition: border-color 0.2s ease;
+        }
+
+        .friend-name {
+            font-size: 13px;
+            color: var(--text-primary);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            flex: 1;
+        }
+
         /* Share Modal */
         .share-modal {
             display: none;
@@ -3601,6 +3664,7 @@
     <script src="js/database.js"></script>
     <script src="js/api-throttle.js"></script>
     <script src="js/share-messages.js"></script>
+    <script src="js/share-modal.js"></script>
 </head>
 <body>
     <!-- Skip to content link for accessibility -->
@@ -3881,77 +3945,29 @@
     <div id="shareModal" class="share-modal">
         <div class="share-modal-content">
             <div class="share-modal-header">
-                <div class="share-modal-title">📢 Share Your Vote</div>
-                <div class="share-modal-subtitle">Spread the word and get more people voting!</div>
-            </div>
-            
-            <div class="share-link-box">
-                <div class="share-link-text">https://zabal.art</div>
-                <button class="copy-link-btn" onclick="copyMiniappLink()">Copy Link</button>
-            </div>
-            
-            <!-- Friend Tagging Section -->
-            <div id="friendTagSection" class="friend-tag-section" style="display: none;">
-                <div class="friend-tag-header">
-                    Tag Friends
-                </div>
-                <div id="friendTagList" class="friend-tag-list"></div>
+                <div class="share-modal-title">🚀 Share to Farcaster</div>
+                <button class="share-modal-close" onclick="closeShareModal()">&times;</button>
             </div>
 
-            <!-- Top Friend Invitation -->
-            <div id="topFriendInvite" class="top-friend-invite" style="display: none;">
-                <div class="invite-header">Invite Your Top Friend</div>
-                <div id="topFriendCard" class="top-friend-card"></div>
-                <button class="invite-friend-btn" onclick="inviteTopFriend()">
-                    Invite to Vote
-                </button>
+            <div class="share-message-preview" id="shareMessagePreview">
+                Loading preview...
+            </div>
+
+            <!-- Friend Selection -->
+            <div class="friend-selection-section" id="friendSelectionSection">
+                <div class="friend-selection-header">Tag Friends (Optional)</div>
+                <div class="friend-selection-grid" id="friendSelectionGrid">
+                    <!-- Populated by JS -->
+                </div>
             </div>
             
             <div class="share-buttons">
-                <button class="share-action-btn share-farcaster-btn" onclick="shareVote(window.currentVotedModes || [userVote])">
+                <button class="share-action-btn share-farcaster-btn" onclick="executeShare()">
                     Share to Farcaster
                 </button>
-                <button class="share-action-btn challenge-friends-btn" onclick="challengeFriends()" style="display: none;">
-                    Challenge Friends
-                </button>
                 <button class="share-action-btn share-close-btn" onclick="closeShareModal()">
-                    Close
+                    Cancel
                 </button>
-            </div>
-
-            <!-- Share Settings -->
-            <div class="settings-section">
-                <div class="settings-title">Share Preferences</div>
-                
-                <div class="setting-item">
-                    <div class="setting-label">
-                        <span>Auto-share votes</span>
-                        <span class="setting-description">Automatically share when you vote</span>
-                    </div>
-                    <div class="toggle-switch" id="autoShareToggle" onclick="toggleSetting('autoShare')">
-                        <div class="toggle-slider"></div>
-                    </div>
-                </div>
-
-                <div class="setting-item">
-                    <div class="setting-label">
-                        <span>Share only when leading</span>
-                        <span class="setting-description">Only auto-share if your mode is winning</span>
-                    </div>
-                    <div class="toggle-switch" id="shareLeadingToggle" onclick="toggleSetting('shareLeading')">
-                        <div class="toggle-slider"></div>
-                    </div>
-                </div>
-
-                <div class="setting-item">
-                    <div class="setting-label">
-                        <span>Milestone celebrations</span>
-                        <span class="setting-description">Share on 10th, 50th, 100th vote</span>
-                    </div>
-                    <div class="toggle-switch" id="shareMilestonesToggle" onclick="toggleSetting('shareMilestones')">
-                        <div class="toggle-slider"></div>
-                    </div>
-                </div>
             </div>
         </div>
     </div>
@@ -7545,25 +7561,22 @@
             }, 10000);
         }
         
-        // Handle share button click
+        // Handle share button click - opens share modal with friend selection
         window.handleShareClick = function(actionType, value) {
             // Remove the floating button
             const btn = document.getElementById('floatingShareBtn');
             if (btn) btn.remove();
             
-            // Trigger appropriate share based on action type
-            if (actionType === 'stream') {
-                // Share stream vote
-                window.shareVote(value, false);
-            } else if (actionType === 'social') {
-                // Share social vote
-                window.isWeeklyVote = true;
-                window.shareVote(value, false);
-            } else if (actionType === 'comment') {
-                // Share with comment context
-                const mode = localStorage.getItem('userVoteMode') || 'social';
-                window.shareVote(mode, false);
-            }
+            // Store context for share modal
+            window.shareContext = {
+                actionType: actionType,
+                value: value,
+                streamVote: localStorage.getItem('userVoteMode'),
+                socialVote: localStorage.getItem('completed_social_vote')
+            };
+            
+            // Open share modal with friend selection
+            openShareModal();
         };
         
         // DEPRECATED: Check if all 3 actions are complete and trigger share modal
