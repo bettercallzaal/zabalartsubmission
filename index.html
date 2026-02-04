@@ -5129,18 +5129,29 @@
                     });
                 }
                 
-                // Check if user has voted today
+                // Check if user has voted this week
                 const { data: userVoteData, error: voteError } = await supabase
-                    .rpc('has_voted_today', { p_fid: parseInt(userFID) });
+                    .rpc('has_voted_this_week', { user_fid: parseInt(userFID) });
                 
                 if (voteError) {
                     log.error('loadVotes:check-vote-failed', voteError);
-                } else if (userVoteData && userVoteData.length > 0) {
-                    const result = userVoteData[0];
-                    if (result.has_voted) {
-                        userVote = result.voted_mode;
-                        // Show voted status indicator if user already voted
-                        showVotedStatus(result.voted_mode);
+                } else if (userVoteData) {
+                    // has_voted_this_week returns boolean, not array
+                    if (userVoteData === true) {
+                        // User has voted this week, get their vote from votes table
+                        const { data: voteData } = await supabase
+                            .from('votes')
+                            .select('mode')
+                            .eq('fid', parseInt(userFID))
+                            .gte('voted_at', getCurrentWeekMonday())
+                            .order('voted_at', { ascending: false })
+                            .limit(1)
+                            .single();
+                        
+                        if (voteData) {
+                            userVote = voteData.mode;
+                            showVotedStatus(voteData.mode);
+                        }
                     }
                 }
                 
@@ -7492,9 +7503,9 @@
                     return false;
                 }
                 
-                console.log('📤 [WEEKLY GATING] Checking DB for daily vote...');
-                const { data, error } = await supabase.rpc('has_voted_today', {
-                    p_fid: parseInt(userFID)
+                console.log('📤 [WEEKLY GATING] Checking DB for weekly vote...');
+                const { data, error } = await supabase.rpc('has_voted_this_week', {
+                    user_fid: parseInt(userFID)
                 });
                 
                 if (error) {
@@ -7504,9 +7515,10 @@
                 
                 console.log('📥 [WEEKLY GATING] DB response:', data);
                 
-                if (data?.has_voted) {
+                if (data === true) {
                     // Update localStorage to match DB
-                    localStorage.setItem('daily_voted_today', 'true');
+                    localStorage.setItem('weekly_voted_this_week', 'true');
+                    localStorage.setItem('weekly_voted_date', getCurrentWeekMonday());
                     localStorage.setItem('daily_voted_date', today);
                     console.log('✅ [WEEKLY GATING] DB confirms vote today - syncing localStorage');
                     return true;
