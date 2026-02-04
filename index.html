@@ -3812,7 +3812,7 @@
             </div>
             
             <div class="share-buttons">
-                <button class="share-action-btn share-farcaster-btn" onclick="shareVote(currentVotedModes)">
+                <button class="share-action-btn share-farcaster-btn" onclick="shareVote(window.currentVotedModes || [userVote])">
                     Share to Farcaster
                 </button>
                 <button class="share-action-btn challenge-friends-btn" onclick="challengeFriends()" style="display: none;">
@@ -5348,7 +5348,7 @@
         }
 
         let currentShareMode = null;
-        let currentVotedModes = []; // Store all voted modes for sharing
+        window.currentVotedModes = []; // Store all voted modes for sharing (global)
         const MINIAPP_URL = window.appConfig?.MINIAPP_URL || 'https://zabal.art';
         const SONGJAM_URL = window.appConfig?.SONGJAM_URL || 'https://www.songjam.space/zabal';
         
@@ -5760,11 +5760,11 @@
             const modesArray = Array.isArray(votedModes) ? votedModes : [votedModes];
             
             // Store all voted modes for sharing
-            currentVotedModes = modesArray;
+            window.currentVotedModes = modesArray;
             currentShareMode = modesArray[0]; // Keep for backwards compatibility
             window.isWeeklyVote = isWeeklyVote; // Store for shareVote function
             
-            console.log('📤 Opening share modal with modes:', currentVotedModes, 'isWeekly:', isWeeklyVote);
+            console.log('📤 Opening share modal with modes:', window.currentVotedModes, 'isWeekly:', isWeeklyVote);
             
             const modal = document.getElementById('shareModal');
             modal.classList.add('active');
