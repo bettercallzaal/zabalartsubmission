@@ -6559,6 +6559,9 @@
                 }
             }
             
+            // Check if multi-vote for mentions
+            const isMultiVote = votedModes.length > 1;
+            
             // Add @zaal mention with stream suggestion
             const zaalMention = isMultiVote 
                 ? `\n\n@zaal I think you should do a ${votedModes.map(m => modeNames[m]).join(' + ')} combo stream! 🎨`
