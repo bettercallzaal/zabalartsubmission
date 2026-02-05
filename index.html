@@ -5007,6 +5007,16 @@
                         
                         console.log('✅ Farcaster user authenticated:', { fid: userFID, username, user: context.user });
                         
+                        // Store in StateManager
+                        window.StateManager?.batch({
+                            'auth.isAuthenticated': true,
+                            'auth.fid': userFID,
+                            'auth.username': username,
+                            'auth.displayName': context.user.displayName || username,
+                            'auth.pfpUrl': context.user.pfpUrl || null,
+                            'auth.bio': context.user.bio || null
+                        });
+                        
                         // Show enhanced user profile in header
                         const userProfileEl = document.getElementById('userProfile');
                         const userNameEl = document.getElementById('userName');
@@ -5015,13 +5025,19 @@
                         const verifiedBadgeEl = document.getElementById('verifiedBadge');
                         
                         if (userProfileEl && userNameEl) {
-                            userNameEl.textContent = `@${username}`;
-                            userFidEl.textContent = `FID: ${userFID}`;
+                            // Use displayName if available, otherwise username
+                            const displayText = context.user.displayName || `@${username}`;
+                            userNameEl.textContent = displayText;
+                            userFidEl.textContent = `@${username}`;
                             
                             // Set profile picture if available
                             if (context.user.pfpUrl) {
                                 userPfpEl.src = context.user.pfpUrl;
                                 userPfpEl.style.display = 'block';
+                                userPfpEl.onerror = () => {
+                                    userPfpEl.style.display = 'none';
+                                    console.warn('⚠️ Failed to load profile picture');
+                                };
                             }
                             
                             // Show verification badge if user has it
@@ -5029,7 +5045,9 @@
                                 verifiedBadgeEl.style.display = 'inline';
                             }
                             
+                            // Make profile visible
                             userProfileEl.style.display = 'flex';
+                            console.log('✅ User profile displayed:', displayText);
                         }
                         
                         // Show personal stats and load user data (async, after ready())

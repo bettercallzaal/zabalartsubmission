@@ -8,7 +8,10 @@ class StateManager {
             auth: {
                 isAuthenticated: false,
                 userFID: null,
-                username: null
+                username: null,
+                displayName: null,
+                pfpUrl: null,
+                bio: null
             },
             
             // Stream state
@@ -221,7 +224,7 @@ class StateManager {
         const oldState = this.getState();
         
         this.state = {
-            auth: { isAuthenticated: false, userFID: null, username: null },
+            auth: { isAuthenticated: false, userFID: null, username: null, displayName: null, pfpUrl: null, bio: null },
             stream: { currentState: 'deciding', lockTime: null, isLive: false },
             votes: { studio: 0, market: 0, social: 0, battle: 0 },
             selections: { selectedModes: [], selectedFriends: [] },

@@ -55,9 +55,12 @@ async function loadRandomizedFriends() {
     const grid = document.getElementById('friendTagGrid');
     if (!grid) return;
     
-    const userFID = window.StateManager?.get('auth.fid');
-    if (!userFID) {
-        grid.innerHTML = '<p style="text-align: center; color: var(--text-gray); padding: 20px;">Sign in to tag friends</p>';
+    // Get user FID from StateManager or fallback to global variable
+    const userFID = window.StateManager?.get('auth.fid') || window.userFID;
+    const isAuth = window.StateManager?.get('auth.isAuthenticated') || window.isAuthenticated;
+    
+    if (!userFID || !isAuth) {
+        grid.innerHTML = '<p style="text-align: center; color: var(--text-gray); padding: 20px;">Loading friends...</p>';
         return;
     }
     
