@@ -5,6 +5,7 @@
 function buildShareMessage() {
     const streamVote = localStorage.getItem('userVoteMode');
     const socialVote = localStorage.getItem('completed_social_vote');
+    const userComment = localStorage.getItem('completed_comment');
     
     const modeEmojis = { studio: '🎬', market: '🛒', social: '🌐', battle: '⚔️' };
     const platformEmojis = {
@@ -31,6 +32,11 @@ function buildShareMessage() {
         const modeEmoji = modeEmojis[streamVote] || '🎨';
         const platformEmoji = platformEmojis[socialVote] || '📱';
         castText = `I voted for a ${modeEmoji} ${streamVote} stream and I think this week's social focus should be on ${platformEmoji} ${socialVote}!`;
+    }
+    
+    // Add user comment if available (prepend to message)
+    if (userComment && userComment.trim()) {
+        castText = `${userComment}\n\n${castText}`;
     }
     
     return castText;
