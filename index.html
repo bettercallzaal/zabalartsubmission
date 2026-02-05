@@ -230,7 +230,6 @@
             padding: 0.5rem 0;
         }
 
-        header.collapsed .user-profile-badge,
         header.collapsed nav {
             opacity: 0;
             visibility: hidden;
@@ -239,7 +238,6 @@
             transition: opacity 0.2s ease, visibility 0.2s ease;
         }
 
-        header.expanded .user-profile-badge,
         header.expanded nav {
             opacity: 1;
             visibility: visible;
@@ -247,19 +245,26 @@
             transition: opacity 0.3s ease 0.1s, visibility 0.3s ease 0.1s;
         }
 
+        /* Keep profile visible in both states */
+        header.collapsed .user-profile-badge,
+        header.expanded .user-profile-badge {
+            opacity: 1 !important;
+            visibility: visible !important;
+            height: auto !important;
+        }
+
         /* Header toggle chevron */
         .header-toggle {
             display: flex;
             align-items: center;
             justify-content: center;
-            min-width: 44px;
-            min-height: 44px;
+            min-width: 40px;
+            min-height: 40px;
             background: rgba(224, 221, 170, 0.1);
             border: 1px solid rgba(224, 221, 170, 0.2);
-            border-radius: 6px;
+            border-radius: 8px;
             cursor: pointer;
             transition: background 0.2s ease, transform 0.3s ease;
-            margin-left: 12px;
             flex-shrink: 0;
         }
 
@@ -291,35 +296,58 @@
         }
 
         .header-content {
-            display: flex;
-            justify-content: space-between;
+            display: grid;
+            grid-template-columns: auto 1fr auto;
             align-items: center;
-            max-width: 1200px;
+            gap: 2rem;
+            max-width: 1400px;
             margin: 0 auto;
-            padding: 0 20px;
+            padding: 0 24px;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .header-center {
+            display: flex;
+            justify-content: center;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            justify-content: flex-end;
         }
 
         .logo {
-            font-size: 1.3rem;
+            font-size: 1.5rem;
             font-weight: 900;
             background: linear-gradient(135deg, var(--text-white) 0%, var(--accent-yellow) 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
             text-decoration: none;
+            white-space: nowrap;
+            letter-spacing: 0.05em;
         }
 
         nav {
             display: flex;
-            gap: 2rem;
+            gap: 1.5rem;
+            align-items: center;
         }
 
         nav a {
             color: var(--text-gray);
             text-decoration: none;
             font-weight: 600;
-            font-size: 0.95rem;
+            font-size: 0.9rem;
             transition: color 0.3s ease;
+            white-space: nowrap;
         }
 
         nav a:hover {
@@ -1683,28 +1711,26 @@
 
         /* User Profile Badge */
         .user-profile-badge {
-            display: flex;
+            display: flex !important;
             align-items: center;
-            gap: 8px;
-            padding: 4px 12px 4px 4px;
+            gap: 10px;
+            padding: 6px 14px 6px 6px;
             background: rgba(224, 221, 170, 0.08);
             border: 1px solid rgba(224, 221, 170, 0.3);
-            border-radius: 20px;
-            font-size: 0.8rem;
+            border-radius: 24px;
+            font-size: 0.85rem;
             color: var(--accent-yellow);
             font-weight: 600;
             transition: all 0.3s ease;
-            max-width: 200px;
-        }
-
-        .user-profile-badge {
             cursor: pointer;
             position: relative;
+            min-width: fit-content;
         }
 
         .user-profile-badge:hover {
             background: rgba(224, 221, 170, 0.15);
             border-color: var(--accent-yellow);
+            transform: translateY(-1px);
         }
 
         /* Settings Dropdown */
@@ -3427,7 +3453,24 @@
             }
 
             .logo {
-                font-size: 1.2rem;
+                font-size: 1.3rem;
+            }
+            
+            .header-content {
+                grid-template-columns: 1fr auto;
+                gap: 1rem;
+            }
+            
+            .header-center {
+                display: none;
+            }
+            
+            .header-left {
+                gap: 8px;
+            }
+            
+            .header-right {
+                gap: 8px;
             }
 
             /* Ensure toggle is visible on mobile */
@@ -3642,7 +3685,16 @@
             }
 
             .logo {
-                font-size: 1rem;
+                font-size: 1.1rem;
+            }
+            
+            .header-content {
+                padding: 0 16px;
+            }
+            
+            .header-toggle {
+                min-width: 36px;
+                min-height: 36px;
             }
 
             .header-toggle {
@@ -3866,26 +3918,30 @@
     <!-- Header - Collapsible (expanded by default to show user profile) -->
     <header id="mainHeader" class="expanded">
         <div class="header-content">
-            <a href="index.html" class="logo">ZABAL</a>
-            <!-- Header toggle chevron - always visible -->
-            <button class="header-toggle" id="headerToggle" onclick="toggleHeader()" aria-label="Toggle header">
-                <span class="header-toggle-icon">▲</span>
-            </button>
-            <nav>
-                <a href="index.html" class="active">Vote</a>
-                <a href="chat.html">Chat</a>
-                <a href="submissions.html">Submit</a>
-                <a href="gallery.html">Research</a>
-                <a href="leaderboard.html">Leaderboard</a>
-                <a href="https://www.empirebuilder.world/empire/0xbB48f19B0494Ff7C1fE5Dc2032aeEE14312f0b07">Empire Builder</a>
-                <a href="https://www.thezao.com/nexus" target="_blank">ZAO Nexus</a>
-            </nav>
-            <button class="hamburger" onclick="toggleMobileMenu()" aria-label="Menu">
-                <span></span>
-                <span></span>
-                <span></span>
-            </button>
-            <div id="userProfile" class="user-profile-badge" style="display: none;" onclick="toggleSettingsDropdown()">
+            <!-- Left: Logo + Toggle -->
+            <div class="header-left">
+                <a href="index.html" class="logo">ZABAL</a>
+                <button class="header-toggle" id="headerToggle" onclick="toggleHeader()" aria-label="Toggle header">
+                    <span class="header-toggle-icon">▲</span>
+                </button>
+            </div>
+            
+            <!-- Center: Navigation -->
+            <div class="header-center">
+                <nav>
+                    <a href="index.html" class="active">Vote</a>
+                    <a href="chat.html">Chat</a>
+                    <a href="submissions.html">Submit</a>
+                    <a href="gallery.html">Research</a>
+                    <a href="leaderboard.html">Leaderboard</a>
+                    <a href="https://www.empirebuilder.world/empire/0xbB48f19B0494Ff7C1fE5Dc2032aeEE14312f0b07">Empire Builder</a>
+                    <a href="https://www.thezao.com/nexus" target="_blank">ZAO Nexus</a>
+                </nav>
+            </div>
+            
+            <!-- Right: Profile + Hamburger -->
+            <div class="header-right">
+                <div id="userProfile" class="user-profile-badge" onclick="toggleSettingsDropdown()">
                 <img id="userPfp" class="user-pfp" src="" alt="Profile" onerror="this.style.display='none'">
                 <div class="user-info">
                     <div class="user-name-row">
@@ -3943,6 +3999,12 @@
                         </button>
                     </div>
                 </div>
+                
+                <button class="hamburger" onclick="toggleMobileMenu()" aria-label="Menu">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
             </div>
         </div>
     </header>
