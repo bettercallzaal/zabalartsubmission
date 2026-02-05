@@ -5400,6 +5400,31 @@
 
             console.log('✅ Voting allowed - state is DECIDING');
             
+            // OPTIMISTIC UI UPDATE - Update immediately for instant feedback
+            const previousVote = userVote;
+            const oldVoteCount = votes[mode];
+            
+            // If user is changing vote, decrement old mode
+            if (previousVote && previousVote !== mode && votes[previousVote] > 0) {
+                votes[previousVote]--;
+            }
+            
+            // Increment new mode (or keep same if re-voting)
+            if (!previousVote || previousVote !== mode) {
+                votes[mode]++;
+            }
+            
+            // Update userVote immediately
+            userVote = mode;
+            
+            // Update UI instantly
+            updateVotes();
+            updateLeader();
+            updatePercentageBars();
+            updateDailyCurrentlyWinningCard();
+            
+            console.log('⚡ Optimistic UI update complete');
+            
             // Show loading state
             window.loadingManager?.show('vote', 'Submitting your vote...');
             
@@ -5441,6 +5466,21 @@
                     showToast('error', 'Vote Failed', 'Could not record your vote. Please try again.');
                     window.analytics?.trackError(error, { context: 'vote', mode });
                     window.loadingManager?.hide('vote');
+                    
+                    // ROLLBACK optimistic update on failure
+                    if (previousVote && previousVote !== mode && votes[previousVote] !== undefined) {
+                        votes[previousVote]++; // Restore old vote
+                    }
+                    if (!previousVote || previousVote !== mode) {
+                        votes[mode]--; // Remove failed vote
+                    }
+                    userVote = previousVote; // Restore previous vote state
+                    
+                    // Update UI to reflect rollback
+                    updateVotes();
+                    updateLeader();
+                    updatePercentageBars();
+                    updateDailyCurrentlyWinningCard();
                     
                     // Reset UI state on failure
                     selectedModes = [];
