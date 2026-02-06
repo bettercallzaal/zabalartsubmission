@@ -1477,6 +1477,155 @@
             }
         }
 
+        /* Farcaster Client Selection Modal */
+        .farcaster-client-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(8px);
+            z-index: 10001;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .farcaster-client-content {
+            background: linear-gradient(135deg, rgba(20, 30, 39, 0.98) 0%, rgba(10, 10, 10, 0.98) 100%);
+            border: 2px solid rgba(224, 221, 170, 0.3);
+            border-radius: 20px;
+            padding: 32px 28px;
+            max-width: 500px;
+            width: 100%;
+            position: relative;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+            animation: slideUp 0.3s ease;
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(30px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .modal-close-btn {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            background: rgba(255, 255, 255, 0.05);
+            border: none;
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 1.8rem;
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            line-height: 1;
+        }
+
+        .modal-close-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--text-white);
+            transform: scale(1.1);
+        }
+
+        .farcaster-client-title {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--text-white);
+            margin-bottom: 8px;
+            text-align: center;
+            background: linear-gradient(135deg, var(--text-white) 0%, var(--accent-yellow) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .farcaster-client-subtitle {
+            font-size: 0.95rem;
+            color: var(--text-gray);
+            text-align: center;
+            margin-bottom: 24px;
+        }
+
+        .farcaster-client-options {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+
+        .farcaster-client-btn {
+            background: rgba(224, 221, 170, 0.05);
+            border: 2px solid rgba(224, 221, 170, 0.2);
+            border-radius: 12px;
+            padding: 16px 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-white);
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        .farcaster-client-btn:hover {
+            background: rgba(224, 221, 170, 0.1);
+            border-color: var(--accent-yellow);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(224, 221, 170, 0.2);
+        }
+
+        .farcaster-client-btn:active {
+            transform: translateY(-1px);
+        }
+
+        .farcaster-client-btn .client-emoji {
+            font-size: 2rem;
+            line-height: 1;
+        }
+
+        .farcaster-client-btn .client-name {
+            font-size: 0.9rem;
+            letter-spacing: 0.03em;
+        }
+
+        @media (max-width: 480px) {
+            .farcaster-client-content {
+                padding: 24px 20px;
+            }
+
+            .farcaster-client-title {
+                font-size: 1.3rem;
+            }
+
+            .farcaster-client-subtitle {
+                font-size: 0.9rem;
+            }
+
+            .farcaster-client-options {
+                grid-template-columns: 1fr;
+            }
+
+            .farcaster-client-btn {
+                padding: 14px 12px;
+            }
+        }
+
         /* Floating Share Button */
         .floating-share-button {
             position: fixed;
@@ -4320,6 +4469,37 @@
         </div>
     </div>
 
+    <!-- Farcaster Client Selection Modal -->
+    <div class="farcaster-client-modal" id="farcasterClientModal" style="display: none;">
+        <div class="farcaster-client-content">
+            <button class="modal-close-btn" onclick="closeFarcasterClientModal()" aria-label="Close">&times;</button>
+            <h3 class="farcaster-client-title">Which Farcaster client should we focus on?</h3>
+            <p class="farcaster-client-subtitle">Choose the client you think is worth aiming for this week</p>
+            <div class="farcaster-client-options">
+                <button class="farcaster-client-btn" onclick="submitFarcasterWithClient('CURA')">
+                    <span class="client-emoji">🔮</span>
+                    <span class="client-name">CURA</span>
+                </button>
+                <button class="farcaster-client-btn" onclick="submitFarcasterWithClient('SOPHA')">
+                    <span class="client-emoji">🛋️</span>
+                    <span class="client-name">SOPHA</span>
+                </button>
+                <button class="farcaster-client-btn" onclick="submitFarcasterWithClient('DEGEN')">
+                    <span class="client-emoji">🎩</span>
+                    <span class="client-name">DEGEN</span>
+                </button>
+                <button class="farcaster-client-btn" onclick="submitFarcasterWithClient('BASE')">
+                    <span class="client-emoji">🔵</span>
+                    <span class="client-name">BASE</span>
+                </button>
+                <button class="farcaster-client-btn" onclick="submitFarcasterWithClient('FARCASTER CLIENT')">
+                    <span class="client-emoji">🟣</span>
+                    <span class="client-name">FARCASTER CLIENT</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- Weekly Social Focus Voting -->
     <section class="weekly-focus-section" id="weeklyFocusSection">
         <!-- Lock Overlay (shown when locked) -->
@@ -4347,7 +4527,7 @@
                     <button class="focus-option-btn" onclick="submitWeeklySocialVote('X (Twitter)')">
                         X (Twitter)
                     </button>
-                    <button class="focus-option-btn" onclick="submitWeeklySocialVote('Farcaster')">
+                    <button class="focus-option-btn" onclick="showFarcasterClientSelection()">
                         Farcaster
                     </button>
                     <button class="focus-option-btn" onclick="submitWeeklySocialVote('TikTok')">
@@ -7602,6 +7782,38 @@
         /* ==============================================
            WEEKLY VOTING LOGIC
         ============================================== */
+
+        // Show Farcaster client selection modal
+        window.showFarcasterClientSelection = function() {
+            const modal = document.getElementById('farcasterClientModal');
+            if (modal) {
+                modal.style.display = 'flex';
+                console.log('🟣 [FARCASTER] Client selection modal opened');
+            }
+        }
+
+        // Close Farcaster client selection modal
+        window.closeFarcasterClientModal = function() {
+            const modal = document.getElementById('farcasterClientModal');
+            if (modal) {
+                modal.style.display = 'none';
+                console.log('🟣 [FARCASTER] Client selection modal closed');
+            }
+        }
+
+        // Submit Farcaster vote with selected client
+        window.submitFarcasterWithClient = async function(client) {
+            console.log('🟣 [FARCASTER] Client selected:', client);
+            
+            // Store the selected client
+            localStorage.setItem('farcaster_client_choice', client);
+            
+            // Close the modal
+            closeFarcasterClientModal();
+            
+            // Submit the Farcaster vote
+            await submitWeeklySocialVote('Farcaster');
+        }
 
         // Submit weekly social vote (single-select only) - DB-backed
         window.submitWeeklySocialVote = async function(platform) {

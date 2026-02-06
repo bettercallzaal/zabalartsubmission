@@ -31,7 +31,18 @@ function buildShareMessage() {
     else if (streamVote && socialVote) {
         const modeEmoji = modeEmojis[streamVote] || '🎨';
         const platformEmoji = platformEmojis[socialVote] || '📱';
-        castText = `I voted for a ${modeEmoji} ${streamVote} stream and I think this week's social focus should be on ${platformEmoji} ${socialVote}!`;
+        
+        // Check if Farcaster was selected and if a client was chosen
+        if (socialVote === 'Farcaster') {
+            const farcasterClient = localStorage.getItem('farcaster_client_choice');
+            if (farcasterClient) {
+                castText = `I voted for a ${modeEmoji} ${streamVote} stream and I think this week's social focus should be on ${platformEmoji} ${socialVote} - specifically ${farcasterClient}!`;
+            } else {
+                castText = `I voted for a ${modeEmoji} ${streamVote} stream and I think this week's social focus should be on ${platformEmoji} ${socialVote}!`;
+            }
+        } else {
+            castText = `I voted for a ${modeEmoji} ${streamVote} stream and I think this week's social focus should be on ${platformEmoji} ${socialVote}!`;
+        }
     }
     
     // Add user comment if available (prepend to message)
