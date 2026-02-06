@@ -8049,13 +8049,28 @@ async function loadVotes() {
                     })
                     .join('');
                 
-                // Update currently winning card during active voting
+                // Show appropriate card based on voting status
                 if (leadingPlatform) {
                     const leaderVoterCount = parseInt(leadingPlatform.voter_count) || 0;
-                    updateWeeklyCurrentlyWinningCard(leadingPlatform.platform, leaderVoterCount);
-                    // Also update final winning card
-                    updateWeeklyWinningCard(leadingPlatform.platform, leaderVoterCount);
+                    
+                    // Check if weekly voting period has ended (Monday 5 PM ET)
+                    const now = new Date();
+                    const etNow = new Date(now.toLocaleString('en-US', { timeZone: 'America/New_York' }));
+                    const dayOfWeek = etNow.getDay();
+                    const hour = etNow.getHours();
+                    const isWeeklyVotingClosed = (dayOfWeek === 1 && hour >= 17); // Monday after 5 PM
+                    
+                    if (isWeeklyVotingClosed) {
+                        // Show final winning card after voting closes
+                        updateWeeklyWinningCard(leadingPlatform.platform, leaderVoterCount);
+                        updateWeeklyCurrentlyWinningCard(null, 0); // Hide currently winning
+                    } else {
+                        // Show currently winning card during active voting
+                        updateWeeklyCurrentlyWinningCard(leadingPlatform.platform, leaderVoterCount);
+                        updateWeeklyWinningCard(null, 0); // Hide final winning
+                    }
                 } else {
+                    // No leader - hide both cards
                     updateWeeklyCurrentlyWinningCard(null, 0);
                     updateWeeklyWinningCard(null, 0);
                 }
