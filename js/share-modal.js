@@ -111,10 +111,15 @@ window.shareToFarcaster = async function() {
     popup.style.display = 'flex';
 };
 
-// Load randomized friend list
-async function loadRandomizedFriends() {
+// Current sort mode for friends
+let currentSortMode = 'random'; // 'random', 'recent', 'oldest'
+
+// Load friend list with sorting options
+async function loadRandomizedFriends(sortMode = 'random') {
     const grid = document.getElementById('friendTagGrid');
     if (!grid) return;
+    
+    currentSortMode = sortMode;
     
     // Get user FID from StateManager or fallback to global variable
     const userFID = window.StateManager?.get('auth.fid') || window.userFID;
@@ -131,16 +136,27 @@ async function loadRandomizedFriends() {
             await loadBestFriends(userFID);
         }
         
-        const friends = window.bestFriends || [];
+        let friends = window.bestFriends || [];
         
         if (friends.length === 0) {
             grid.innerHTML = '<p style="text-align: center; color: var(--text-gray); padding: 20px;">No friends found</p>';
             return;
         }
         
-        // Randomize friend order (shuffle)
-        const shuffled = [...friends].sort(() => Math.random() - 0.5);
-        const displayFriends = shuffled.slice(0, 6); // Show 6 random friends
+        // Sort friends based on selected mode
+        let sortedFriends;
+        if (sortMode === 'random') {
+            // Randomize friend order (shuffle)
+            sortedFriends = [...friends].sort(() => Math.random() - 0.5);
+        } else if (sortMode === 'recent') {
+            // Sort by most recent (assuming friends array is already sorted by recency from API)
+            sortedFriends = [...friends];
+        } else if (sortMode === 'oldest') {
+            // Reverse order for oldest friends first
+            sortedFriends = [...friends].reverse();
+        }
+        
+        const displayFriends = sortedFriends.slice(0, 10); // Show up to 10 friends
         
         // Render friend tags
         grid.innerHTML = displayFriends.map(friend => `
@@ -150,15 +166,47 @@ async function loadRandomizedFriends() {
             </div>
         `).join('');
         
+        // Update sort button states
+        updateSortButtonStates(sortMode);
+        
     } catch (error) {
         console.error('Error loading friends:', error);
         grid.innerHTML = '<p style="text-align: center; color: var(--text-gray); padding: 20px;">Could not load friends</p>';
     }
 }
 
-// Toggle friend selection
+// Update sort button visual states
+function updateSortButtonStates(activeMode) {
+    const buttons = document.querySelectorAll('.friend-sort-btn');
+    buttons.forEach(btn => {
+        if (btn.dataset.sort === activeMode) {
+            btn.classList.add('active');
+        } else {
+            btn.classList.remove('active');
+        }
+    });
+}
+
+// Change friend sort mode
+window.changeFriendSort = function(sortMode) {
+    console.log('🔄 Changing friend sort to:', sortMode);
+    loadRandomizedFriends(sortMode);
+};
+
+// Toggle friend selection (max 10)
 window.toggleFriendSelection = function(element) {
-    element.classList.toggle('selected');
+    const selectedCount = document.querySelectorAll('.friend-tag-item.selected').length;
+    const isCurrentlySelected = element.classList.contains('selected');
+    
+    // Allow deselection or selection if under limit
+    if (isCurrentlySelected || selectedCount < 10) {
+        element.classList.toggle('selected');
+    } else {
+        // Show toast if trying to select more than 10
+        if (window.showToast) {
+            window.showToast('info', 'Limit Reached', 'You can tag up to 10 friends');
+        }
+    }
 };
 
 // Share with selected tags
