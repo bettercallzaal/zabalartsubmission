@@ -6075,13 +6075,11 @@ async function loadVotes() {
                 
                 // REMOVED: Auto-open share modal - now opt-in via voted status buttons
                 
-                // Only reload votes if not in batch mode (submitVotes will reload once at the end)
+                // Optimistic update already complete - rely on realtime subscription for sync
+                // No need to call loadVotes() here as it causes race condition
                 if (!skipModal) {
-                    await loadVotes();
-                    
-                    // Force update the UI
-                    updateVotes();
-                    updateLeader();
+                    // UI already updated optimistically above
+                    console.log('✅ Vote submitted - waiting for realtime sync');
                 }
                 
             } catch (err) {
