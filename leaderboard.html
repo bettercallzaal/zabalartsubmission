@@ -16,10 +16,10 @@
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #000000;
             min-height: 100vh;
             padding: 20px;
-            color: #333;
+            color: #ffffff;
         }
 
         .container {
@@ -29,183 +29,35 @@
 
         .header {
             text-align: center;
-            color: white;
+            color: #ffffff;
             margin-bottom: 40px;
         }
 
         .header h1 {
             font-size: 2.5rem;
             margin-bottom: 10px;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+            background: linear-gradient(135deg, #fbbf24 0%, #a855f7 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
 
         .header p {
             font-size: 1.1rem;
-            opacity: 0.9;
+            color: #9ca3af;
         }
 
         .config-section {
-            background: white;
-            border-radius: 16px;
-            padding: 30px;
-            margin-bottom: 30px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-        }
-
-        .config-section h2 {
-            font-size: 1.5rem;
-            margin-bottom: 20px;
-            color: #667eea;
-        }
-
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        .form-group label {
-            display: block;
-            font-weight: 600;
-            margin-bottom: 8px;
-            color: #555;
-        }
-
-        .char-count {
-            font-size: 0.85rem;
-            color: #999;
-            margin-left: 5px;
-        }
-
-        .form-group input[type="text"],
-        .form-group textarea {
-            width: 100%;
-            padding: 12px;
-            border: 2px solid #e0e0e0;
-            border-radius: 8px;
-            font-size: 1rem;
-            transition: border-color 0.3s;
-        }
-
-        .form-group input[type="text"]:focus,
-        .form-group textarea:focus {
-            outline: none;
-            border-color: #667eea;
-        }
-
-        .form-group textarea {
-            resize: vertical;
-            min-height: 80px;
-        }
-
-        .upload-area {
-            border: 2px dashed #e0e0e0;
-            border-radius: 8px;
-            padding: 30px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.3s;
-            background: #f9f9f9;
-        }
-
-        .upload-area:hover {
-            border-color: #667eea;
-            background: #f0f0ff;
-        }
-
-        .upload-area.dragover {
-            border-color: #667eea;
-            background: #e8ebff;
-        }
-
-        .upload-icon {
-            font-size: 3rem;
-            margin-bottom: 10px;
-            color: #999;
-        }
-
-        .upload-text {
-            color: #666;
-            margin-bottom: 5px;
-        }
-
-        .upload-hint {
-            font-size: 0.85rem;
-            color: #999;
-        }
-
-        .icon-preview {
-            margin-top: 15px;
             display: none;
         }
 
-        .icon-preview img {
-            max-width: 100px;
-            max-height: 100px;
-            border-radius: 8px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-        }
-
-        .api-config {
-            background: #f9f9f9;
-            padding: 20px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-        }
-
-        .api-config h3 {
-            font-size: 1.1rem;
-            margin-bottom: 10px;
-            color: #667eea;
-        }
-
-        .api-config p {
-            font-size: 0.9rem;
-            color: #666;
-            margin-bottom: 10px;
-        }
-
-        .api-endpoint {
-            background: white;
-            padding: 10px;
-            border-radius: 4px;
-            font-family: 'Courier New', monospace;
-            font-size: 0.9rem;
-            color: #333;
-            word-break: break-all;
-        }
-
-        .btn {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border: none;
-            padding: 14px 32px;
-            font-size: 1rem;
-            font-weight: 600;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: transform 0.2s, box-shadow 0.2s;
-            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
-        }
-
-        .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 16px rgba(102, 126, 234, 0.5);
-        }
-
-        .btn:active {
-            transform: translateY(0);
-        }
-
-        .btn:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-            transform: none;
-        }
 
         .leaderboard-section {
-            background: white;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
             border-radius: 16px;
             padding: 30px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            backdrop-filter: blur(10px);
         }
 
         .leaderboard-header {
@@ -225,12 +77,12 @@
 
         .leaderboard-info h2 {
             font-size: 1.8rem;
-            color: #667eea;
+            color: #fbbf24;
             margin-bottom: 5px;
         }
 
         .leaderboard-info p {
-            color: #666;
+            color: #9ca3af;
             font-size: 1rem;
         }
 
@@ -240,8 +92,8 @@
         }
 
         .leaderboard-table thead {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
+            background: linear-gradient(135deg, #fbbf24 0%, #a855f7 100%);
+            color: #000000;
         }
 
         .leaderboard-table th {
@@ -259,12 +111,12 @@
         }
 
         .leaderboard-table tbody tr {
-            border-bottom: 1px solid #f0f0f0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
             transition: background 0.2s;
         }
 
         .leaderboard-table tbody tr:hover {
-            background: #f9f9ff;
+            background: rgba(251, 191, 36, 0.1);
         }
 
         .leaderboard-table td {
@@ -274,7 +126,7 @@
         .rank {
             font-weight: 700;
             font-size: 1.2rem;
-            color: #667eea;
+            color: #fbbf24;
             width: 60px;
         }
 
@@ -292,19 +144,19 @@
 
         .username {
             font-weight: 600;
-            color: #333;
+            color: #ffffff;
         }
 
         .address {
             font-family: 'Courier New', monospace;
-            color: #999;
+            color: #6b7280;
             font-size: 0.85rem;
         }
 
         .score {
             font-weight: 700;
             font-size: 1.1rem;
-            color: #667eea;
+            color: #fbbf24;
         }
 
         .streak {
@@ -326,12 +178,12 @@
         .loading {
             text-align: center;
             padding: 40px;
-            color: #999;
+            color: #9ca3af;
         }
 
         .loading-spinner {
-            border: 4px solid #f3f3f3;
-            border-top: 4px solid #667eea;
+            border: 4px solid rgba(255, 255, 255, 0.1);
+            border-top: 4px solid #fbbf24;
             border-radius: 50%;
             width: 40px;
             height: 40px;
@@ -345,16 +197,18 @@
         }
 
         .error {
-            background: #fee;
-            color: #c33;
+            background: rgba(239, 68, 68, 0.1);
+            color: #ef4444;
+            border: 1px solid rgba(239, 68, 68, 0.3);
             padding: 15px;
             border-radius: 8px;
             margin-bottom: 20px;
         }
 
         .success {
-            background: #efe;
-            color: #3c3;
+            background: rgba(34, 197, 94, 0.1);
+            color: #22c55e;
+            border: 1px solid rgba(34, 197, 94, 0.3);
             padding: 15px;
             border-radius: 8px;
             margin-bottom: 20px;
@@ -363,7 +217,7 @@
         .empty-state {
             text-align: center;
             padding: 60px 20px;
-            color: #999;
+            color: #9ca3af;
         }
 
         .empty-state-icon {
@@ -400,76 +254,7 @@
     <div class="container">
         <div class="header">
             <h1>🏆 ZABAL Voter Leaderboard</h1>
-            <p>Track the most dedicated voters in the ZABAL community</p>
-        </div>
-
-        <div class="config-section">
-            <h2>⚙️ Leaderboard Configuration</h2>
-            
-            <div id="message-container"></div>
-
-            <form id="config-form">
-                <div class="form-group">
-                    <label for="leaderboard-name">
-                        Leaderboard Name
-                        <span class="char-count" id="name-count">0/20</span>
-                    </label>
-                    <input 
-                        type="text" 
-                        id="leaderboard-name" 
-                        name="name" 
-                        placeholder="Name"
-                        maxlength="20"
-                        required
-                    >
-                </div>
-
-                <div class="form-group">
-                    <label for="leaderboard-description">
-                        Description
-                        <span class="char-count" id="desc-count">0/80</span>
-                    </label>
-                    <textarea 
-                        id="leaderboard-description" 
-                        name="description" 
-                        placeholder="Brief description of the leaderboard"
-                        maxlength="80"
-                        required
-                    ></textarea>
-                </div>
-
-                <div class="form-group">
-                    <label>Upload Icon (Optional)</label>
-                    <div class="upload-area" id="upload-area">
-                        <div class="upload-icon">📤</div>
-                        <div class="upload-text">Click to upload icon</div>
-                        <div class="upload-hint">Max 1MB • PNG, JPG, GIF</div>
-                        <input 
-                            type="file" 
-                            id="icon-upload" 
-                            accept="image/png,image/jpeg,image/gif"
-                            style="display: none;"
-                        >
-                    </div>
-                    <div class="icon-preview" id="icon-preview">
-                        <img id="preview-image" src="" alt="Icon preview">
-                    </div>
-                </div>
-
-                <div class="api-config">
-                    <h3>📡 API Configuration</h3>
-                    <p>Enter an API endpoint that returns leaderboard data</p>
-                    <p style="font-size: 0.85rem; margin-bottom: 15px;">API should return JSON with address and score fields</p>
-                    <label for="api-endpoint" style="font-weight: 600; margin-bottom: 8px; display: block;">API Endpoint URL</label>
-                    <div class="api-endpoint" id="api-endpoint-display">
-                        https://zabal.art/api/leaderboard
-                    </div>
-                </div>
-
-                <button type="submit" class="btn" id="save-btn">
-                    Save Configuration
-                </button>
-            </form>
+            <p>Most dedicated voters in the ZABAL community</p>
         </div>
 
         <div class="leaderboard-section">
