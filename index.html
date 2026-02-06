@@ -5698,10 +5698,14 @@
                     modeTotals[a] > modeTotals[b] ? a : b
                 );
                 
-                // Format date
+                // Format date (use EST timezone for consistency)
                 const dateObj = new Date(date + 'T00:00:00');
-                const isToday = dateObj.toDateString() === new Date().toDateString();
-                const isYesterday = dateObj.toDateString() === new Date(Date.now() - 86400000).toDateString();
+                const estNow = new Date(new Date().toLocaleString('en-US', { timeZone: 'America/New_York' }));
+                const estToday = new Date(estNow.getFullYear(), estNow.getMonth(), estNow.getDate());
+                const estYesterday = new Date(estToday.getTime() - 86400000);
+                
+                const isToday = dateObj.toDateString() === estToday.toDateString();
+                const isYesterday = dateObj.toDateString() === estYesterday.toDateString();
                 
                 let dateLabel = dateObj.toLocaleDateString('en-US', { 
                     weekday: 'long', 
