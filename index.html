@@ -4301,40 +4301,7 @@
     </div>
 
     <!-- Personal Stats -->
-    <section class="container" style="padding-top: 70px;">
-        <div id="personalStats" class="personal-stats">
-            <div class="stats-header" onclick="toggleStatsExpand()" style="cursor: pointer;">
-                <span class="stats-summary" id="statsSummary">Your impact: 0 votes cast · 1× power</span>
-                <span class="stats-toggle-icon" id="statsToggleIcon">▼</span>
-            </div>
-            <div class="stats-grid" id="statsGrid" style="display: none;">
-                <div class="stat-item">
-                    <span class="stat-value" id="statTotalVotes">0</span>
-                    <span class="stat-label">Total Votes</span>
-                </div>
-                <div class="stat-item">
-                    <span class="stat-value" id="statStreak">0</span>
-                    <span class="stat-label">Week Streak</span>
-                </div>
-                <div class="stat-item">
-                    <span class="stat-value" id="statFavoriteMode">—</span>
-                    <span class="stat-label">Favorite Mode</span>
-                </div>
-                <div class="stat-item">
-                    <span class="stat-value" id="statVotePower">1x</span>
-                    <span class="stat-label">Vote Power</span>
-                </div>
-            </div>
-            
-            <!-- Vote Power (Simplified) -->
-            <div id="votePowerDisplay" class="vote-power-simple">
-                <span class="power-label">Your vote power:</span>
-                <span id="simplePowerValue" class="power-value">1.0×</span>
-                <span class="power-hint">Based on community activity</span>
-            </div>
-            </div>
-        </div>
-    </section>
+    <!-- Voting power moved to bottom of page -->
 
     <!-- Live State Hero -->
     <section class="live-hero">
@@ -4732,6 +4699,41 @@
                         See what happened →
                     </a>
                 </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Voting Power Stats (Bottom of Page) -->
+    <section class="container" style="padding: 40px 20px;">
+        <div id="personalStats" class="personal-stats">
+            <div class="stats-header" onclick="toggleStatsExpand()" style="cursor: pointer;">
+                <span class="stats-summary" id="statsSummary">Your impact: 0 votes cast · 1× power</span>
+                <span class="stats-toggle-icon" id="statsToggleIcon">▼</span>
+            </div>
+            <div class="stats-grid" id="statsGrid" style="display: none;">
+                <div class="stat-item">
+                    <span class="stat-value" id="statTotalVotes">0</span>
+                    <span class="stat-label">Total Votes</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-value" id="statStreak">0</span>
+                    <span class="stat-label">Week Streak</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-value" id="statFavoriteMode">—</span>
+                    <span class="stat-label">Favorite Mode</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-value" id="statVotePower">1x</span>
+                    <span class="stat-label">Vote Power</span>
+                </div>
+            </div>
+            
+            <!-- Vote Power (Simplified) -->
+            <div id="votePowerDisplay" class="vote-power-simple">
+                <span class="power-label">Your vote power:</span>
+                <span id="simplePowerValue" class="power-value">1.0×</span>
+                <span class="power-hint">Based on community activity</span>
             </div>
         </div>
     </section>
