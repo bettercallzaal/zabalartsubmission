@@ -5763,78 +5763,112 @@
             
             timeline.innerHTML = html;
         }
+    } catch (error) {
+        console.error('❌ Error fetching user data:', error);
+    }
+    
+    return userDataCache;
+}
 
-        /* ==============================================
-           VOTE DISPLAY & STATE MANAGEMENT
-        ============================================== */
+// Realtime subscription for vote updates
+let voteSubscription = null;
 
-        // Load votes from database
-        async function loadVotes() {
-            if (!supabase) {
-                return;
+// Subscribe to real-time vote updates
+function subscribeToVoteUpdates() {
+    if (!supabase) {
+        console.warn('⚠️ [REALTIME] Supabase not initialized, cannot subscribe');
+        return;
+    }
+
+    // Remove existing subscription if any
+    if (voteSubscription) {
+        supabase.removeChannel(voteSubscription);
+    }
+
+    console.log('📡 [REALTIME] Subscribing to vote updates...');
+
+    // Subscribe to broadcast channel for vote updates
+    voteSubscription = supabase
+        .channel('vote-updates')
+        .on('broadcast', { event: 'vote-change' }, (payload) => {
+            console.log('🔔 [REALTIME] Vote update received:', payload);
+            // Reload votes when any vote changes
+            loadVotes();
+        })
+        .subscribe((status) => {
+            if (status === 'SUBSCRIBED') {
+                console.log('✅ [REALTIME] Subscribed to vote updates');
+            } else if (status === 'CHANNEL_ERROR') {
+                console.error('❌ [REALTIME] Channel error, retrying...');
+                setTimeout(subscribeToVoteUpdates, 5000);
+            } else if (status === 'TIMED_OUT') {
+                console.error('❌ [REALTIME] Subscription timed out, retrying...');
+                setTimeout(subscribeToVoteUpdates, 5000);
             }
-            
-            try {
-                // Get this week's vote totals
-                const { data, error } = await supabase
-                    .rpc('get_this_weeks_votes');
+        });
+}
+
+// Load votes from database
+async function loadVotes() {
+    if (!supabase) {
+        return;
+    }
+    try {
+        // Fetch aggregated vote counts from RPC
+        const { data, error } = await supabase
+            .rpc('get_this_weeks_votes');
+        
+        if (error) {
+            log.error('loadVotes:rpc-failed', error);
+            return;
+        }
+        
+        // Reset votes
+        votes.studio = 0;
+        votes.market = 0;
+        votes.social = 0;
+        votes.battle = 0;
+        
+        // Update with database values
+        if (data) {
+            data.forEach(row => {
+                votes[row.mode] = parseInt(row.vote_count) || 0;
+            });
+        }
+        
+        // Check if user has voted this week
+        const { data: userVoteData, error: voteError } = await supabase
+            .rpc('has_voted_this_week', { user_fid: parseInt(userFID) });
+        
+        if (voteError) {
+            log.error('loadVotes:check-vote-failed', voteError);
+        } else if (userVoteData) {
+            if (userVoteData === true) {
+                const { data: voteData } = await supabase
+                    .from('votes')
+                    .select('mode')
+                    .eq('fid', parseInt(userFID))
+                    .gte('voted_at', getCurrentWeekMonday())
+                    .order('voted_at', { ascending: false })
+                    .limit(1)
+                    .single();
                 
-                if (error) {
-                    log.error('loadVotes:rpc-failed', error);
-                    return;
+                if (voteData) {
+                    userVote = voteData.mode;
+                    showVotedStatus(voteData.mode);
                 }
-                
-                // Reset votes
-                votes.studio = 0;
-                votes.market = 0;
-                votes.social = 0;
-                votes.battle = 0;
-                
-                // Update with database values
-                if (data) {
-                    data.forEach(row => {
-                        // get_this_weeks_votes returns vote_count and total_power
-                        votes[row.mode] = parseInt(row.vote_count) || 0;
-                    });
-                }
-                
-                // Check if user has voted this week
-                const { data: userVoteData, error: voteError } = await supabase
-                    .rpc('has_voted_this_week', { user_fid: parseInt(userFID) });
-                
-                if (voteError) {
-                    log.error('loadVotes:check-vote-failed', voteError);
-                } else if (userVoteData) {
-                    // has_voted_this_week returns boolean, not array
-                    if (userVoteData === true) {
-                        // User has voted this week, get their vote from votes table
-                        const { data: voteData } = await supabase
-                            .from('votes')
-                            .select('mode')
-                            .eq('fid', parseInt(userFID))
-                            .gte('voted_at', getCurrentWeekMonday())
-                            .order('voted_at', { ascending: false })
-                            .limit(1)
-                            .single();
-                        
-                        if (voteData) {
-                            userVote = voteData.mode;
-                            showVotedStatus(voteData.mode);
-                        }
-                    }
-                }
-                
-                updateVotes();
-                updateLeader();
-                updatePercentageBars();
-                
-                // Update currently winning card during active voting
-                updateDailyCurrentlyWinningCard();
-                
-            } catch (err) {
-                log.error('loadVotes:exception', err);
             }
         }
+        
+        updateVotes();
+        updateLeader();
+        updatePercentageBars();
+        updateDailyCurrentlyWinningCard();
+        
+    } catch (err) {
+        log.error('loadVotes:exception', err);
+    }
+}
 
         /* ==============================================
            WEEKLY VOTING LOGIC (Monday 5pm ET)
@@ -7740,9 +7774,13 @@
             await initializeComments();
             console.log('✅ Comments section initialized');
             
-            // Refresh votes every 30 seconds (using lifecycle manager)
-            window.appLifecycle.addInterval(loadVotes, 30000, 'vote-refresh');
-            console.log('✅ Vote refresh interval set (30s)');
+            // Initialize real-time vote subscriptions
+            subscribeToVoteUpdates();
+            console.log('✅ Real-time vote updates enabled');
+            
+            // Fallback polling every 60 seconds (reduced from 30s since we have realtime)
+            window.appLifecycle.addInterval(loadVotes, 60000, 'vote-refresh');
+            console.log('✅ Vote refresh fallback interval set (60s)');
             
             // Refresh weekly social results every 30 seconds
             window.appLifecycle.addInterval(loadWeeklySocialResults, 30000, 'weekly-refresh');
