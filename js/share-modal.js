@@ -1,6 +1,43 @@
 // Simplified Share Logic - Direct SDK composeCast for fluid UX
 // Based on Farcaster best practices: instant composer, no modal friction
 
+// Client to channel mapping for Farcaster posts
+const CLIENT_CHANNELS = {
+    'CURA': 'cura',
+    'SOPHA': 'https://farcaster.xyz/sopha',
+    'DEGEN': 'degen',
+    'BASE': 'basenft',
+    'FARCASTER CLIENT': 'farcaster'
+};
+
+// Varied message templates to avoid bot detection
+const MESSAGE_VARIANTS = {
+    streamOnly: [
+        (emoji, mode) => `Just voted ${emoji} ${mode} stream!`,
+        (emoji, mode) => `${emoji} ${mode} stream gets my vote today`,
+        (emoji, mode) => `Backing ${emoji} ${mode} for the next stream`,
+        (emoji, mode) => `My pick: ${emoji} ${mode} stream 🎨`
+    ],
+    streamAndSocial: [
+        (modeEmoji, mode, platformEmoji, platform) => `Voted ${modeEmoji} ${mode} stream + pushing for ${platformEmoji} ${platform} this week`,
+        (modeEmoji, mode, platformEmoji, platform) => `${modeEmoji} ${mode} stream is my choice, and ${platformEmoji} ${platform} should be our focus`,
+        (modeEmoji, mode, platformEmoji, platform) => `Going with ${modeEmoji} ${mode} for the stream. Think we should prioritize ${platformEmoji} ${platform}`,
+        (modeEmoji, mode, platformEmoji, platform) => `My vote: ${modeEmoji} ${mode} stream. Weekly focus? ${platformEmoji} ${platform}`
+    ],
+    streamAndClient: [
+        (modeEmoji, mode, platformEmoji, platform, client) => `${modeEmoji} ${mode} stream + ${platformEmoji} ${platform} via ${client} 🎯`,
+        (modeEmoji, mode, platformEmoji, platform, client) => `Voted ${modeEmoji} ${mode} stream. Targeting ${client} for ${platformEmoji} ${platform} this week`,
+        (modeEmoji, mode, platformEmoji, platform, client) => `My picks: ${modeEmoji} ${mode} stream & ${client} as the ${platformEmoji} ${platform} focus`,
+        (modeEmoji, mode, platformEmoji, platform, client) => `${modeEmoji} ${mode} + ${client} on ${platformEmoji} ${platform} - that's the move`
+    ],
+    generic: [
+        'Come vote on the ZABAL stream! 🎨',
+        'Help decide the next ZABAL stream 🎨',
+        'Your vote matters - join the ZABAL stream decision 🎨',
+        'Cast your vote for the ZABAL stream 🎨'
+    ]
+};
+
 // Build conditional share message based on vote context
 function buildShareMessage() {
     const streamVote = localStorage.getItem('userVoteMode');
@@ -18,14 +55,18 @@ function buildShareMessage() {
     
     let castText = '';
     
+    // Random variant selection to avoid bot detection
+    const randomIndex = Math.floor(Math.random() * 4);
+    
     // Scenario 1: No votes yet - generic invite
     if (!streamVote && !socialVote) {
-        castText = 'Come vote on the ZABAL stream! 🎨';
+        castText = MESSAGE_VARIANTS.generic[randomIndex];
     }
     // Scenario 2: Stream vote only
     else if (streamVote && !socialVote) {
         const emoji = modeEmojis[streamVote] || '🎨';
-        castText = `I voted for a ${emoji} ${streamVote} stream!`;
+        const template = MESSAGE_VARIANTS.streamOnly[randomIndex];
+        castText = template(emoji, streamVote);
     }
     // Scenario 3: Stream vote + social platform vote
     else if (streamVote && socialVote) {
@@ -36,12 +77,15 @@ function buildShareMessage() {
         if (socialVote === 'Farcaster') {
             const farcasterClient = localStorage.getItem('farcaster_client_choice');
             if (farcasterClient) {
-                castText = `I voted for a ${modeEmoji} ${streamVote} stream and I think this week's social focus should be on ${platformEmoji} ${socialVote} - specifically ${farcasterClient}!`;
+                const template = MESSAGE_VARIANTS.streamAndClient[randomIndex];
+                castText = template(modeEmoji, streamVote, platformEmoji, socialVote, farcasterClient);
             } else {
-                castText = `I voted for a ${modeEmoji} ${streamVote} stream and I think this week's social focus should be on ${platformEmoji} ${socialVote}!`;
+                const template = MESSAGE_VARIANTS.streamAndSocial[randomIndex];
+                castText = template(modeEmoji, streamVote, platformEmoji, socialVote);
             }
         } else {
-            castText = `I voted for a ${modeEmoji} ${streamVote} stream and I think this week's social focus should be on ${platformEmoji} ${socialVote}!`;
+            const template = MESSAGE_VARIANTS.streamAndSocial[randomIndex];
+            castText = template(modeEmoji, streamVote, platformEmoji, socialVote);
         }
     }
     
@@ -136,13 +180,22 @@ window.shareWithTags = async function() {
             finalText += '\n\n' + selectedUsernames.map(u => `@${u}`).join(' ');
         }
         
+        // Determine channel based on Farcaster client selection
+        const farcasterClient = localStorage.getItem('farcaster_client_choice');
+        let channelKey = 'zao'; // Default channel
+        
+        if (farcasterClient && CLIENT_CHANNELS[farcasterClient]) {
+            channelKey = CLIENT_CHANNELS[farcasterClient];
+            console.log(`🎯 Posting to ${farcasterClient} channel: ${channelKey}`);
+        }
+        
         console.log('🚀 Opening Farcaster composer with:', finalText);
         
-        // Direct SDK call - opens Farcaster composer
+        // Direct SDK call - opens Farcaster composer with client-specific channel
         const result = await window.farcasterSDK.actions.composeCast({
             text: finalText,
             embeds: ['https://zabal.art'],
-            channelKey: 'zao'
+            channelKey: channelKey
         });
         
         // Result can be null if user cancels
