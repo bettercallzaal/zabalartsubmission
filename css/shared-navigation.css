@@ -116,6 +116,35 @@
     border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
 
+/* Desktop Navigation - Always visible */
+nav {
+    display: flex;
+    gap: 1.5rem;
+    align-items: center;
+}
+
+nav a {
+    color: var(--text-white);
+    text-decoration: none;
+    font-size: 0.95rem;
+    font-weight: 600;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+}
+
+nav a:hover {
+    background: rgba(224, 221, 170, 0.1);
+    color: var(--accent-yellow);
+}
+
+nav a.active {
+    background: rgba(224, 221, 170, 0.15);
+    color: var(--accent-yellow);
+    border-bottom: 2px solid var(--accent-yellow);
+}
+
 /* Mobile-specific navigation rules */
 @media (max-width: 768px) {
     nav {
