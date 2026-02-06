@@ -314,6 +314,7 @@
         .header-center {
             display: flex;
             justify-content: center;
+            flex: 1;
         }
 
         .header-right {
@@ -5931,7 +5932,7 @@ async function loadVotes() {
             
             if (!isAuthenticated) {
                 console.error('❌ Not authenticated');
-                showToast('error', 'Authentication Required', 'Please open in Farcaster to vote');
+                showToast('info', 'Farcaster Required', 'Open this page in Warpcast or another Farcaster client to vote and participate!');
                 window.analytics?.trackUserAction('vote_failed', { reason: 'not_authenticated', mode });
                 return;
             }
@@ -6367,13 +6368,14 @@ async function loadVotes() {
             }
         }
         
-        // Calculate vote power based on /zao activity and Neynar score
+        // Calculate vote power based on /zao activity, Neynar score, leaderboard rank, and streak
         async function calculateVotePower(fid) {
             try {
                 console.log('🎯 Calculating vote power for FID:', fid);
                 
                 // Base power
                 let power = 1;
+                let breakdown = { base: 1, zao: 0, leaderboard: 0, streak: 0 };
                 
                 // Get /zao channel activity
                 const zaoCasts = await getZaoChannelCasts(fid);
@@ -6381,12 +6383,15 @@ async function loadVotes() {
                 // Tiered bonuses based on /zao posts
                 if (zaoCasts >= 50) {
                     power += 3; // Super active: 4x base
+                    breakdown.zao = 3;
                     console.log('🔥 Super Active: +3 (50+ /zao posts)');
                 } else if (zaoCasts >= 20) {
                     power += 2; // Very active: 3x base
+                    breakdown.zao = 2;
                     console.log('⭐ Very Active: +2 (20+ /zao posts)');
                 } else if (zaoCasts >= 5) {
                     power += 1; // Active: 2x base
+                    breakdown.zao = 1;
                     console.log('✨ Active: +1 (5+ /zao posts)');
                 } else {
                     console.log('👤 Member: base power (0-4 /zao posts)');
@@ -6408,30 +6413,72 @@ async function loadVotes() {
                     console.log('⚠️ Low Quality: 0.5x multiplier (Neynar <0.5)');
                 }
                 
+                // Get leaderboard rank and add bonus
+                try {
+                    const leaderboardResponse = await fetch(`/api/leaderboard?fid=${fid}`);
+                    if (leaderboardResponse.ok) {
+                        const leaderboardData = await leaderboardResponse.json();
+                        if (leaderboardData.success && leaderboardData.data) {
+                            const rank = leaderboardData.data.rank;
+                            const score = leaderboardData.data.score || 0;
+                            const streak = leaderboardData.data.streak || 0;
+                            
+                            // Leaderboard rank bonus (top performers get more power)
+                            if (rank <= 10) {
+                                power += 3; // Top 10: +3
+                                breakdown.leaderboard = 3;
+                                console.log('🏆 Top 10 Leaderboard: +3 (Rank:', rank + ')');
+                            } else if (rank <= 50) {
+                                power += 2; // Top 50: +2
+                                breakdown.leaderboard = 2;
+                                console.log('🥇 Top 50 Leaderboard: +2 (Rank:', rank + ')');
+                            } else if (rank <= 100) {
+                                power += 1; // Top 100: +1
+                                breakdown.leaderboard = 1;
+                                console.log('🥈 Top 100 Leaderboard: +1 (Rank:', rank + ')');
+                            }
+                            
+                            // Daily streak bonus: +1 per day streak (encourages consistency)
+                            if (streak > 0) {
+                                power += streak;
+                                breakdown.streak = streak;
+                                console.log('🔥 Streak Bonus: +' + streak + ' (' + streak + ' day streak)');
+                            }
+                        }
+                    }
+                } catch (leaderboardError) {
+                    console.warn('⚠️ Could not fetch leaderboard data:', leaderboardError);
+                }
+                
                 // Calculate final power (round to 1 decimal)
                 const finalPower = Math.round(power * multiplier);
                 
-                // Cap at 6x
-                const cappedPower = Math.min(finalPower, 6);
+                // Cap at 15x (increased from 6x to accommodate leaderboard + streak bonuses)
+                const cappedPower = Math.min(finalPower, 15);
                 
                 console.log('✅ Final vote power:', cappedPower, '(base:', power, 'x multiplier:', multiplier + ')');
+                console.log('📊 Breakdown:', breakdown);
                 
                 return {
                     power: cappedPower,
                     zaoCasts: zaoCasts,
                     neynarScore: neynarScore,
-                    multiplier: multiplier
+                    multiplier: multiplier,
+                    breakdown: breakdown,
+                    leaderboardRank: breakdown.leaderboard > 0 ? 'Top tier' : 'Standard',
+                    streakDays: breakdown.streak
                 };
             } catch (error) {
                 console.error('❌ Error calculating vote power:', error);
-                return { power: 1, zaoCasts: 0, neynarScore: 0.5, multiplier: 1.0 };
+                return { power: 1, zaoCasts: 0, neynarScore: 0.5, multiplier: 1.0, breakdown: { base: 1, zao: 0, leaderboard: 0, streak: 0 } };
             }
         }
         
-        // Update vote power display (simplified)
+        // Update vote power display with detailed breakdown
         function updateVotePowerDisplay(powerData) {
             const powerEl = document.getElementById('statVotePower');
             const simplePowerEl = document.getElementById('simplePowerValue');
+            const powerHintEl = document.querySelector('.power-hint');
             
             if (powerEl) {
                 powerEl.textContent = `${powerData.power}x`;
@@ -6439,6 +6486,17 @@ async function loadVotes() {
             
             if (simplePowerEl) {
                 simplePowerEl.textContent = `${powerData.power}x`;
+            }
+            
+            // Show detailed breakdown in hint
+            if (powerHintEl && powerData.breakdown) {
+                const b = powerData.breakdown;
+                const parts = [];
+                if (b.base) parts.push(`Base: ${b.base}`);
+                if (b.zao) parts.push(`ZAO: +${b.zao}`);
+                if (b.leaderboard) parts.push(`Rank: +${b.leaderboard}`);
+                if (b.streak) parts.push(`Streak: +${b.streak}`);
+                powerHintEl.textContent = parts.join(' · ');
             }
             
             // Update stats summary
@@ -7156,7 +7214,7 @@ async function loadVotes() {
             
             // Check authentication
             if (!isAuthenticated) {
-                showToast('error', 'Authentication Required', 'Please open in Farcaster to vote');
+                showToast('info', 'Farcaster Required', 'Open this page in Warpcast to vote on weekly social platforms!');
                 return;
             }
             
@@ -7900,7 +7958,7 @@ async function loadVotes() {
                 
                 // Check if user is authenticated
                 if (!isAuthenticated || !userFID) {
-                    showToast('error', 'Authentication Required', 'Please connect your Farcaster account to vote');
+                    showToast('info', 'Farcaster Required', 'Open in Warpcast to participate in weekly voting!');
                     return;
                 }
                 
@@ -8466,7 +8524,7 @@ async function loadVotes() {
             }
             
             if (!isAuthenticated || !userFID) {
-                showToast('error', 'Not Authenticated', 'Please log in to post comments.');
+                showToast('info', 'Farcaster Required', 'Open in Warpcast to post comments!');
                 return;
             }
             
