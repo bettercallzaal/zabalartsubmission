@@ -2737,6 +2737,50 @@
             transform: translateY(-2px);
         }
 
+        .friend-tag-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .friend-sort-options {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 16px;
+            justify-content: center;
+        }
+
+        .friend-sort-btn {
+            padding: 8px 16px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            color: var(--text-gray);
+            font-size: 0.875rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .friend-sort-btn:hover {
+            background: rgba(251, 191, 36, 0.1);
+            border-color: var(--accent-yellow);
+            color: var(--accent-yellow);
+        }
+
+        .friend-sort-btn.active {
+            background: var(--accent-yellow);
+            border-color: var(--accent-yellow);
+            color: #000000;
+            font-weight: 700;
+        }
+
         .vote-day-header {
             display: flex;
             justify-content: space-between;
@@ -4426,8 +4470,19 @@
                 <span>Tag Friends (Optional)</span>
                 <button class="friend-tag-close" onclick="closeFriendTagPopup()">&times;</button>
             </div>
+            <div class="friend-sort-options">
+                <button class="friend-sort-btn active" data-sort="random" onclick="changeFriendSort('random')">
+                    🎲 Random
+                </button>
+                <button class="friend-sort-btn" data-sort="recent" onclick="changeFriendSort('recent')">
+                    🕐 Recent
+                </button>
+                <button class="friend-sort-btn" data-sort="oldest" onclick="changeFriendSort('oldest')">
+                    ⏳ Oldest
+                </button>
+            </div>
             <div class="friend-tag-grid" id="friendTagGrid">
-                <!-- Populated by JS with randomized friends -->
+                <!-- Populated by JS with sorted friends -->
             </div>
             <div class="friend-tag-actions">
                 <button class="friend-tag-share-btn" onclick="shareWithTags()">
