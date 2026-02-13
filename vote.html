@@ -30,21 +30,38 @@
     <!-- Shared Navigation Script -->
     <script src="js/mobile-navigation.js" defer></script>
     
-    <!-- CRITICAL: Call ready() when DOM is loaded -->
+    <!-- CRITICAL: Call ready() when SDK is loaded -->
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Method 1: Direct postMessage
-            if (window.parent && window.parent.postMessage) {
-                window.parent.postMessage({ type: 'ready' }, '*');
-            }
+        // Call ready() as soon as possible to dismiss splash screen
+        function callReady() {
+            console.log('🚀 Attempting to call ready()...');
             
-            // Method 2: Try SDK if available
-            if (window.sdk && window.sdk.actions && window.sdk.actions.ready) {
-                window.sdk.actions.ready().catch(function(err) {
-                    // Silent fail - splash will timeout
-                });
+            // Try multiple SDK references
+            const sdk = window.farcasterSDK || window.miniapp?.sdk || window.sdk;
+            
+            if (sdk && sdk.actions && sdk.actions.ready) {
+                console.log('✅ SDK found, calling ready()');
+                sdk.actions.ready()
+                    .then(() => {
+                        console.log('✅ Splash screen dismissed successfully');
+                        window.splashDismissed = true;
+                    })
+                    .catch(err => {
+                        console.warn('⚠️ ready() call failed:', err);
+                    });
+            } else {
+                console.warn('⚠️ SDK not available yet, will retry...');
             }
-        });
+        }
+        
+        // Try immediately
+        callReady();
+        
+        // Try on DOMContentLoaded
+        document.addEventListener('DOMContentLoaded', callReady);
+        
+        // Try when SDK loads
+        window.addEventListener('farcasterSDKReady', callReady);
     </script>
     
     <!-- Open Graph Meta Tags -->
@@ -137,6 +154,18 @@
         if (window.miniapp && window.miniapp.sdk) {
             window.farcasterSDK = window.miniapp.sdk;
             window.farcasterSDKLoaded = true;
+            
+            // CRITICAL: Call ready() immediately when SDK loads
+            console.log('🎯 SDK loaded, calling ready() immediately...');
+            window.farcasterSDK.actions.ready()
+                .then(() => {
+                    console.log('✅ Splash screen dismissed via SDK load');
+                    window.splashDismissed = true;
+                })
+                .catch(err => {
+                    console.warn('⚠️ ready() failed on SDK load:', err);
+                });
+            
             window.dispatchEvent(new Event('farcasterSDKReady'));
         }
     </script>
