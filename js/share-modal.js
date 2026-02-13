@@ -99,80 +99,160 @@ function buildShareMessage() {
 
 // Show friend tagging popup before sharing
 window.shareToFarcaster = async function() {
+    console.log('🎯 [FRIEND TAG] shareToFarcaster() called');
+    
     const popup = document.getElementById('friendTagPopup');
     if (!popup) {
-        // Fallback: direct share if popup doesn't exist
+        console.warn('⚠️ [FRIEND TAG] Popup element not found, falling back to direct share');
         await shareWithTags();
         return;
     }
     
-    // Load and show friend tagging popup
-    await loadRandomizedFriends();
+    console.log('✅ [FRIEND TAG] Popup element found, showing popup');
     popup.style.display = 'flex';
+    
+    // Load friends after showing popup so user sees loading state
+    console.log('🔄 [FRIEND TAG] Starting to load friends...');
+    await loadRandomizedFriends();
+    console.log('✅ [FRIEND TAG] Friends loaded and displayed');
 };
 
 // Current sort mode for friends
 let currentSortMode = 'random'; // 'random', 'recent', 'oldest'
 
 // Load friend list with sorting options
-async function loadRandomizedFriends(sortMode = 'random') {
-    const grid = document.getElementById('friendTagGrid');
-    if (!grid) return;
+window.loadRandomizedFriends = async function(sortMode = 'random') {
+    console.log('� [FRIEND TAG] ========================================');
+    console.log('🟢 [FRIEND TAG] loadRandomizedFriends() START');
+    console.log('🟢 [FRIEND TAG] sortMode:', sortMode);
+    console.log('🟢 [FRIEND TAG] ========================================');
     
+    const grid = document.getElementById('friendTagGrid');
+    console.log('🔍 [FRIEND TAG] Looking for friendTagGrid element...');
+    
+    if (!grid) {
+        console.error('❌ [FRIEND TAG] friendTagGrid element not found!');
+        console.error('❌ [FRIEND TAG] Available elements with "friend":', 
+            Array.from(document.querySelectorAll('[id*="friend"]')).map(el => el.id));
+        return;
+    }
+    
+    console.log('✅ [FRIEND TAG] Grid element found');
+    console.log('✅ [FRIEND TAG] Grid ID:', grid.id);
+    console.log('✅ [FRIEND TAG] Grid classes:', grid.className);
+    console.log('✅ [FRIEND TAG] Grid parent:', grid.parentElement?.id);
     currentSortMode = sortMode;
+    
+    // Show loading state
+    grid.innerHTML = '<p style="text-align: center; color: var(--text-gray); padding: 20px;">Loading friends...</p>';
+    console.log('📝 [FRIEND TAG] Set loading state in grid');
     
     // Get user FID from StateManager or fallback to global variable
     const userFID = window.StateManager?.get('auth.fid') || window.userFID;
     const isAuth = window.StateManager?.get('auth.isAuthenticated') || window.isAuthenticated;
     
+    console.log('👤 [FRIEND TAG] User FID:', userFID, '| Authenticated:', isAuth);
+    
     if (!userFID || !isAuth) {
-        grid.innerHTML = '<p style="text-align: center; color: var(--text-gray); padding: 20px;">Loading friends...</p>';
+        console.warn('⚠️ [FRIEND TAG] User not authenticated or no FID');
+        grid.innerHTML = '<p style="text-align: center; color: var(--text-gray); padding: 20px;">Please sign in to tag friends</p>';
         return;
     }
     
     try {
-        // Use existing loadBestFriends if not already loaded
-        if (!window.bestFriends || window.bestFriends.length === 0) {
-            await loadBestFriends(userFID);
+        // Check if friends are already loaded
+        console.log('🔍 [FRIEND TAG] Checking window.bestFriends...');
+        console.log('🔍 [FRIEND TAG] window.bestFriends exists?', !!window.bestFriends);
+        console.log('🔍 [FRIEND TAG] window.bestFriends length:', window.bestFriends?.length || 0);
+        
+        if (window.bestFriends && window.bestFriends.length > 0) {
+            console.log('✅ [FRIEND TAG] Friends already loaded, using cached data');
+        } else {
+            console.log('🔄 [FRIEND TAG] No cached friends, calling window.loadBestFriends()...');
+            console.log('🔄 [FRIEND TAG] window.loadBestFriends exists?', typeof window.loadBestFriends);
+            
+            if (window.loadBestFriends) {
+                await window.loadBestFriends(userFID);
+                console.log('✅ [FRIEND TAG] window.loadBestFriends() completed');
+            } else {
+                console.error('❌ [FRIEND TAG] window.loadBestFriends function not found!');
+                console.error('❌ [FRIEND TAG] Available window functions:', Object.keys(window).filter(k => k.includes('friend')));
+            }
         }
+        
+        // Wait a moment for friends to be stored
+        await new Promise(resolve => setTimeout(resolve, 200));
+        console.log('⏱️ [FRIEND TAG] Waited 200ms for data to populate');
         
         let friends = window.bestFriends || [];
         
+        console.log('👥 [FRIEND TAG] Friends available for tagging:', friends.length);
+        console.log('📊 [FRIEND TAG] First 3 friends:', friends.slice(0, 3).map(f => ({ username: f.username, display_name: f.display_name, pfp_url: f.pfp_url })));
+        
         if (friends.length === 0) {
-            grid.innerHTML = '<p style="text-align: center; color: var(--text-gray); padding: 20px;">No friends found</p>';
+            console.warn('⚠️ [FRIEND TAG] No friends found after loading');
+            grid.innerHTML = '<p style="text-align: center; color: var(--text-gray); padding: 20px;">No friends found. Follow more people!</p>';
             return;
         }
         
         // Sort friends based on selected mode
         let sortedFriends;
         if (sortMode === 'random') {
-            // Randomize friend order (shuffle)
             sortedFriends = [...friends].sort(() => Math.random() - 0.5);
+            console.log('🎲 [FRIEND TAG] Randomized friend order');
         } else if (sortMode === 'recent') {
-            // Sort by most recent (assuming friends array is already sorted by recency from API)
             sortedFriends = [...friends];
+            console.log('🕐 [FRIEND TAG] Showing recent friends');
         } else if (sortMode === 'oldest') {
-            // Reverse order for oldest friends first
             sortedFriends = [...friends].reverse();
+            console.log('⏳ [FRIEND TAG] Showing oldest friends');
         }
         
-        const displayFriends = sortedFriends.slice(0, 10); // Show up to 10 friends
+        const displayFriends = sortedFriends.slice(0, 10);
         
-        // Render friend tags
-        grid.innerHTML = displayFriends.map(friend => `
+        console.log('✅ [FRIEND TAG] Preparing to display', displayFriends.length, 'friends');
+        console.log('📋 [FRIEND TAG] Display friends:', displayFriends.map(f => f.username));
+        
+        // Render friend tags with better UI
+        console.log('🎨 [FRIEND TAG] Generating HTML for', displayFriends.length, 'friends...');
+        
+        const html = displayFriends.map((friend, index) => {
+            console.log(`  ${index + 1}. ${friend.username} (${friend.display_name || 'no display name'})`);
+            return `
             <div class="friend-tag-item" data-username="${friend.username}" onclick="toggleFriendSelection(this)">
-                <img src="${friend.pfp_url || '/icon.png'}" alt="${friend.display_name}" class="friend-tag-avatar">
-                <span class="friend-tag-name">${friend.display_name || friend.username}</span>
+                <img src="${friend.pfp_url || '/icon.png'}" alt="${friend.display_name || friend.username}" class="friend-tag-avatar" onerror="this.src='/icon.png'">
+                <div class="friend-tag-info">
+                    <span class="friend-tag-name">${friend.display_name || friend.username}</span>
+                    <span class="friend-tag-username">@${friend.username}</span>
+                </div>
             </div>
-        `).join('');
+        `;
+        }).join('');
+        
+        console.log('📝 [FRIEND TAG] Generated HTML length:', html.length, 'characters');
+        console.log('📝 [FRIEND TAG] HTML preview (first 300 chars):', html.substring(0, 300));
+        console.log('📝 [FRIEND TAG] Setting grid.innerHTML...');
+        
+        grid.innerHTML = html;
+        
+        console.log('✅ [FRIEND TAG] Grid innerHTML updated');
+        console.log('🔍 [FRIEND TAG] Grid children count:', grid.children.length);
+        console.log('🔍 [FRIEND TAG] Grid children:', Array.from(grid.children).map(c => c.dataset.username));
         
         // Update sort button states
         updateSortButtonStates(sortMode);
+        console.log('✅ [FRIEND TAG] Sort button states updated');
         
     } catch (error) {
-        console.error('Error loading friends:', error);
-        grid.innerHTML = '<p style="text-align: center; color: var(--text-gray); padding: 20px;">Could not load friends</p>';
+        console.error('❌ [FRIEND TAG] Error loading friends:', error);
+        console.error('❌ [FRIEND TAG] Error message:', error.message);
+        console.error('❌ [FRIEND TAG] Error stack:', error.stack);
+        grid.innerHTML = '<p style="text-align: center; color: var(--text-gray); padding: 20px;">Could not load friends. Try again.</p>';
     }
+    
+    console.log('🟢 [FRIEND TAG] ========================================');
+    console.log('🟢 [FRIEND TAG] loadRandomizedFriends() END');
+    console.log('🟢 [FRIEND TAG] ========================================');
 }
 
 // Update sort button visual states
@@ -189,20 +269,25 @@ function updateSortButtonStates(activeMode) {
 
 // Change friend sort mode
 window.changeFriendSort = function(sortMode) {
-    console.log('🔄 Changing friend sort to:', sortMode);
+    console.log('🔄 [FRIEND TAG] changeFriendSort() called with:', sortMode);
     loadRandomizedFriends(sortMode);
 };
 
 // Toggle friend selection (max 10)
 window.toggleFriendSelection = function(element) {
+    console.log('👆 [FRIEND TAG] toggleFriendSelection() called for:', element.dataset.username);
+    
     const selectedCount = document.querySelectorAll('.friend-tag-item.selected').length;
     const isCurrentlySelected = element.classList.contains('selected');
+    
+    console.log('📊 [FRIEND TAG] Currently selected:', selectedCount, '| This item selected:', isCurrentlySelected);
     
     // Allow deselection or selection if under limit
     if (isCurrentlySelected || selectedCount < 10) {
         element.classList.toggle('selected');
+        console.log('✅ [FRIEND TAG] Toggled selection for:', element.dataset.username);
     } else {
-        // Show toast if trying to select more than 10
+        console.log('⚠️ [FRIEND TAG] Selection limit reached (10 friends)');
         if (window.showToast) {
             window.showToast('info', 'Limit Reached', 'You can tag up to 10 friends');
         }
@@ -222,10 +307,16 @@ window.shareWithTags = async function() {
         const selectedElements = document.querySelectorAll('.friend-tag-item.selected');
         const selectedUsernames = Array.from(selectedElements).map(el => el.dataset.username);
         
+        console.log('👥 Selected friends to tag:', selectedUsernames);
+        
         // Add friend tags if any selected
+        // Per Farcaster docs: mentions can be included using @username format
+        // The SDK will handle converting these to proper mention objects
         let finalText = castText;
         if (selectedUsernames.length > 0) {
-            finalText += '\n\n' + selectedUsernames.map(u => `@${u}`).join(' ');
+            const mentions = selectedUsernames.map(u => `@${u}`).join(' ');
+            finalText += '\n\n' + mentions;
+            console.log('✅ Added mentions:', mentions);
         }
         
         // Determine channel based on Farcaster client selection
@@ -237,9 +328,13 @@ window.shareWithTags = async function() {
             console.log(`🎯 Posting to ${farcasterClient} channel: ${channelKey}`);
         }
         
-        console.log('🚀 Opening Farcaster composer with:', finalText);
+        console.log('🚀 Opening Farcaster composer');
+        console.log('📝 Text:', finalText);
+        console.log('🔗 Embed:', 'https://zabal.art');
+        console.log('📺 Channel:', channelKey);
         
         // Direct SDK call - opens Farcaster composer with client-specific channel
+        // Mentions in @username format are automatically handled by the SDK
         const result = await window.farcasterSDK.actions.composeCast({
             text: finalText,
             embeds: ['https://zabal.art'],
@@ -249,14 +344,31 @@ window.shareWithTags = async function() {
         // Result can be null if user cancels
         if (result && result.cast) {
             console.log('✅ Cast shared successfully');
-            showToast('success', 'Shared!', 'Your vote has been shared to Farcaster');
+            if (window.showToast) {
+                showToast('success', 'Shared!', 'Your vote has been shared to Farcaster');
+            }
+            
+            // Track share with analytics
+            if (window.analytics) {
+                window.analytics.track('share_completed', {
+                    friends_tagged: selectedUsernames.length,
+                    channel: channelKey
+                });
+            }
         } else {
             console.log('ℹ️ User cancelled share');
         }
         
     } catch (error) {
         console.error('❌ Failed to share:', error);
-        showToast('error', 'Share Failed', 'Could not open Farcaster composer');
+        if (window.showToast) {
+            showToast('error', 'Share Failed', 'Could not open Farcaster composer');
+        }
+        
+        // Track error
+        if (window.analytics) {
+            window.analytics.trackError(error, { context: 'share_with_tags' });
+        }
     }
 };
 
