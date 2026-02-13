@@ -142,7 +142,7 @@ const MESSAGE_VARIANTS = {
         'Help decide what @zaal should stream 🎨',
         'Vote on what @zaal should do today 🗳️',
         'What should @zaal stream? Cast your vote 🎨',
-        'I'm voting on what @zaal should do. Join me 🎨',
+        'I\'m voting on what @zaal should do. Join me 🎨',
         'Help @zaal decide what to stream - vote now 🎨'
     ]
 };
