@@ -51,6 +51,12 @@ ZABAL Live Hub is a Farcaster miniapp that allows the community to vote on the d
 
 ### Module Structure
 ```
+/assets                    # Images, icons, splash screens
+├── icon.png              # App icon (1024x1024)
+├── splash.png            # Splash screen (200x200)
+├── logo.png              # Logo (1024x1024)
+└── preview.png           # Social preview (1200x630)
+
 /js
 ├── config.js              # Configuration management
 ├── validation.js          # Input validation & rate limiting
@@ -59,16 +65,25 @@ ZABAL Live Hub is a Farcaster miniapp that allows the community to vote on the d
 ├── state-manager.js       # Centralized state management
 ├── database.js            # Database connection management
 ├── api-throttle.js        # API rate limiting & throttling
+├── share-modal.js         # Friend tagging & sharing
 └── production-enhancements.js  # Loading, analytics, persistence
 
 /css
 ├── production-styles.css  # Production UI styles
+└── shared-navigation.css  # Navigation styles
 
 /api
 └── send-notification-neynar.js  # Serverless notification handler
 
 /.well-known
 └── farcaster.json         # Farcaster miniapp manifest
+
+/docs                      # Documentation
+├── ARCHITECTURE.md        # System architecture
+├── DEPLOYMENT.md          # Deployment guide
+├── API.md                 # API documentation
+├── ASSETS.md              # Asset specifications
+└── setup/                 # Setup guides
 ```
 
 ### Key Design Patterns
@@ -135,7 +150,8 @@ Visit `http://localhost:3000`
 - [ARCHITECTURE.md](./docs/ARCHITECTURE.md) - System architecture and design decisions
 - [DEPLOYMENT.md](./docs/DEPLOYMENT.md) - Deployment guide and configuration
 - [API.md](./docs/API.md) - API documentation and endpoints
-- [CONTRIBUTING.md](./docs/CONTRIBUTING.md) - Contributing guidelines
+- [ASSETS.md](./docs/ASSETS.md) - Asset specifications and guidelines
+- [CONTRIBUTING.md](./CONTRIBUTING.md) - Contributing guidelines
 
 ### Setup Guides
 - [Supabase Setup](./docs/setup/SUPABASE_SETUP_GUIDE.md) - Complete Supabase database setup
