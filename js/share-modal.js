@@ -1,14 +1,9 @@
 // Simplified Share Logic - Direct SDK composeCast for fluid UX
 // Based on Farcaster best practices: instant composer, no modal friction
 
-// Client to channel mapping for Farcaster posts
-const CLIENT_CHANNELS = {
-    'CURA': 'cura',
-    'SOPHA': 'https://farcaster.xyz/sopha',
-    'DEGEN': 'degen',
-    'BASE': 'basenft',
-    'FARCASTER CLIENT': 'farcaster'
-};
+// All ZABAL votes are posted to /zao channel
+// The Farcaster client choice (CURA, SOPHA, BASE, etc.) is only used in the message text
+const ZABAL_CHANNEL = 'zao';
 
 // Varied message templates to avoid bot detection
 const MESSAGE_VARIANTS = {
@@ -352,19 +347,13 @@ window.shareWithTags = async function() {
             console.log('✅ Added mentions:', mentions);
         }
         
-        // Determine channel based on Farcaster client selection
-        const farcasterClient = localStorage.getItem('farcaster_client_choice');
-        let channelKey = 'zao'; // Default channel
-        
-        if (farcasterClient && CLIENT_CHANNELS[farcasterClient]) {
-            channelKey = CLIENT_CHANNELS[farcasterClient];
-            console.log(`🎯 Posting to ${farcasterClient} channel: ${channelKey}`);
-        }
+        // Always post to /zao channel
+        const channelKey = ZABAL_CHANNEL;
         
         console.log('🚀 Opening Farcaster composer');
         console.log('📝 Text:', finalText);
         console.log('🔗 Embed:', 'https://zabal.art');
-        console.log('📺 Channel:', channelKey);
+        console.log('📺 Channel:', channelKey, '(/zao)');
         
         // Direct SDK call - opens Farcaster composer with client-specific channel
         // Mentions in @username format are automatically handled by the SDK
