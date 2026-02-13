@@ -5587,6 +5587,11 @@
                         username = context.user.username || 'User';
                         isAuthenticated = true;
                         
+                        // Expose to window scope for share-modal.js
+                        window.userFID = userFID;
+                        window.username = username;
+                        window.isAuthenticated = isAuthenticated;
+                        
                         console.log('✅ Farcaster user authenticated:', { fid: userFID, username, user: context.user });
                         
                         // Store in StateManager
@@ -5652,6 +5657,11 @@
                 localStorage.setItem('userFID', userFID);
                 username = 'Test User';
                 isAuthenticated = false;
+                
+                // Expose fallback values to window scope
+                window.userFID = userFID;
+                window.username = username;
+                window.isAuthenticated = isAuthenticated;
             }
             
             console.log('👤 User FID:', userFID, '| Username:', username, '| Authenticated:', isAuthenticated);
