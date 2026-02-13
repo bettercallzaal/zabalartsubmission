@@ -148,15 +148,13 @@
     
     <script src="https://unpkg.com/@supabase/supabase-js@2.39.0/dist/umd/supabase.js"></script>
     <!-- Farcaster Mini App SDK - CDN version for better compatibility -->
-    <script src="https://cdn.jsdelivr.net/npm/@farcaster/miniapp-sdk/dist/index.min.js"></script>
-    <script>
-        // SDK is now available as window.miniapp.sdk
+    <script src="https://cdn.jsdelivr.net/npm/@farcaster/miniapp-sdk/dist/index.min.js" onload="
+        console.log('🎯 SDK script loaded, initializing...');
         if (window.miniapp && window.miniapp.sdk) {
             window.farcasterSDK = window.miniapp.sdk;
             window.farcasterSDKLoaded = true;
             
-            // CRITICAL: Call ready() immediately when SDK loads
-            console.log('🎯 SDK loaded, calling ready() immediately...');
+            console.log('🎯 SDK ready, calling ready() immediately...');
             window.farcasterSDK.actions.ready()
                 .then(() => {
                     console.log('✅ Splash screen dismissed via SDK load');
@@ -167,8 +165,10 @@
                 });
             
             window.dispatchEvent(new Event('farcasterSDKReady'));
+        } else {
+            console.warn('⚠️ SDK loaded but window.miniapp not available');
         }
-    </script>
+    "></script>
     <script>
         // Aggressive fallback: Force hide splash screen after 3 seconds
         window.splashDismissed = false;
