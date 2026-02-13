@@ -7,8 +7,8 @@
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
     <title>ZABAL — Creative Hub</title>
-    <meta name="description" content="ZABAL creative hub - Vote on streams, chat with the community, submit art, explore research, and more.">
-    <meta name="keywords" content="ZABAL, Farcaster, art, community, web3, crypto art, NFT">
+    <meta name="description" content="ZABAL creative hub - Vote on streams, chat with the community, submit art, explore research, and connect with the ZAO ecosystem.">
+    <meta name="keywords" content="ZABAL, Farcaster, art, community, web3, crypto art, NFT, ZAO">
     <meta name="author" content="ZABAL">
     <meta name="theme-color" content="#141e27">
     
@@ -47,20 +47,83 @@
             background: linear-gradient(135deg, var(--bg-dark) 0%, var(--bg-secondary) 100%);
             color: var(--text-white);
             min-height: 100vh;
+        }
+
+        /* Top Navigation Bar */
+        .top-nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: rgba(20, 30, 39, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border-color);
+            padding: 1rem 2rem;
+            z-index: 1000;
             display: flex;
-            flex-direction: column;
+            justify-content: space-between;
             align-items: center;
-            justify-content: center;
-            padding: 2rem;
         }
 
-        .container {
-            max-width: 900px;
-            width: 100%;
+        .logo-link {
+            font-size: 1.5rem;
+            font-weight: 900;
+            letter-spacing: 0.1em;
+            color: var(--accent-yellow);
+            text-decoration: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .logo-link:hover {
+            opacity: 0.8;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .nav-links a {
+            color: var(--text-gray);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.95rem;
+            transition: color 0.3s ease;
+            white-space: nowrap;
+        }
+
+        .nav-links a:hover {
+            color: var(--accent-yellow);
+        }
+
+        /* Mobile Menu Toggle */
+        .mobile-menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            color: var(--accent-yellow);
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-top: 80px;
+            padding: 4rem 2rem;
+            max-width: 1200px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        /* Hero Section */
+        .hero {
             text-align: center;
+            margin-bottom: 4rem;
+            animation: fadeInUp 0.8s ease;
         }
 
-        .logo {
+        .hero-logo {
             font-size: clamp(3rem, 10vw, 6rem);
             font-weight: 900;
             letter-spacing: 0.1em;
@@ -69,98 +132,117 @@
             -webkit-text-fill-color: transparent;
             background-clip: text;
             margin-bottom: 1rem;
-            animation: fadeInUp 0.8s ease;
         }
 
-        .tagline {
+        .hero-tagline {
             font-size: clamp(1rem, 3vw, 1.5rem);
             color: var(--text-gray);
-            margin-bottom: 4rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .hero-description {
+            font-size: 1rem;
+            color: var(--text-gray);
+            max-width: 600px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+
+        /* Portals Section */
+        .portals-section {
             animation: fadeInUp 0.8s ease 0.2s both;
         }
 
-        .nav-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 1.5rem;
-            margin-bottom: 3rem;
-            animation: fadeInUp 0.8s ease 0.4s both;
+        .section-title {
+            font-size: clamp(1.5rem, 4vw, 2rem);
+            font-weight: 700;
+            color: var(--text-white);
+            margin-bottom: 2rem;
+            text-align: center;
         }
 
-        .nav-card {
+        .portals-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .portal-card {
             background: rgba(20, 30, 39, 0.6);
             border: 1px solid var(--border-color);
             border-radius: 16px;
-            padding: 2rem 1.5rem;
+            padding: 2.5rem 2rem;
             text-decoration: none;
             color: var(--text-white);
             transition: all 0.3s ease;
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 0.75rem;
+            gap: 1rem;
+            position: relative;
+            overflow: hidden;
         }
 
-        .nav-card:hover {
+        .portal-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(224, 221, 170, 0.05) 0%, transparent 100%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .portal-card:hover::before {
+            opacity: 1;
+        }
+
+        .portal-card:hover {
             background: rgba(20, 30, 39, 0.9);
             border-color: var(--accent-yellow);
-            transform: translateY(-4px);
-            box-shadow: 0 8px 24px rgba(224, 221, 170, 0.2);
+            transform: translateY(-8px);
+            box-shadow: 0 12px 32px rgba(224, 221, 170, 0.2);
         }
 
-        .nav-card-icon {
-            font-size: 2.5rem;
+        .portal-icon {
+            font-size: 3rem;
             line-height: 1;
+            filter: grayscale(0.3);
+            transition: filter 0.3s ease;
         }
 
-        .nav-card-title {
-            font-size: 1.25rem;
+        .portal-card:hover .portal-icon {
+            filter: grayscale(0);
+        }
+
+        .portal-title {
+            font-size: 1.5rem;
             font-weight: 700;
             color: var(--text-white);
+            text-align: center;
         }
 
-        .nav-card-description {
-            font-size: 0.9rem;
+        .portal-description {
+            font-size: 0.95rem;
             color: var(--text-gray);
-            line-height: 1.4;
+            line-height: 1.5;
+            text-align: center;
         }
 
-        .external-links {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 1rem;
-            justify-content: center;
-            animation: fadeInUp 0.8s ease 0.6s both;
-        }
-
-        .external-link {
-            background: rgba(20, 30, 39, 0.4);
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            padding: 0.75rem 1.5rem;
-            text-decoration: none;
-            color: var(--text-gray);
-            font-weight: 600;
-            font-size: 0.9rem;
-            transition: all 0.3s ease;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .external-link:hover {
-            background: rgba(20, 30, 39, 0.8);
-            border-color: var(--accent-yellow);
+        .portal-badge {
+            display: inline-block;
+            background: rgba(224, 221, 170, 0.1);
+            border: 1px solid var(--accent-yellow);
             color: var(--accent-yellow);
-            transform: translateY(-2px);
-        }
-
-        .divider {
-            width: 100%;
-            height: 1px;
-            background: var(--border-color);
-            margin: 3rem 0;
-            animation: fadeInUp 0.8s ease 0.5s both;
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
         }
 
         @keyframes fadeInUp {
@@ -174,84 +256,122 @@
             }
         }
 
+        /* Mobile Responsive */
         @media (max-width: 768px) {
-            body {
-                padding: 1.5rem;
+            .top-nav {
+                padding: 1rem;
             }
 
-            .nav-grid {
-                grid-template-columns: 1fr;
-                gap: 1rem;
-            }
-
-            .nav-card {
-                padding: 1.5rem 1rem;
-            }
-
-            .external-links {
+            .nav-links {
+                display: none;
+                position: fixed;
+                top: 60px;
+                left: 0;
+                right: 0;
+                background: rgba(20, 30, 39, 0.98);
                 flex-direction: column;
-                align-items: stretch;
+                padding: 2rem;
+                gap: 1.5rem;
+                border-bottom: 1px solid var(--border-color);
             }
 
-            .external-link {
-                justify-content: center;
+            .nav-links.active {
+                display: flex;
+            }
+
+            .mobile-menu-toggle {
+                display: block;
+            }
+
+            .main-content {
+                padding: 2rem 1rem;
+            }
+
+            .portals-grid {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+
+            .portal-card {
+                padding: 2rem 1.5rem;
             }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1 class="logo">ZABAL</h1>
-        <p class="tagline">Creative Hub & Community</p>
-
-        <div class="nav-grid">
-            <a href="vote.html" class="nav-card">
-                <div class="nav-card-icon">🗳️</div>
-                <div class="nav-card-title">Vote</div>
-                <div class="nav-card-description">Vote daily on stream direction</div>
-            </a>
-
-            <a href="chat.html" class="nav-card">
-                <div class="nav-card-icon">💬</div>
-                <div class="nav-card-title">Chat</div>
-                <div class="nav-card-description">Join the community conversation</div>
-            </a>
-
-            <a href="submissions.html" class="nav-card">
-                <div class="nav-card-icon">🎨</div>
-                <div class="nav-card-title">Submit</div>
-                <div class="nav-card-description">Submit your art & creations</div>
-            </a>
-
-            <a href="gallery.html" class="nav-card">
-                <div class="nav-card-icon">🔬</div>
-                <div class="nav-card-title">Research</div>
-                <div class="nav-card-description">Explore the gallery & research</div>
-            </a>
-
-            <a href="leaderboard.html" class="nav-card">
-                <div class="nav-card-icon">🏆</div>
-                <div class="nav-card-title">Leaderboard</div>
-                <div class="nav-card-description">See top community members</div>
-            </a>
-
-            <a href="custom-leaderboards.html" class="nav-card">
-                <div class="nav-card-icon">📊</div>
-                <div class="nav-card-title">Custom Leaderboards</div>
-                <div class="nav-card-description">View specialized rankings</div>
-            </a>
+    <!-- Top Navigation -->
+    <nav class="top-nav">
+        <a href="index.html" class="logo-link">ZABAL</a>
+        <div class="nav-links" id="navLinks">
+            <a href="vote.html">Vote</a>
+            <a href="chat.html">Chat</a>
+            <a href="submissions.html">Submit</a>
+            <a href="gallery.html">Research</a>
+            <a href="leaderboard.html">Leaderboard</a>
         </div>
+        <button class="mobile-menu-toggle" id="mobileMenuToggle" onclick="toggleMobileMenu()">☰</button>
+    </nav>
 
-        <div class="divider"></div>
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Hero Section -->
+        <section class="hero">
+            <h1 class="hero-logo">ZABAL</h1>
+            <p class="hero-tagline">Creative Hub & Community</p>
+            <p class="hero-description">
+                Vote on stream direction, connect with the community, and explore the ZAO ecosystem
+            </p>
+        </section>
 
-        <div class="external-links">
-            <a href="https://www.empirebuilder.world/empire/0xbB48f19B0494Ff7C1fE5Dc2032aeEE14312f0b07" class="external-link" target="_blank">
-                🏰 Empire Builder
-            </a>
-            <a href="https://www.thezao.com/nexus" class="external-link" target="_blank">
-                🌐 ZAO Nexus
-            </a>
-        </div>
+        <!-- Portals Section -->
+        <section class="portals-section">
+            <h2 class="section-title">Explore Portals</h2>
+            <div class="portals-grid">
+                <a href="https://www.thezao.com/nexus" class="portal-card" target="_blank">
+                    <div class="portal-icon">🌐</div>
+                    <div class="portal-title">ZAO Nexus</div>
+                    <div class="portal-description">
+                        Central hub for the ZAO ecosystem. Discover projects, connect with builders, and explore the network.
+                    </div>
+                    <span class="portal-badge">Ecosystem</span>
+                </a>
+
+                <a href="https://www.empirebuilder.world/empire/0xbB48f19B0494Ff7C1fE5Dc2032aeEE14312f0b07" class="portal-card" target="_blank">
+                    <div class="portal-icon">🏰</div>
+                    <div class="portal-title">Empire Builder</div>
+                    <div class="portal-description">
+                        Build your empire on-chain. Track progress, manage resources, and grow your influence.
+                    </div>
+                    <span class="portal-badge">Game</span>
+                </a>
+
+                <a href="custom-leaderboards.html" class="portal-card">
+                    <div class="portal-icon">📊</div>
+                    <div class="portal-title">Custom Leaderboards</div>
+                    <div class="portal-description">
+                        View specialized rankings, track performance metrics, and see community standings.
+                    </div>
+                    <span class="portal-badge">Stats</span>
+                </a>
+            </div>
+        </section>
     </div>
+
+    <script>
+        function toggleMobileMenu() {
+            const navLinks = document.getElementById('navLinks');
+            navLinks.classList.toggle('active');
+        }
+
+        // Close mobile menu when clicking outside
+        document.addEventListener('click', function(event) {
+            const navLinks = document.getElementById('navLinks');
+            const toggle = document.getElementById('mobileMenuToggle');
+            
+            if (!navLinks.contains(event.target) && !toggle.contains(event.target)) {
+                navLinks.classList.remove('active');
+            }
+        });
+    </script>
 </body>
 </html>

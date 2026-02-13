@@ -6835,14 +6835,18 @@ async function loadVotes() {
             return milestones.includes(totalVotes);
         }
 
-        // Load best friends from Neynar
-        window.loadBestFriends = async function(fid) {
+        // Load best friends from Neynar with retry logic
+        window.loadBestFriends = async function(fid, retryCount = 0) {
+            const MAX_RETRIES = 3;
+            const RETRY_DELAY = 1000; // 1 second
+            
             console.log('🔵 [LOAD FRIENDS] === START loadBestFriends() ===');
-            console.log('🔵 [LOAD FRIENDS] Input FID:', fid);
+            console.log('🔵 [LOAD FRIENDS] Input FID:', fid, '| Retry:', retryCount);
             
             if (!fid) {
                 console.error('❌ [LOAD FRIENDS] No FID provided to loadBestFriends');
-                return;
+                window.bestFriends = [];
+                return false;
             }
             
             console.log('📡 [LOAD FRIENDS] Calling Neynar API for FID:', fid);
@@ -6912,12 +6916,22 @@ async function loadVotes() {
                 console.error('❌ [LOAD FRIENDS] Error details:', error.message);
                 console.error('❌ [LOAD FRIENDS] Error stack:', error.stack);
                 
+                // Retry logic
+                if (retryCount < MAX_RETRIES) {
+                    console.log(`🔄 [LOAD FRIENDS] Retrying in ${RETRY_DELAY}ms... (Attempt ${retryCount + 1}/${MAX_RETRIES})`);
+                    await new Promise(resolve => setTimeout(resolve, RETRY_DELAY));
+                    return await window.loadBestFriends(fid, retryCount + 1);
+                }
+                
+                console.error('❌ [LOAD FRIENDS] Max retries reached, giving up');
                 // Ensure window.bestFriends is set even on error
                 window.bestFriends = [];
+                return false;
             }
             
             console.log('🔵 [LOAD FRIENDS] === END loadBestFriends() ===');
             console.log('🔵 [LOAD FRIENDS] Final window.bestFriends:', window.bestFriends?.length || 0);
+            return true;
         }
 
         // Display friend tags in share modal
