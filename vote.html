@@ -6146,6 +6146,7 @@ async function loadVotes() {
                 localStorage.setItem('weekly_voted_date', currentWeekMonday);
                 localStorage.setItem('userVoteMode', mode); // Store vote mode for comments
                 localStorage.setItem('completed_stream_vote', mode); // Track stream vote completion
+                localStorage.setItem('current_vote_timestamp', Date.now().toString()); // Track voting session
                 
                 // Unlock weekly voting (with feedback)
                 unlockWeeklyVoting(true);
@@ -8745,8 +8746,9 @@ async function loadVotes() {
                             showShareButton('comment', comment);
                         });
                         
-                        // Track comment completion
+                        // Track comment completion with timestamp for session validation
                         localStorage.setItem('completed_comment', comment);
+                        localStorage.setItem('comment_timestamp', localStorage.getItem('current_vote_timestamp') || Date.now().toString());
                         
                         commentInput.value = '';
                         document.getElementById('charCount').textContent = '0/500';

@@ -5,31 +5,163 @@
 // The Farcaster client choice (CURA, SOPHA, BASE, etc.) is only used in the message text
 const ZABAL_CHANNEL = 'zao';
 
-// Varied message templates to avoid bot detection
+// Extensive message templates with personality archetypes for monthly variety
+// 30+ variants per scenario = ~90 total unique messages
 const MESSAGE_VARIANTS = {
     streamOnly: [
-        (emoji, mode) => `Just voted ${emoji} ${mode} stream!`,
-        (emoji, mode) => `${emoji} ${mode} stream gets my vote today`,
-        (emoji, mode) => `Backing ${emoji} ${mode} for the next stream`,
-        (emoji, mode) => `My pick: ${emoji} ${mode} stream 🎨`
+        // 🔥 Hype Energy (6 variants)
+        (emoji, mode) => `LFG! ${emoji} ${mode.toUpperCase()} stream is the move 🚀`,
+        (emoji, mode) => `${emoji} ${mode} stream supremacy! Who's with me? 💪`,
+        (emoji, mode) => `Throwing my vote at ${emoji} ${mode} stream. This is the way 🎨`,
+        (emoji, mode) => `${emoji} ${mode} stream locked in. Let's make it happen 🔥`,
+        (emoji, mode) => `Just voted ${emoji} ${mode} stream and I'm hyped! 💯`,
+        (emoji, mode) => `${emoji} ${mode} stream energy is unmatched. That's my pick 🌟`,
+        
+        // 🧠 Strategic (6 variants)
+        (emoji, mode) => `After careful consideration: ${emoji} ${mode} stream is the play 🎯`,
+        (emoji, mode) => `The data is clear. ${emoji} ${mode} stream. That's my vote 📊`,
+        (emoji, mode) => `Strategic vote incoming: ${emoji} ${mode} stream for maximum impact`,
+        (emoji, mode) => `${emoji} ${mode} stream makes the most sense right now`,
+        (emoji, mode) => `Analyzed the options. ${emoji} ${mode} stream is optimal 🧠`,
+        (emoji, mode) => `${emoji} ${mode} stream aligns with the vision. Voted`,
+        
+        // 😎 Casual Cool (6 variants)
+        (emoji, mode) => `${emoji} ${mode} stream. No cap, this is it`,
+        (emoji, mode) => `Vibing with ${emoji} ${mode} stream today. Simple as that`,
+        (emoji, mode) => `${emoji} ${mode} stream hits different. That's my pick`,
+        (emoji, mode) => `Going with ${emoji} ${mode} stream. Clean choice`,
+        (emoji, mode) => `${emoji} ${mode} stream feels right. Voted 🎨`,
+        (emoji, mode) => `${emoji} ${mode} stream. Easy decision`,
+        
+        // 🎯 Direct (6 variants)
+        (emoji, mode) => `${emoji} ${mode} stream. Done. Next question?`,
+        (emoji, mode) => `Voted ${emoji} ${mode} stream. Your turn 👇`,
+        (emoji, mode) => `${emoji} ${mode} stream locked in. Let's go`,
+        (emoji, mode) => `${emoji} ${mode} stream. That's it. That's the tweet`,
+        (emoji, mode) => `My vote: ${emoji} ${mode} stream 🎨`,
+        (emoji, mode) => `${emoji} ${mode} stream. Simple`,
+        
+        // 🎪 Playful (6 variants)
+        (emoji, mode) => `Plot twist: I voted ${emoji} ${mode} stream 🎭`,
+        (emoji, mode) => `${emoji} ${mode} stream? ${emoji} ${mode} stream. (I said what I said)`,
+        (emoji, mode) => `Surprise! It's ${emoji} ${mode} stream o'clock 🕐`,
+        (emoji, mode) => `${emoji} ${mode} stream is the main character today ✨`,
+        (emoji, mode) => `Manifesting ${emoji} ${mode} stream energy 🔮`,
+        (emoji, mode) => `${emoji} ${mode} stream just hits different today 🎨`,
+        
+        // 💎 Degen (6 variants)
+        (emoji, mode) => `Aping into ${emoji} ${mode} stream. WAGMI 🦍`,
+        (emoji, mode) => `${emoji} ${mode} stream or ngmi. Choose wisely anon`,
+        (emoji, mode) => `Ser, I voted ${emoji} ${mode} stream. This is alpha 📈`,
+        (emoji, mode) => `${emoji} ${mode} stream is the meta. Don't fade this 💎`,
+        (emoji, mode) => `Bullish on ${emoji} ${mode} stream. NFA 🚀`,
+        (emoji, mode) => `${emoji} ${mode} stream. IYKYK 🤝`
     ],
     streamAndSocial: [
-        (modeEmoji, mode, platformEmoji, platform) => `Voted ${modeEmoji} ${mode} stream + pushing for ${platformEmoji} ${platform} this week`,
-        (modeEmoji, mode, platformEmoji, platform) => `${modeEmoji} ${mode} stream is my choice, and ${platformEmoji} ${platform} should be our focus`,
-        (modeEmoji, mode, platformEmoji, platform) => `Going with ${modeEmoji} ${mode} for the stream. Think we should prioritize ${platformEmoji} ${platform}`,
-        (modeEmoji, mode, platformEmoji, platform) => `My vote: ${modeEmoji} ${mode} stream. Weekly focus? ${platformEmoji} ${platform}`
+        // 🔥 Hype Energy (6 variants)
+        (modeEmoji, mode, platformEmoji, platform) => `${modeEmoji} ${mode} stream + ${platformEmoji} ${platform} domination this week! Who's ready? 🔥`,
+        (modeEmoji, mode, platformEmoji, platform) => `Double down: ${modeEmoji} ${mode} for the stream, ${platformEmoji} ${platform} for the culture 💯`,
+        (modeEmoji, mode, platformEmoji, platform) => `${modeEmoji} ${mode} stream + ${platformEmoji} ${platform} grind = unstoppable combo 🚀`,
+        (modeEmoji, mode, platformEmoji, platform) => `LFG! ${modeEmoji} ${mode} stream + ${platformEmoji} ${platform} push. This is it 💪`,
+        (modeEmoji, mode, platformEmoji, platform) => `${modeEmoji} ${mode} + ${platformEmoji} ${platform} energy is unmatched. Let's go 🌟`,
+        (modeEmoji, mode, platformEmoji, platform) => `Voted ${modeEmoji} ${mode} stream + ${platformEmoji} ${platform}. Maximum impact mode 🎯`,
+        
+        // 🧠 Strategic (6 variants)
+        (modeEmoji, mode, platformEmoji, platform) => `My thesis: ${modeEmoji} ${mode} stream paired with ${platformEmoji} ${platform} focus = maximum reach`,
+        (modeEmoji, mode, platformEmoji, platform) => `${modeEmoji} ${mode} stream + ${platformEmoji} ${platform} strategy. Let's capture that audience 🎯`,
+        (modeEmoji, mode, platformEmoji, platform) => `Coordinated play: ${modeEmoji} ${mode} content on ${platformEmoji} ${platform}. This is how we scale`,
+        (modeEmoji, mode, platformEmoji, platform) => `${modeEmoji} ${mode} stream optimized for ${platformEmoji} ${platform}. Smart move 🧠`,
+        (modeEmoji, mode, platformEmoji, platform) => `Data-driven vote: ${modeEmoji} ${mode} + ${platformEmoji} ${platform} = growth 📊`,
+        (modeEmoji, mode, platformEmoji, platform) => `${modeEmoji} ${mode} stream + ${platformEmoji} ${platform} synergy. This is the path`,
+        
+        // 😎 Casual Cool (6 variants)
+        (modeEmoji, mode, platformEmoji, platform) => `${modeEmoji} ${mode} stream vibes + ${platformEmoji} ${platform} energy. That's the combo`,
+        (modeEmoji, mode, platformEmoji, platform) => `Going with ${modeEmoji} ${mode} stream, ${platformEmoji} ${platform} feels right for this week`,
+        (modeEmoji, mode, platformEmoji, platform) => `${modeEmoji} ${mode} + ${platformEmoji} ${platform}. Clean and simple`,
+        (modeEmoji, mode, platformEmoji, platform) => `${modeEmoji} ${mode} stream + ${platformEmoji} ${platform}. No brainer`,
+        (modeEmoji, mode, platformEmoji, platform) => `Vibing with ${modeEmoji} ${mode} + ${platformEmoji} ${platform} this week`,
+        (modeEmoji, mode, platformEmoji, platform) => `${modeEmoji} ${mode} stream + ${platformEmoji} ${platform}. That's it`,
+        
+        // 🎯 Direct (6 variants)
+        (modeEmoji, mode, platformEmoji, platform) => `${modeEmoji} ${mode} stream. ${platformEmoji} ${platform} focus. Let's execute`,
+        (modeEmoji, mode, platformEmoji, platform) => `Two votes: ${modeEmoji} ${mode} for stream, ${platformEmoji} ${platform} for platform. Done`,
+        (modeEmoji, mode, platformEmoji, platform) => `${modeEmoji} ${mode} stream + ${platformEmoji} ${platform} push. That's the plan`,
+        (modeEmoji, mode, platformEmoji, platform) => `Voted ${modeEmoji} ${mode} + ${platformEmoji} ${platform}. Your move 👇`,
+        (modeEmoji, mode, platformEmoji, platform) => `${modeEmoji} ${mode} stream. ${platformEmoji} ${platform} platform. Simple`,
+        (modeEmoji, mode, platformEmoji, platform) => `${modeEmoji} ${mode} + ${platformEmoji} ${platform}. Locked in`,
+        
+        // 🎪 Playful (6 variants)
+        (modeEmoji, mode, platformEmoji, platform) => `Recipe for success: ${modeEmoji} ${mode} stream + ${platformEmoji} ${platform} sauce 👨‍🍳`,
+        (modeEmoji, mode, platformEmoji, platform) => `${modeEmoji} ${mode} stream meets ${platformEmoji} ${platform}. A love story 💕`,
+        (modeEmoji, mode, platformEmoji, platform) => `Manifesting ${modeEmoji} ${mode} stream + ${platformEmoji} ${platform} takeover ✨`,
+        (modeEmoji, mode, platformEmoji, platform) => `${modeEmoji} ${mode} + ${platformEmoji} ${platform} is the main character arc 🎭`,
+        (modeEmoji, mode, platformEmoji, platform) => `Plot twist: ${modeEmoji} ${mode} stream + ${platformEmoji} ${platform} supremacy 🔮`,
+        (modeEmoji, mode, platformEmoji, platform) => `${modeEmoji} ${mode} stream + ${platformEmoji} ${platform}. Chef's kiss 💋`,
+        
+        // 💎 Degen (6 variants)
+        (modeEmoji, mode, platformEmoji, platform) => `${modeEmoji} ${mode} stream + ${platformEmoji} ${platform} alpha. Anon, you're early 📈`,
+        (modeEmoji, mode, platformEmoji, platform) => `Bullish on ${modeEmoji} ${mode} stream + ${platformEmoji} ${platform}. WAGMI 🦍`,
+        (modeEmoji, mode, platformEmoji, platform) => `${modeEmoji} ${mode} x ${platformEmoji} ${platform} is the meta. Don't fade this 💎`,
+        (modeEmoji, mode, platformEmoji, platform) => `Aping into ${modeEmoji} ${mode} + ${platformEmoji} ${platform}. NFA 🚀`,
+        (modeEmoji, mode, platformEmoji, platform) => `${modeEmoji} ${mode} stream + ${platformEmoji} ${platform}. IYKYK 🤝`,
+        (modeEmoji, mode, platformEmoji, platform) => `Ser, ${modeEmoji} ${mode} + ${platformEmoji} ${platform} is alpha. DYOR 📊`
     ],
     streamAndClient: [
-        (modeEmoji, mode, platformEmoji, platform, client) => `${modeEmoji} ${mode} stream + ${platformEmoji} ${platform} via ${client} 🎯`,
-        (modeEmoji, mode, platformEmoji, platform, client) => `Voted ${modeEmoji} ${mode} stream. Targeting ${client} for ${platformEmoji} ${platform} this week`,
-        (modeEmoji, mode, platformEmoji, platform, client) => `My picks: ${modeEmoji} ${mode} stream & ${client} as the ${platformEmoji} ${platform} focus`,
-        (modeEmoji, mode, platformEmoji, platform, client) => `${modeEmoji} ${mode} + ${client} on ${platformEmoji} ${platform} - that's the move`
+        // 🔥 Hype Energy (6 variants)
+        (modeEmoji, mode, platformEmoji, platform, client) => `${modeEmoji} ${mode} stream + ${platformEmoji} ${platform} on ${client}! Triple threat activated 🔥`,
+        (modeEmoji, mode, platformEmoji, platform, client) => `${modeEmoji} ${mode} + ${platformEmoji} ${platform} + ${client} = the ultimate combo. LFG! 🚀`,
+        (modeEmoji, mode, platformEmoji, platform, client) => `Stacking votes: ${modeEmoji} ${mode} stream, ${platformEmoji} ${platform} platform, ${client} client. Let's gooo 💪`,
+        (modeEmoji, mode, platformEmoji, platform, client) => `${modeEmoji} ${mode} + ${platformEmoji} ${platform} via ${client}. Maximum power 💯`,
+        (modeEmoji, mode, platformEmoji, platform, client) => `Triple down: ${modeEmoji} ${mode} / ${platformEmoji} ${platform} / ${client}. This is it 🌟`,
+        (modeEmoji, mode, platformEmoji, platform, client) => `${modeEmoji} ${mode} stream + ${platformEmoji} ${platform} + ${client} supremacy 🎯`,
+        
+        // 🧠 Strategic (6 variants)
+        (modeEmoji, mode, platformEmoji, platform, client) => `Full stack vote: ${modeEmoji} ${mode} stream → ${platformEmoji} ${platform} → ${client}. This is the path`,
+        (modeEmoji, mode, platformEmoji, platform, client) => `${modeEmoji} ${mode} content, ${platformEmoji} ${platform} distribution, ${client} community. The trifecta 🎯`,
+        (modeEmoji, mode, platformEmoji, platform, client) => `${modeEmoji} ${mode} stream optimized for ${platformEmoji} ${platform} via ${client}. Maximum synergy`,
+        (modeEmoji, mode, platformEmoji, platform, client) => `Strategic alignment: ${modeEmoji} ${mode} + ${platformEmoji} ${platform} + ${client} 🧠`,
+        (modeEmoji, mode, platformEmoji, platform, client) => `${modeEmoji} ${mode} stream → ${platformEmoji} ${platform} → ${client}. Calculated move 📊`,
+        (modeEmoji, mode, platformEmoji, platform, client) => `Three-layer strategy: ${modeEmoji} ${mode} / ${platformEmoji} ${platform} / ${client}`,
+        
+        // 😎 Casual Cool (6 variants)
+        (modeEmoji, mode, platformEmoji, platform, client) => `${modeEmoji} ${mode} stream + ${platformEmoji} ${platform} + ${client}. That's the vibe`,
+        (modeEmoji, mode, platformEmoji, platform, client) => `Going all in: ${modeEmoji} ${mode}, ${platformEmoji} ${platform}, ${client}. Clean sweep`,
+        (modeEmoji, mode, platformEmoji, platform, client) => `${modeEmoji} ${mode} stream on ${platformEmoji} ${platform} through ${client}. Simple`,
+        (modeEmoji, mode, platformEmoji, platform, client) => `${modeEmoji} ${mode} + ${platformEmoji} ${platform} + ${client}. No brainer`,
+        (modeEmoji, mode, platformEmoji, platform, client) => `Vibing with ${modeEmoji} ${mode} / ${platformEmoji} ${platform} / ${client}`,
+        (modeEmoji, mode, platformEmoji, platform, client) => `${modeEmoji} ${mode} + ${platformEmoji} ${platform} via ${client}. That's it`,
+        
+        // 🎯 Direct (6 variants)
+        (modeEmoji, mode, platformEmoji, platform, client) => `${modeEmoji} ${mode} stream. ${platformEmoji} ${platform} platform. ${client} client. Execute`,
+        (modeEmoji, mode, platformEmoji, platform, client) => `Three votes locked: ${modeEmoji} ${mode} / ${platformEmoji} ${platform} / ${client}`,
+        (modeEmoji, mode, platformEmoji, platform, client) => `${modeEmoji} ${mode} + ${platformEmoji} ${platform} via ${client}. That's it`,
+        (modeEmoji, mode, platformEmoji, platform, client) => `Voted ${modeEmoji} ${mode} + ${platformEmoji} ${platform} + ${client}. Done`,
+        (modeEmoji, mode, platformEmoji, platform, client) => `${modeEmoji} ${mode} / ${platformEmoji} ${platform} / ${client}. Your turn 👇`,
+        (modeEmoji, mode, platformEmoji, platform, client) => `${modeEmoji} ${mode} + ${platformEmoji} ${platform} + ${client}. Simple`,
+        
+        // 🎪 Playful (6 variants)
+        (modeEmoji, mode, platformEmoji, platform, client) => `${modeEmoji} ${mode} stream + ${platformEmoji} ${platform} + ${client} = chaos (the good kind) 🎪`,
+        (modeEmoji, mode, platformEmoji, platform, client) => `Mixing ${modeEmoji} ${mode}, ${platformEmoji} ${platform}, and ${client} like a DJ 🎧`,
+        (modeEmoji, mode, platformEmoji, platform, client) => `${modeEmoji} ${mode} stream feat. ${platformEmoji} ${platform} (${client} remix) 🎵`,
+        (modeEmoji, mode, platformEmoji, platform, client) => `${modeEmoji} ${mode} + ${platformEmoji} ${platform} + ${client}. The holy trinity ✨`,
+        (modeEmoji, mode, platformEmoji, platform, client) => `Plot twist: ${modeEmoji} ${mode} / ${platformEmoji} ${platform} / ${client} supremacy 🎭`,
+        (modeEmoji, mode, platformEmoji, platform, client) => `${modeEmoji} ${mode} + ${platformEmoji} ${platform} + ${client}. Chef's kiss 💋`,
+        
+        // 💎 Degen (6 variants)
+        (modeEmoji, mode, platformEmoji, platform, client) => `${modeEmoji} ${mode} + ${platformEmoji} ${platform} + ${client} is the alpha play. Ser, this is it 📈`,
+        (modeEmoji, mode, platformEmoji, platform, client) => `Aping into ${modeEmoji} ${mode} stream on ${platformEmoji} ${platform} via ${client}. WAGMI 🦍`,
+        (modeEmoji, mode, platformEmoji, platform, client) => `${modeEmoji} ${mode} x ${platformEmoji} ${platform} x ${client}. Triple degen mode activated 💎`,
+        (modeEmoji, mode, platformEmoji, platform, client) => `Bullish on ${modeEmoji} ${mode} + ${platformEmoji} ${platform} + ${client}. NFA 🚀`,
+        (modeEmoji, mode, platformEmoji, platform, client) => `${modeEmoji} ${mode} / ${platformEmoji} ${platform} / ${client}. IYKYK 🤝`,
+        (modeEmoji, mode, platformEmoji, platform, client) => `Ser, ${modeEmoji} ${mode} + ${platformEmoji} ${platform} + ${client} is alpha. DYOR 📊`
     ],
     generic: [
         'Come vote on the ZABAL stream! 🎨',
         'Help decide the next ZABAL stream 🎨',
         'Your vote matters - join the ZABAL stream decision 🎨',
-        'Cast your vote for the ZABAL stream 🎨'
+        'Cast your vote for the ZABAL stream 🎨',
+        'ZABAL voting is live! Make your voice heard 🗳️',
+        'Shape the ZABAL stream - vote now 🎨'
     ]
 };
 
@@ -50,16 +182,15 @@ function buildShareMessage() {
     
     let castText = '';
     
-    // Random variant selection to avoid bot detection
-    const randomIndex = Math.floor(Math.random() * 4);
-    
     // Scenario 1: No votes yet - generic invite
     if (!streamVote && !socialVote) {
+        const randomIndex = Math.floor(Math.random() * MESSAGE_VARIANTS.generic.length);
         castText = MESSAGE_VARIANTS.generic[randomIndex];
     }
     // Scenario 2: Stream vote only
     else if (streamVote && !socialVote) {
         const emoji = modeEmojis[streamVote] || '🎨';
+        const randomIndex = Math.floor(Math.random() * MESSAGE_VARIANTS.streamOnly.length);
         const template = MESSAGE_VARIANTS.streamOnly[randomIndex];
         castText = template(emoji, streamVote);
     }
@@ -72,20 +203,27 @@ function buildShareMessage() {
         if (socialVote === 'Farcaster') {
             const farcasterClient = localStorage.getItem('farcaster_client_choice');
             if (farcasterClient) {
+                const randomIndex = Math.floor(Math.random() * MESSAGE_VARIANTS.streamAndClient.length);
                 const template = MESSAGE_VARIANTS.streamAndClient[randomIndex];
                 castText = template(modeEmoji, streamVote, platformEmoji, socialVote, farcasterClient);
             } else {
+                const randomIndex = Math.floor(Math.random() * MESSAGE_VARIANTS.streamAndSocial.length);
                 const template = MESSAGE_VARIANTS.streamAndSocial[randomIndex];
                 castText = template(modeEmoji, streamVote, platformEmoji, socialVote);
             }
         } else {
+            const randomIndex = Math.floor(Math.random() * MESSAGE_VARIANTS.streamAndSocial.length);
             const template = MESSAGE_VARIANTS.streamAndSocial[randomIndex];
             castText = template(modeEmoji, streamVote, platformEmoji, socialVote);
         }
     }
     
-    // Add user comment if available (prepend to message)
-    if (userComment && userComment.trim()) {
+    // IMPORTANT: Only add comment if it was set in THIS session
+    // Check if comment exists AND if it's from current voting session
+    const currentVoteTimestamp = localStorage.getItem('current_vote_timestamp');
+    const commentTimestamp = localStorage.getItem('comment_timestamp');
+    
+    if (userComment && userComment.trim() && commentTimestamp === currentVoteTimestamp) {
         castText = `${userComment}\n\n${castText}`;
     }
     
@@ -330,6 +468,10 @@ window.shareWithTags = async function() {
     
     try {
         const castText = buildShareMessage();
+        
+        // Clear comment after building message so it doesn't persist to next session
+        localStorage.removeItem('completed_comment');
+        localStorage.removeItem('comment_timestamp');
         
         // Get selected friends
         const selectedElements = document.querySelectorAll('.friend-tag-item.selected');
