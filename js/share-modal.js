@@ -273,6 +273,39 @@ window.changeFriendSort = function(sortMode) {
     loadRandomizedFriends(sortMode);
 };
 
+// Select 5 random friends automatically
+window.selectRandom5Friends = function() {
+    console.log('⚡ [FRIEND TAG] selectRandom5Friends() called');
+    
+    // Clear all current selections
+    const allItems = document.querySelectorAll('.friend-tag-item');
+    allItems.forEach(item => item.classList.remove('selected'));
+    
+    // Get all available friend items
+    const friendItems = Array.from(allItems);
+    
+    if (friendItems.length === 0) {
+        console.warn('⚠️ [FRIEND TAG] No friends available to select');
+        return;
+    }
+    
+    // Shuffle and select up to 5
+    const shuffled = friendItems.sort(() => Math.random() - 0.5);
+    const toSelect = shuffled.slice(0, Math.min(5, friendItems.length));
+    
+    // Apply selection
+    toSelect.forEach(item => {
+        item.classList.add('selected');
+        console.log('✅ [FRIEND TAG] Auto-selected:', item.dataset.username);
+    });
+    
+    console.log(`⚡ [FRIEND TAG] Selected ${toSelect.length} random friends`);
+    
+    if (window.showToast) {
+        window.showToast('success', 'Friends Selected', `${toSelect.length} random friends selected`);
+    }
+};
+
 // Toggle friend selection (max 10)
 window.toggleFriendSelection = function(element) {
     console.log('👆 [FRIEND TAG] toggleFriendSelection() called for:', element.dataset.username);
