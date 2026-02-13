@@ -9,159 +9,141 @@ const ZABAL_CHANNEL = 'zao';
 // 30+ variants per scenario = ~90 total unique messages
 const MESSAGE_VARIANTS = {
     streamOnly: [
-        // 🔥 Hype Energy (6 variants)
-        (emoji, mode) => `LFG! ${emoji} ${mode.toUpperCase()} stream is the move 🚀`,
-        (emoji, mode) => `${emoji} ${mode} stream supremacy! Who's with me? 💪`,
-        (emoji, mode) => `Throwing my vote at ${emoji} ${mode} stream. This is the way 🎨`,
-        (emoji, mode) => `${emoji} ${mode} stream locked in. Let's make it happen 🔥`,
-        (emoji, mode) => `Just voted ${emoji} ${mode} stream and I'm hyped! 💯`,
-        (emoji, mode) => `${emoji} ${mode} stream energy is unmatched. That's my pick 🌟`,
+        // Direct & Personal (12 variants)
+        (emoji, mode) => `I think @zaal should do ${emoji} ${mode} stream`,
+        (emoji, mode) => `I want @zaal to do ${emoji} ${mode} stream`,
+        (emoji, mode) => `@zaal should do ${emoji} ${mode} stream`,
+        (emoji, mode) => `I'm voting for @zaal to do ${emoji} ${mode} stream`,
+        (emoji, mode) => `I think @zaal should do ${emoji} ${mode} stream today`,
+        (emoji, mode) => `@zaal should definitely do ${emoji} ${mode} stream`,
+        (emoji, mode) => `I want @zaal to do ${emoji} ${mode} stream. That's my vote`,
+        (emoji, mode) => `I think @zaal should do ${emoji} ${mode} stream. Let's go`,
+        (emoji, mode) => `@zaal should do ${emoji} ${mode} stream. My vote is in`,
+        (emoji, mode) => `I'm voting for @zaal to do ${emoji} ${mode} stream today`,
+        (emoji, mode) => `I think @zaal should do ${emoji} ${mode} stream 🎨`,
+        (emoji, mode) => `@zaal should do ${emoji} ${mode} stream. That's what I'm voting for`,
         
-        // 🧠 Strategic (6 variants)
-        (emoji, mode) => `After careful consideration: ${emoji} ${mode} stream is the play 🎯`,
-        (emoji, mode) => `The data is clear. ${emoji} ${mode} stream. That's my vote 📊`,
-        (emoji, mode) => `Strategic vote incoming: ${emoji} ${mode} stream for maximum impact`,
-        (emoji, mode) => `${emoji} ${mode} stream makes the most sense right now`,
-        (emoji, mode) => `Analyzed the options. ${emoji} ${mode} stream is optimal 🧠`,
-        (emoji, mode) => `${emoji} ${mode} stream aligns with the vision. Voted`,
+        // Casual & Enthusiastic (12 variants)
+        (emoji, mode) => `I think @zaal should do ${emoji} ${mode} stream! Who's with me?`,
+        (emoji, mode) => `I want @zaal to do ${emoji} ${mode} stream. It'd be fire 🔥`,
+        (emoji, mode) => `@zaal should totally do ${emoji} ${mode} stream`,
+        (emoji, mode) => `I'm voting for @zaal to do ${emoji} ${mode} stream. Let's make it happen`,
+        (emoji, mode) => `I think @zaal should do ${emoji} ${mode} stream. No cap`,
+        (emoji, mode) => `@zaal should do ${emoji} ${mode} stream. That's the move`,
+        (emoji, mode) => `I want @zaal to do ${emoji} ${mode} stream. Hits different`,
+        (emoji, mode) => `I think @zaal should do ${emoji} ${mode} stream. This is it`,
+        (emoji, mode) => `@zaal should do ${emoji} ${mode} stream. I'm all in on this`,
+        (emoji, mode) => `I'm voting for @zaal to do ${emoji} ${mode} stream. LFG`,
+        (emoji, mode) => `I think @zaal should do ${emoji} ${mode} stream. That's the vibe`,
+        (emoji, mode) => `@zaal should do ${emoji} ${mode} stream. My pick for sure`,
         
-        // 😎 Casual Cool (6 variants)
-        (emoji, mode) => `${emoji} ${mode} stream. No cap, this is it`,
-        (emoji, mode) => `Vibing with ${emoji} ${mode} stream today. Simple as that`,
-        (emoji, mode) => `${emoji} ${mode} stream hits different. That's my pick`,
-        (emoji, mode) => `Going with ${emoji} ${mode} stream. Clean choice`,
-        (emoji, mode) => `${emoji} ${mode} stream feels right. Voted 🎨`,
-        (emoji, mode) => `${emoji} ${mode} stream. Easy decision`,
-        
-        // 🎯 Direct (6 variants)
-        (emoji, mode) => `${emoji} ${mode} stream. Done. Next question?`,
-        (emoji, mode) => `Voted ${emoji} ${mode} stream. Your turn 👇`,
-        (emoji, mode) => `${emoji} ${mode} stream locked in. Let's go`,
-        (emoji, mode) => `${emoji} ${mode} stream. That's it. That's the tweet`,
-        (emoji, mode) => `My vote: ${emoji} ${mode} stream 🎨`,
-        (emoji, mode) => `${emoji} ${mode} stream. Simple`,
-        
-        // 🎪 Playful (6 variants)
-        (emoji, mode) => `Plot twist: I voted ${emoji} ${mode} stream 🎭`,
-        (emoji, mode) => `${emoji} ${mode} stream? ${emoji} ${mode} stream. (I said what I said)`,
-        (emoji, mode) => `Surprise! It's ${emoji} ${mode} stream o'clock 🕐`,
-        (emoji, mode) => `${emoji} ${mode} stream is the main character today ✨`,
-        (emoji, mode) => `Manifesting ${emoji} ${mode} stream energy 🔮`,
-        (emoji, mode) => `${emoji} ${mode} stream just hits different today 🎨`,
-        
-        // 💎 Degen (6 variants)
-        (emoji, mode) => `Aping into ${emoji} ${mode} stream. WAGMI 🦍`,
-        (emoji, mode) => `${emoji} ${mode} stream or ngmi. Choose wisely anon`,
-        (emoji, mode) => `Ser, I voted ${emoji} ${mode} stream. This is alpha 📈`,
-        (emoji, mode) => `${emoji} ${mode} stream is the meta. Don't fade this 💎`,
-        (emoji, mode) => `Bullish on ${emoji} ${mode} stream. NFA 🚀`,
-        (emoji, mode) => `${emoji} ${mode} stream. IYKYK 🤝`
+        // Explanatory & Thoughtful (12 variants)
+        (emoji, mode) => `I think @zaal should do ${emoji} ${mode} stream. Makes the most sense`,
+        (emoji, mode) => `I want @zaal to do ${emoji} ${mode} stream. It's the right call`,
+        (emoji, mode) => `@zaal should do ${emoji} ${mode} stream. Best option imo`,
+        (emoji, mode) => `I'm voting for @zaal to do ${emoji} ${mode} stream. Smart play`,
+        (emoji, mode) => `I think @zaal should do ${emoji} ${mode} stream. Feels right`,
+        (emoji, mode) => `@zaal should do ${emoji} ${mode} stream. That's my take`,
+        (emoji, mode) => `I want @zaal to do ${emoji} ${mode} stream. Good timing for it`,
+        (emoji, mode) => `I think @zaal should do ${emoji} ${mode} stream. Clear choice`,
+        (emoji, mode) => `@zaal should do ${emoji} ${mode} stream. I'm confident in this`,
+        (emoji, mode) => `I'm voting for @zaal to do ${emoji} ${mode} stream. Here's why`,
+        (emoji, mode) => `I think @zaal should do ${emoji} ${mode} stream. Solid move`,
+        (emoji, mode) => `@zaal should do ${emoji} ${mode} stream. That's what I'm thinking`
     ],
     streamAndSocial: [
-        // 🔥 Hype Energy (6 variants)
-        (modeEmoji, mode, platformEmoji, platform) => `${modeEmoji} ${mode} stream + ${platformEmoji} ${platform} domination this week! Who's ready? 🔥`,
-        (modeEmoji, mode, platformEmoji, platform) => `Double down: ${modeEmoji} ${mode} for the stream, ${platformEmoji} ${platform} for the culture 💯`,
-        (modeEmoji, mode, platformEmoji, platform) => `${modeEmoji} ${mode} stream + ${platformEmoji} ${platform} grind = unstoppable combo 🚀`,
-        (modeEmoji, mode, platformEmoji, platform) => `LFG! ${modeEmoji} ${mode} stream + ${platformEmoji} ${platform} push. This is it 💪`,
-        (modeEmoji, mode, platformEmoji, platform) => `${modeEmoji} ${mode} + ${platformEmoji} ${platform} energy is unmatched. Let's go 🌟`,
-        (modeEmoji, mode, platformEmoji, platform) => `Voted ${modeEmoji} ${mode} stream + ${platformEmoji} ${platform}. Maximum impact mode 🎯`,
+        // Direct & Personal (12 variants)
+        (modeEmoji, mode, platformEmoji, platform) => `I think @zaal should do ${modeEmoji} ${mode} stream and focus on ${platformEmoji} ${platform}`,
+        (modeEmoji, mode, platformEmoji, platform) => `I want @zaal to do ${modeEmoji} ${mode} stream + ${platformEmoji} ${platform}`,
+        (modeEmoji, mode, platformEmoji, platform) => `@zaal should do ${modeEmoji} ${mode} stream and push ${platformEmoji} ${platform}`,
+        (modeEmoji, mode, platformEmoji, platform) => `I'm voting for @zaal to do ${modeEmoji} ${mode} stream + focus on ${platformEmoji} ${platform}`,
+        (modeEmoji, mode, platformEmoji, platform) => `I think @zaal should do ${modeEmoji} ${mode} stream + ${platformEmoji} ${platform} this week`,
+        (modeEmoji, mode, platformEmoji, platform) => `@zaal should do ${modeEmoji} ${mode} stream and ${platformEmoji} ${platform}. That's my vote`,
+        (modeEmoji, mode, platformEmoji, platform) => `I want @zaal to do ${modeEmoji} ${mode} stream with ${platformEmoji} ${platform} focus`,
+        (modeEmoji, mode, platformEmoji, platform) => `I think @zaal should do ${modeEmoji} ${mode} stream + ${platformEmoji} ${platform}. Let's go`,
+        (modeEmoji, mode, platformEmoji, platform) => `@zaal should do ${modeEmoji} ${mode} stream and focus on ${platformEmoji} ${platform}`,
+        (modeEmoji, mode, platformEmoji, platform) => `I'm voting for @zaal to do ${modeEmoji} ${mode} stream + ${platformEmoji} ${platform} today`,
+        (modeEmoji, mode, platformEmoji, platform) => `I think @zaal should do ${modeEmoji} ${mode} stream + ${platformEmoji} ${platform} 🎨`,
+        (modeEmoji, mode, platformEmoji, platform) => `@zaal should do ${modeEmoji} ${mode} stream + ${platformEmoji} ${platform}. My votes`,
         
-        // 🧠 Strategic (6 variants)
-        (modeEmoji, mode, platformEmoji, platform) => `My thesis: ${modeEmoji} ${mode} stream paired with ${platformEmoji} ${platform} focus = maximum reach`,
-        (modeEmoji, mode, platformEmoji, platform) => `${modeEmoji} ${mode} stream + ${platformEmoji} ${platform} strategy. Let's capture that audience 🎯`,
-        (modeEmoji, mode, platformEmoji, platform) => `Coordinated play: ${modeEmoji} ${mode} content on ${platformEmoji} ${platform}. This is how we scale`,
-        (modeEmoji, mode, platformEmoji, platform) => `${modeEmoji} ${mode} stream optimized for ${platformEmoji} ${platform}. Smart move 🧠`,
-        (modeEmoji, mode, platformEmoji, platform) => `Data-driven vote: ${modeEmoji} ${mode} + ${platformEmoji} ${platform} = growth 📊`,
-        (modeEmoji, mode, platformEmoji, platform) => `${modeEmoji} ${mode} stream + ${platformEmoji} ${platform} synergy. This is the path`,
+        // Casual & Enthusiastic (12 variants)
+        (modeEmoji, mode, platformEmoji, platform) => `I think @zaal should do ${modeEmoji} ${mode} stream + ${platformEmoji} ${platform}! Who's with me?`,
+        (modeEmoji, mode, platformEmoji, platform) => `I want @zaal to do ${modeEmoji} ${mode} stream + ${platformEmoji} ${platform}. It'd be fire 🔥`,
+        (modeEmoji, mode, platformEmoji, platform) => `@zaal should totally do ${modeEmoji} ${mode} stream + ${platformEmoji} ${platform}`,
+        (modeEmoji, mode, platformEmoji, platform) => `I'm voting for @zaal to do ${modeEmoji} ${mode} stream + ${platformEmoji} ${platform}. Let's make it happen`,
+        (modeEmoji, mode, platformEmoji, platform) => `I think @zaal should do ${modeEmoji} ${mode} stream + ${platformEmoji} ${platform}. No cap`,
+        (modeEmoji, mode, platformEmoji, platform) => `@zaal should do ${modeEmoji} ${mode} stream + ${platformEmoji} ${platform}. That's the move`,
+        (modeEmoji, mode, platformEmoji, platform) => `I want @zaal to do ${modeEmoji} ${mode} stream + ${platformEmoji} ${platform}. Hits different`,
+        (modeEmoji, mode, platformEmoji, platform) => `I think @zaal should do ${modeEmoji} ${mode} stream + ${platformEmoji} ${platform}. This is it`,
+        (modeEmoji, mode, platformEmoji, platform) => `@zaal should do ${modeEmoji} ${mode} stream + ${platformEmoji} ${platform}. I'm all in`,
+        (modeEmoji, mode, platformEmoji, platform) => `I'm voting for @zaal to do ${modeEmoji} ${mode} stream + ${platformEmoji} ${platform}. LFG`,
+        (modeEmoji, mode, platformEmoji, platform) => `I think @zaal should do ${modeEmoji} ${mode} stream + ${platformEmoji} ${platform}. That's the vibe`,
+        (modeEmoji, mode, platformEmoji, platform) => `@zaal should do ${modeEmoji} ${mode} stream + ${platformEmoji} ${platform}. My picks for sure`,
         
-        // 😎 Casual Cool (6 variants)
-        (modeEmoji, mode, platformEmoji, platform) => `${modeEmoji} ${mode} stream vibes + ${platformEmoji} ${platform} energy. That's the combo`,
-        (modeEmoji, mode, platformEmoji, platform) => `Going with ${modeEmoji} ${mode} stream, ${platformEmoji} ${platform} feels right for this week`,
-        (modeEmoji, mode, platformEmoji, platform) => `${modeEmoji} ${mode} + ${platformEmoji} ${platform}. Clean and simple`,
-        (modeEmoji, mode, platformEmoji, platform) => `${modeEmoji} ${mode} stream + ${platformEmoji} ${platform}. No brainer`,
-        (modeEmoji, mode, platformEmoji, platform) => `Vibing with ${modeEmoji} ${mode} + ${platformEmoji} ${platform} this week`,
-        (modeEmoji, mode, platformEmoji, platform) => `${modeEmoji} ${mode} stream + ${platformEmoji} ${platform}. That's it`,
-        
-        // 🎯 Direct (6 variants)
-        (modeEmoji, mode, platformEmoji, platform) => `${modeEmoji} ${mode} stream. ${platformEmoji} ${platform} focus. Let's execute`,
-        (modeEmoji, mode, platformEmoji, platform) => `Two votes: ${modeEmoji} ${mode} for stream, ${platformEmoji} ${platform} for platform. Done`,
-        (modeEmoji, mode, platformEmoji, platform) => `${modeEmoji} ${mode} stream + ${platformEmoji} ${platform} push. That's the plan`,
-        (modeEmoji, mode, platformEmoji, platform) => `Voted ${modeEmoji} ${mode} + ${platformEmoji} ${platform}. Your move 👇`,
-        (modeEmoji, mode, platformEmoji, platform) => `${modeEmoji} ${mode} stream. ${platformEmoji} ${platform} platform. Simple`,
-        (modeEmoji, mode, platformEmoji, platform) => `${modeEmoji} ${mode} + ${platformEmoji} ${platform}. Locked in`,
-        
-        // 🎪 Playful (6 variants)
-        (modeEmoji, mode, platformEmoji, platform) => `Recipe for success: ${modeEmoji} ${mode} stream + ${platformEmoji} ${platform} sauce 👨‍🍳`,
-        (modeEmoji, mode, platformEmoji, platform) => `${modeEmoji} ${mode} stream meets ${platformEmoji} ${platform}. A love story 💕`,
-        (modeEmoji, mode, platformEmoji, platform) => `Manifesting ${modeEmoji} ${mode} stream + ${platformEmoji} ${platform} takeover ✨`,
-        (modeEmoji, mode, platformEmoji, platform) => `${modeEmoji} ${mode} + ${platformEmoji} ${platform} is the main character arc 🎭`,
-        (modeEmoji, mode, platformEmoji, platform) => `Plot twist: ${modeEmoji} ${mode} stream + ${platformEmoji} ${platform} supremacy 🔮`,
-        (modeEmoji, mode, platformEmoji, platform) => `${modeEmoji} ${mode} stream + ${platformEmoji} ${platform}. Chef's kiss 💋`,
-        
-        // 💎 Degen (6 variants)
-        (modeEmoji, mode, platformEmoji, platform) => `${modeEmoji} ${mode} stream + ${platformEmoji} ${platform} alpha. Anon, you're early 📈`,
-        (modeEmoji, mode, platformEmoji, platform) => `Bullish on ${modeEmoji} ${mode} stream + ${platformEmoji} ${platform}. WAGMI 🦍`,
-        (modeEmoji, mode, platformEmoji, platform) => `${modeEmoji} ${mode} x ${platformEmoji} ${platform} is the meta. Don't fade this 💎`,
-        (modeEmoji, mode, platformEmoji, platform) => `Aping into ${modeEmoji} ${mode} + ${platformEmoji} ${platform}. NFA 🚀`,
-        (modeEmoji, mode, platformEmoji, platform) => `${modeEmoji} ${mode} stream + ${platformEmoji} ${platform}. IYKYK 🤝`,
-        (modeEmoji, mode, platformEmoji, platform) => `Ser, ${modeEmoji} ${mode} + ${platformEmoji} ${platform} is alpha. DYOR 📊`
+        // Explanatory & Thoughtful (12 variants)
+        (modeEmoji, mode, platformEmoji, platform) => `I think @zaal should do ${modeEmoji} ${mode} stream + ${platformEmoji} ${platform}. Makes the most sense`,
+        (modeEmoji, mode, platformEmoji, platform) => `I want @zaal to do ${modeEmoji} ${mode} stream + ${platformEmoji} ${platform}. It's the right call`,
+        (modeEmoji, mode, platformEmoji, platform) => `@zaal should do ${modeEmoji} ${mode} stream + ${platformEmoji} ${platform}. Best combo imo`,
+        (modeEmoji, mode, platformEmoji, platform) => `I'm voting for @zaal to do ${modeEmoji} ${mode} stream + ${platformEmoji} ${platform}. Smart play`,
+        (modeEmoji, mode, platformEmoji, platform) => `I think @zaal should do ${modeEmoji} ${mode} stream + ${platformEmoji} ${platform}. Feels right`,
+        (modeEmoji, mode, platformEmoji, platform) => `@zaal should do ${modeEmoji} ${mode} stream + ${platformEmoji} ${platform}. That's my take`,
+        (modeEmoji, mode, platformEmoji, platform) => `I want @zaal to do ${modeEmoji} ${mode} stream + ${platformEmoji} ${platform}. Good timing`,
+        (modeEmoji, mode, platformEmoji, platform) => `I think @zaal should do ${modeEmoji} ${mode} stream + ${platformEmoji} ${platform}. Clear choice`,
+        (modeEmoji, mode, platformEmoji, platform) => `@zaal should do ${modeEmoji} ${mode} stream + ${platformEmoji} ${platform}. I'm confident`,
+        (modeEmoji, mode, platformEmoji, platform) => `I'm voting for @zaal to do ${modeEmoji} ${mode} stream + ${platformEmoji} ${platform}. Here's why`,
+        (modeEmoji, mode, platformEmoji, platform) => `I think @zaal should do ${modeEmoji} ${mode} stream + ${platformEmoji} ${platform}. Solid move`,
+        (modeEmoji, mode, platformEmoji, platform) => `@zaal should do ${modeEmoji} ${mode} stream + ${platformEmoji} ${platform}. That's what I'm thinking`
     ],
     streamAndClient: [
-        // 🔥 Hype Energy (6 variants)
-        (modeEmoji, mode, platformEmoji, platform, client) => `${modeEmoji} ${mode} stream + ${platformEmoji} ${platform} on ${client}! Triple threat activated 🔥`,
-        (modeEmoji, mode, platformEmoji, platform, client) => `${modeEmoji} ${mode} + ${platformEmoji} ${platform} + ${client} = the ultimate combo. LFG! 🚀`,
-        (modeEmoji, mode, platformEmoji, platform, client) => `Stacking votes: ${modeEmoji} ${mode} stream, ${platformEmoji} ${platform} platform, ${client} client. Let's gooo 💪`,
-        (modeEmoji, mode, platformEmoji, platform, client) => `${modeEmoji} ${mode} + ${platformEmoji} ${platform} via ${client}. Maximum power 💯`,
-        (modeEmoji, mode, platformEmoji, platform, client) => `Triple down: ${modeEmoji} ${mode} / ${platformEmoji} ${platform} / ${client}. This is it 🌟`,
-        (modeEmoji, mode, platformEmoji, platform, client) => `${modeEmoji} ${mode} stream + ${platformEmoji} ${platform} + ${client} supremacy 🎯`,
+        // Direct & Personal (12 variants)
+        (modeEmoji, mode, platformEmoji, platform, client) => `I think @zaal should do ${modeEmoji} ${mode} stream + ${platformEmoji} ${platform} on ${client}`,
+        (modeEmoji, mode, platformEmoji, platform, client) => `I want @zaal to do ${modeEmoji} ${mode} stream + ${platformEmoji} ${platform} via ${client}`,
+        (modeEmoji, mode, platformEmoji, platform, client) => `@zaal should do ${modeEmoji} ${mode} stream + ${platformEmoji} ${platform} on ${client}`,
+        (modeEmoji, mode, platformEmoji, platform, client) => `I'm voting for @zaal to do ${modeEmoji} ${mode} stream + ${platformEmoji} ${platform} on ${client}`,
+        (modeEmoji, mode, platformEmoji, platform, client) => `I think @zaal should do ${modeEmoji} ${mode} stream + ${platformEmoji} ${platform} via ${client} this week`,
+        (modeEmoji, mode, platformEmoji, platform, client) => `@zaal should do ${modeEmoji} ${mode} stream + ${platformEmoji} ${platform} on ${client}. That's my vote`,
+        (modeEmoji, mode, platformEmoji, platform, client) => `I want @zaal to do ${modeEmoji} ${mode} stream + ${platformEmoji} ${platform} on ${client}`,
+        (modeEmoji, mode, platformEmoji, platform, client) => `I think @zaal should do ${modeEmoji} ${mode} stream + ${platformEmoji} ${platform} via ${client}. Let's go`,
+        (modeEmoji, mode, platformEmoji, platform, client) => `@zaal should do ${modeEmoji} ${mode} stream + ${platformEmoji} ${platform} on ${client}`,
+        (modeEmoji, mode, platformEmoji, platform, client) => `I'm voting for @zaal to do ${modeEmoji} ${mode} stream + ${platformEmoji} ${platform} via ${client} today`,
+        (modeEmoji, mode, platformEmoji, platform, client) => `I think @zaal should do ${modeEmoji} ${mode} stream + ${platformEmoji} ${platform} on ${client} 🎨`,
+        (modeEmoji, mode, platformEmoji, platform, client) => `@zaal should do ${modeEmoji} ${mode} stream + ${platformEmoji} ${platform} via ${client}. My votes`,
         
-        // 🧠 Strategic (6 variants)
-        (modeEmoji, mode, platformEmoji, platform, client) => `Full stack vote: ${modeEmoji} ${mode} stream → ${platformEmoji} ${platform} → ${client}. This is the path`,
-        (modeEmoji, mode, platformEmoji, platform, client) => `${modeEmoji} ${mode} content, ${platformEmoji} ${platform} distribution, ${client} community. The trifecta 🎯`,
-        (modeEmoji, mode, platformEmoji, platform, client) => `${modeEmoji} ${mode} stream optimized for ${platformEmoji} ${platform} via ${client}. Maximum synergy`,
-        (modeEmoji, mode, platformEmoji, platform, client) => `Strategic alignment: ${modeEmoji} ${mode} + ${platformEmoji} ${platform} + ${client} 🧠`,
-        (modeEmoji, mode, platformEmoji, platform, client) => `${modeEmoji} ${mode} stream → ${platformEmoji} ${platform} → ${client}. Calculated move 📊`,
-        (modeEmoji, mode, platformEmoji, platform, client) => `Three-layer strategy: ${modeEmoji} ${mode} / ${platformEmoji} ${platform} / ${client}`,
+        // Casual & Enthusiastic (12 variants)
+        (modeEmoji, mode, platformEmoji, platform, client) => `I think @zaal should do ${modeEmoji} ${mode} stream + ${platformEmoji} ${platform} on ${client}! Who's with me?`,
+        (modeEmoji, mode, platformEmoji, platform, client) => `I want @zaal to do ${modeEmoji} ${mode} stream + ${platformEmoji} ${platform} via ${client}. It'd be fire 🔥`,
+        (modeEmoji, mode, platformEmoji, platform, client) => `@zaal should totally do ${modeEmoji} ${mode} stream + ${platformEmoji} ${platform} on ${client}`,
+        (modeEmoji, mode, platformEmoji, platform, client) => `I'm voting for @zaal to do ${modeEmoji} ${mode} stream + ${platformEmoji} ${platform} via ${client}. Let's make it happen`,
+        (modeEmoji, mode, platformEmoji, platform, client) => `I think @zaal should do ${modeEmoji} ${mode} stream + ${platformEmoji} ${platform} on ${client}. No cap`,
+        (modeEmoji, mode, platformEmoji, platform, client) => `@zaal should do ${modeEmoji} ${mode} stream + ${platformEmoji} ${platform} via ${client}. That's the move`,
+        (modeEmoji, mode, platformEmoji, platform, client) => `I want @zaal to do ${modeEmoji} ${mode} stream + ${platformEmoji} ${platform} on ${client}. Hits different`,
+        (modeEmoji, mode, platformEmoji, platform, client) => `I think @zaal should do ${modeEmoji} ${mode} stream + ${platformEmoji} ${platform} via ${client}. This is it`,
+        (modeEmoji, mode, platformEmoji, platform, client) => `@zaal should do ${modeEmoji} ${mode} stream + ${platformEmoji} ${platform} on ${client}. I'm all in`,
+        (modeEmoji, mode, platformEmoji, platform, client) => `I'm voting for @zaal to do ${modeEmoji} ${mode} stream + ${platformEmoji} ${platform} via ${client}. LFG`,
+        (modeEmoji, mode, platformEmoji, platform, client) => `I think @zaal should do ${modeEmoji} ${mode} stream + ${platformEmoji} ${platform} on ${client}. That's the vibe`,
+        (modeEmoji, mode, platformEmoji, platform, client) => `@zaal should do ${modeEmoji} ${mode} stream + ${platformEmoji} ${platform} via ${client}. My picks for sure`,
         
-        // 😎 Casual Cool (6 variants)
-        (modeEmoji, mode, platformEmoji, platform, client) => `${modeEmoji} ${mode} stream + ${platformEmoji} ${platform} + ${client}. That's the vibe`,
-        (modeEmoji, mode, platformEmoji, platform, client) => `Going all in: ${modeEmoji} ${mode}, ${platformEmoji} ${platform}, ${client}. Clean sweep`,
-        (modeEmoji, mode, platformEmoji, platform, client) => `${modeEmoji} ${mode} stream on ${platformEmoji} ${platform} through ${client}. Simple`,
-        (modeEmoji, mode, platformEmoji, platform, client) => `${modeEmoji} ${mode} + ${platformEmoji} ${platform} + ${client}. No brainer`,
-        (modeEmoji, mode, platformEmoji, platform, client) => `Vibing with ${modeEmoji} ${mode} / ${platformEmoji} ${platform} / ${client}`,
-        (modeEmoji, mode, platformEmoji, platform, client) => `${modeEmoji} ${mode} + ${platformEmoji} ${platform} via ${client}. That's it`,
-        
-        // 🎯 Direct (6 variants)
-        (modeEmoji, mode, platformEmoji, platform, client) => `${modeEmoji} ${mode} stream. ${platformEmoji} ${platform} platform. ${client} client. Execute`,
-        (modeEmoji, mode, platformEmoji, platform, client) => `Three votes locked: ${modeEmoji} ${mode} / ${platformEmoji} ${platform} / ${client}`,
-        (modeEmoji, mode, platformEmoji, platform, client) => `${modeEmoji} ${mode} + ${platformEmoji} ${platform} via ${client}. That's it`,
-        (modeEmoji, mode, platformEmoji, platform, client) => `Voted ${modeEmoji} ${mode} + ${platformEmoji} ${platform} + ${client}. Done`,
-        (modeEmoji, mode, platformEmoji, platform, client) => `${modeEmoji} ${mode} / ${platformEmoji} ${platform} / ${client}. Your turn 👇`,
-        (modeEmoji, mode, platformEmoji, platform, client) => `${modeEmoji} ${mode} + ${platformEmoji} ${platform} + ${client}. Simple`,
-        
-        // 🎪 Playful (6 variants)
-        (modeEmoji, mode, platformEmoji, platform, client) => `${modeEmoji} ${mode} stream + ${platformEmoji} ${platform} + ${client} = chaos (the good kind) 🎪`,
-        (modeEmoji, mode, platformEmoji, platform, client) => `Mixing ${modeEmoji} ${mode}, ${platformEmoji} ${platform}, and ${client} like a DJ 🎧`,
-        (modeEmoji, mode, platformEmoji, platform, client) => `${modeEmoji} ${mode} stream feat. ${platformEmoji} ${platform} (${client} remix) 🎵`,
-        (modeEmoji, mode, platformEmoji, platform, client) => `${modeEmoji} ${mode} + ${platformEmoji} ${platform} + ${client}. The holy trinity ✨`,
-        (modeEmoji, mode, platformEmoji, platform, client) => `Plot twist: ${modeEmoji} ${mode} / ${platformEmoji} ${platform} / ${client} supremacy 🎭`,
-        (modeEmoji, mode, platformEmoji, platform, client) => `${modeEmoji} ${mode} + ${platformEmoji} ${platform} + ${client}. Chef's kiss 💋`,
-        
-        // 💎 Degen (6 variants)
-        (modeEmoji, mode, platformEmoji, platform, client) => `${modeEmoji} ${mode} + ${platformEmoji} ${platform} + ${client} is the alpha play. Ser, this is it 📈`,
-        (modeEmoji, mode, platformEmoji, platform, client) => `Aping into ${modeEmoji} ${mode} stream on ${platformEmoji} ${platform} via ${client}. WAGMI 🦍`,
-        (modeEmoji, mode, platformEmoji, platform, client) => `${modeEmoji} ${mode} x ${platformEmoji} ${platform} x ${client}. Triple degen mode activated 💎`,
-        (modeEmoji, mode, platformEmoji, platform, client) => `Bullish on ${modeEmoji} ${mode} + ${platformEmoji} ${platform} + ${client}. NFA 🚀`,
-        (modeEmoji, mode, platformEmoji, platform, client) => `${modeEmoji} ${mode} / ${platformEmoji} ${platform} / ${client}. IYKYK 🤝`,
-        (modeEmoji, mode, platformEmoji, platform, client) => `Ser, ${modeEmoji} ${mode} + ${platformEmoji} ${platform} + ${client} is alpha. DYOR 📊`
+        // Explanatory & Thoughtful (12 variants)
+        (modeEmoji, mode, platformEmoji, platform, client) => `I think @zaal should do ${modeEmoji} ${mode} stream + ${platformEmoji} ${platform} on ${client}. Makes the most sense`,
+        (modeEmoji, mode, platformEmoji, platform, client) => `I want @zaal to do ${modeEmoji} ${mode} stream + ${platformEmoji} ${platform} via ${client}. It's the right call`,
+        (modeEmoji, mode, platformEmoji, platform, client) => `@zaal should do ${modeEmoji} ${mode} stream + ${platformEmoji} ${platform} on ${client}. Best combo imo`,
+        (modeEmoji, mode, platformEmoji, platform, client) => `I'm voting for @zaal to do ${modeEmoji} ${mode} stream + ${platformEmoji} ${platform} via ${client}. Smart play`,
+        (modeEmoji, mode, platformEmoji, platform, client) => `I think @zaal should do ${modeEmoji} ${mode} stream + ${platformEmoji} ${platform} on ${client}. Feels right`,
+        (modeEmoji, mode, platformEmoji, platform, client) => `@zaal should do ${modeEmoji} ${mode} stream + ${platformEmoji} ${platform} via ${client}. That's my take`,
+        (modeEmoji, mode, platformEmoji, platform, client) => `I want @zaal to do ${modeEmoji} ${mode} stream + ${platformEmoji} ${platform} on ${client}. Good timing`,
+        (modeEmoji, mode, platformEmoji, platform, client) => `I think @zaal should do ${modeEmoji} ${mode} stream + ${platformEmoji} ${platform} via ${client}. Clear choice`,
+        (modeEmoji, mode, platformEmoji, platform, client) => `@zaal should do ${modeEmoji} ${mode} stream + ${platformEmoji} ${platform} on ${client}. I'm confident`,
+        (modeEmoji, mode, platformEmoji, platform, client) => `I'm voting for @zaal to do ${modeEmoji} ${mode} stream + ${platformEmoji} ${platform} via ${client}. Here's why`,
+        (modeEmoji, mode, platformEmoji, platform, client) => `I think @zaal should do ${modeEmoji} ${mode} stream + ${platformEmoji} ${platform} on ${client}. Solid move`,
+        (modeEmoji, mode, platformEmoji, platform, client) => `@zaal should do ${modeEmoji} ${mode} stream + ${platformEmoji} ${platform} via ${client}. That's what I'm thinking`
     ],
     generic: [
-        'Come vote on the ZABAL stream! 🎨',
-        'Help decide the next ZABAL stream 🎨',
-        'Your vote matters - join the ZABAL stream decision 🎨',
-        'Cast your vote for the ZABAL stream 🎨',
-        'ZABAL voting is live! Make your voice heard 🗳️',
-        'Shape the ZABAL stream - vote now 🎨'
+        'Come vote on what @zaal should do for the stream! 🎨',
+        'Help decide what @zaal should stream 🎨',
+        'Vote on what @zaal should do today 🗳️',
+        'What should @zaal stream? Cast your vote 🎨',
+        'I'm voting on what @zaal should do. Join me 🎨',
+        'Help @zaal decide what to stream - vote now 🎨'
     ]
 };
 
