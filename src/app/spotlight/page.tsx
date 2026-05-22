@@ -28,7 +28,9 @@ export const metadata: Metadata = {
   },
 };
 
-export const revalidate = 60;
+// Per-request render - pulls live spotlight data from Supabase, so it
+// must not be statically prerendered at build time.
+export const dynamic = 'force-dynamic';
 
 interface WinnerRow {
   fid: number;
