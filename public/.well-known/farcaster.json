@@ -1,0 +1,20 @@
+{
+  "accountAssociation": {
+    "header": "TODO_HEADER",
+    "payload": "TODO_PAYLOAD",
+    "signature": "TODO_SIGNATURE"
+  },
+  "miniapp": {
+    "version": "1",
+    "name": "ZABAL",
+    "iconUrl": "https://zabal.art/icon-1024.png",
+    "homeUrl": "https://zabal.art",
+    "splashImageUrl": "https://zabal.art/splash.png",
+    "splashBackgroundColor": "#0a0a0a",
+    "webhookUrl": "https://zabal.art/api/miniapp/webhook",
+    "subtitle": "Vote on ZAO Direction",
+    "description": "ZABAL - Vote weekly on ZAO focus (Music, Governance, Events, Build), hold $ZABAL, and explore the ecosystem.",
+    "primaryCategory": "social",
+    "tags": ["community", "governance", "voting", "web3"]
+  }
+}

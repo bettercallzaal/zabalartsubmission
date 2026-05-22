@@ -1,12 +1,8 @@
 {
-  "buildCommand": null,
-  "outputDirectory": ".",
-  "cleanUrls": true,
-  "trailingSlash": false,
   "crons": [
     {
-      "path": "/api/cron/daily-reminder",
-      "schedule": "0 16 * * *"
+      "path": "/api/cron/zabal-spotlight-winner",
+      "schedule": "0 5 * * 1"
     }
   ]
 }

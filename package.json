@@ -1,39 +1,29 @@
 {
-  "name": "zabal-live-hub",
-  "version": "2.0.0",
-  "description": "ZABAL Live Hub - Community-driven stream voting miniapp for Farcaster",
-  "main": "index.html",
-  "type": "module",
+  "name": "zabal",
+  "version": "1.0.0",
+  "description": "ZABAL - Vote on ZAO Direction",
+  "private": true,
   "scripts": {
-    "dev": "npx http-server -p 3000 -c-1",
-    "start": "npm run dev",
-    "preview": "npx http-server -p 8080",
-    "lint": "eslint js/**/*.js",
-    "format": "prettier --write \"**/*.{js,json,md,html,css}\"",
-    "validate": "npm run lint && npm run format",
-    "deploy": "vercel --prod",
-    "deploy:preview": "vercel"
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@neynar/nodejs-sdk": "^1.0.0",
-    "@supabase/supabase-js": "^2.39.0"
+    "@farcaster/miniapp-sdk": "^0.2.3",
+    "@supabase/supabase-js": "^2.39.0",
+    "next": "^16.2.0",
+    "react": "19.2.3",
+    "react-dom": "19.2.3",
+    "zod": "^3.22.4"
   },
   "devDependencies": {
-    "eslint": "^8.56.0",
-    "http-server": "^14.1.1",
-    "prettier": "^3.1.1",
-    "vercel": "^33.0.1"
+    "@types/node": "^20.0.0",
+    "@types/react": "19.2.3",
+    "@types/react-dom": "19.2.3",
+    "typescript": "^5.3.0"
   },
-  "keywords": [
-    "farcaster",
-    "miniapp",
-    "voting",
-    "streaming",
-    "web3",
-    "community",
-    "nft",
-    "art"
-  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/bettercallzaal/zabalartsubmission.git"
