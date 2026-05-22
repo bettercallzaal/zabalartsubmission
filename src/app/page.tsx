@@ -35,7 +35,10 @@ export const metadata: Metadata = {
   },
 };
 
-export const revalidate = 30;
+// Per-request render - the hub pulls live vote/leaderboard data from
+// Supabase, so it must not be statically prerendered at build time
+// (build runs without DB env vars).
+export const dynamic = 'force-dynamic';
 
 interface ModeTotal {
   mode: string;
