@@ -13,6 +13,10 @@ interface Nominee {
 
 type Phase = 'nominate' | 'vote' | 'closed';
 
+const WEEKDAY_INDEX: Record<string, number> = {
+  Sun: 0, Mon: 1, Tue: 2, Wed: 3, Thu: 4, Fri: 5, Sat: 6,
+};
+
 function currentPhase(): Phase {
   const fmt = new Intl.DateTimeFormat('en-US', { timeZone: 'America/New_York', weekday: 'short' });
   const day = fmt.format(new Date());
@@ -21,8 +25,81 @@ function currentPhase(): Phase {
   return 'closed';
 }
 
+// Milliseconds from real-now until the next time it's targetWeekday
+// at 00:00 America/New_York. Used for the phase-transition countdown
+// (Research Doc 733, ranked action #13).
+function msUntilNyWeekdayMidnight(targetWeekday: 'Mon' | 'Thu'): number {
+  const now = new Date();
+  const fmt = new Intl.DateTimeFormat('en-US', {
+    timeZone: 'America/New_York',
+    weekday: 'short',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    hour12: false,
+  });
+  const parts = Object.fromEntries(fmt.formatToParts(now).map((p) => [p.type, p.value]));
+  const dow = WEEKDAY_INDEX[parts.weekday] ?? 0;
+  const targetDow = WEEKDAY_INDEX[targetWeekday];
+  let daysToTarget = (targetDow - dow + 7) % 7;
+  // If today IS the target and we're past midnight, target next week
+  if (daysToTarget === 0) daysToTarget = 7;
+  let target = new Date(
+    Date.UTC(
+      Number(parts.year),
+      Number(parts.month) - 1,
+      Number(parts.day),
+      0, 0, 0,
+    ) + daysToTarget * 24 * 60 * 60 * 1000,
+  );
+  // Adjust for NY offset (one iteration covers EST + EDT swings)
+  for (let i = 0; i < 2; i++) {
+    const nyHour = Number(
+      new Intl.DateTimeFormat('en-US', {
+        timeZone: 'America/New_York',
+        hour: '2-digit',
+        hour12: false,
+      }).format(target).replace(/\D/g, ''),
+    );
+    if (nyHour === 0) break;
+    target = new Date(target.getTime() + ((24 - nyHour) % 24) * 60 * 60 * 1000);
+  }
+  return target.getTime() - now.getTime();
+}
+
+function formatRemaining(ms: number): string {
+  if (ms <= 0) return 'closing';
+  const totalMin = Math.floor(ms / 60_000);
+  const days = Math.floor(totalMin / 1440);
+  const hours = Math.floor((totalMin % 1440) / 60);
+  const mins = totalMin % 60;
+  if (days > 0) return `${days}d ${hours}h`;
+  if (hours > 0) return `${hours}h ${mins}m`;
+  return `${mins}m`;
+}
+
 export function ZabalSpotlightClient() {
   const [phase] = useState<Phase>(currentPhase());
+  const [phaseCountdown, setPhaseCountdown] = useState<string>('-');
+
+  // Tick the phase-transition countdown every 60s. Target depends
+  // on phase: nominate -> next Thursday 00:00 ET; vote -> next
+  // Monday 00:00 ET (when winner cron fires + new nominate opens).
+  useEffect(() => {
+    const tick = () => {
+      if (phase === 'nominate') {
+        setPhaseCountdown(formatRemaining(msUntilNyWeekdayMidnight('Thu')));
+      } else if (phase === 'vote') {
+        setPhaseCountdown(formatRemaining(msUntilNyWeekdayMidnight('Mon')));
+      } else {
+        setPhaseCountdown('-');
+      }
+    };
+    tick();
+    const id = setInterval(tick, 60_000);
+    return () => clearInterval(id);
+  }, [phase]);
   const [fid, setFid] = useState<number | null>(null);
   const [nominees, setNominees] = useState<Nominee[]>([]);
   const [nomineeInput, setNomineeInput] = useState<string>('');
@@ -191,6 +268,14 @@ export function ZabalSpotlightClient() {
         <strong style={{ color: '#e0ddaa', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
           {phase}
         </strong>
+        {phase !== 'closed' && (
+          <span style={{ color: '#666', fontSize: '0.85rem', marginLeft: '0.5rem' }}>
+            · {phase === 'nominate' ? 'voting opens in' : 'voting closes in'}{' '}
+            <span style={{ color: '#e0ddaa', fontVariantNumeric: 'tabular-nums' }}>
+              {phaseCountdown}
+            </span>
+          </span>
+        )}
       </div>
 
       <style>{`
