@@ -90,14 +90,19 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ ok: false, error: 'unauthorized' }, { status: 401 });
   }
 
-  // Fail loudly + early if the signer isn't configured.
-  if (!process.env.ZABAL_FID || !process.env.ZABAL_SIGNER_PRIVATE_KEY) {
+  // Fail loudly + early if NO signer backend is configured. publishCast()
+  // picks HAATZ direct (ZABAL_SIGNER_PRIVATE_KEY) or Neynar managed
+  // (NEYNAR_SIGNER_UUID) automatically; need at least one.
+  const hasHaatz =
+    !!process.env.ZABAL_FID && !!process.env.ZABAL_SIGNER_PRIVATE_KEY;
+  const hasNeynar = !!process.env.NEYNAR_SIGNER_UUID;
+  if (!hasHaatz && !hasNeynar) {
     return NextResponse.json(
       {
         ok: false,
-        error: 'ZABAL_FID or ZABAL_SIGNER_PRIVATE_KEY not set',
+        error: 'No signer configured',
         howto:
-          'Run `npx tsx scripts/generate-zabal-signer.ts` once to generate the keypair, approve the public key for the ZABAL account in Warpcast, then set ZABAL_FID + ZABAL_SIGNER_PRIVATE_KEY in Vercel project env.',
+          'Run `npx tsx scripts/generate-zabal-signer.ts` for the default Neynar managed signer flow (~5 min, recommended), OR `npx tsx scripts/generate-zabal-signer.ts --quilibrium` for the pure HAATZ on-chain flow. Then set the printed env vars in Vercel.',
       },
       { status: 503 },
     );
@@ -116,14 +121,13 @@ export async function GET(req: NextRequest) {
     });
     logger.info('zabal-daily-cast posted', {
       hash: result.hash,
-      fid: result.fid,
-      hub: result.hubUrl,
+      backend: result.backend,
       leader,
     });
     return NextResponse.json({
       ok: true,
-      cast: { hash: result.hash, fid: result.fid },
-      hub: result.hubUrl,
+      cast: { hash: result.hash },
+      backend: result.backend,
       leader,
       text,
     });
