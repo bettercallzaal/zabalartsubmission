@@ -6,6 +6,7 @@ import { SongJamCard } from './_components/SongJamCard';
 import { LastWeekBanner } from './_components/LastWeekBanner';
 import { ZaoStockHero } from './_components/ZaoStockHero';
 import { LtaePodcastStrip } from './_components/LtaePodcastStrip';
+import { Past4WeeksSparkline } from './_components/Past4WeeksSparkline';
 import {
   VoteCardsSkeleton,
   LeaderboardSkeleton,
@@ -256,6 +257,13 @@ export default function ZabalPage() {
       {/* Streams as get_zabal_spotlight_leaderboard resolves */}
       <Suspense fallback={<SpotlightCardSkeleton />}>
         <SpotlightCard />
+      </Suspense>
+
+      {/* Past 4 weeks momentum sparkline - above the cumulative
+          leaderboard, anchors week-over-week story. Renders nothing
+          until database/zabal-4week-winners-rpc.sql is applied. */}
+      <Suspense fallback={null}>
+        <Past4WeeksSparkline />
       </Suspense>
 
       {/* Streams last - leaderboard table is not above the fold */}
