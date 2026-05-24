@@ -1,20 +1,21 @@
-// Direct Farcaster Hub publishing - no Neynar dependency.
+// ZABAL cast publishing - dual backend.
 //
-// Constructs a CastAdd message, signs it with the ZABAL signer
-// (Ed25519, registered on Optimism KeyGateway), and submits to a
-// Snapchain Hub via HTTP POST /v1/submitMessage. Defaults to HAATZ
-// (haatz.quilibrium.com) which proxies Hypersnap, fully aligned
-// with Quilibrium / casie's farcasterorg federation.
+// Picks publish backend based on env presence:
+//   1. ZABAL_SIGNER_PRIVATE_KEY + ZABAL_FID set
+//      -> direct Hub submit via HAATZ. Pure Quilibrium-aligned path.
+//      -> Required env: ZABAL_FID, ZABAL_SIGNER_PRIVATE_KEY
+//      -> Optional env: ZABAL_HUB_URL (defaults to haatz.quilibrium.com)
 //
-// Required env:
-//   ZABAL_FID                  - integer FID of the ZABAL Farcaster account
-//   ZABAL_SIGNER_PRIVATE_KEY   - hex-encoded 32-byte Ed25519 private key,
-//                                already approved on KeyGateway for ZABAL_FID
-//   ZABAL_HUB_URL              - optional, defaults to https://haatz.quilibrium.com
+//   2. Else NEYNAR_SIGNER_UUID set
+//      -> Neynar publish_cast (uses Neynar's managed signer which the
+//         user approved one-time in Warpcast)
+//      -> Required env: NEYNAR_API_KEY, NEYNAR_SIGNER_UUID
 //
-// One-time setup: `npx tsx scripts/generate-zabal-signer.ts` produces
-// the keypair + Warpcast approval instructions. See that script for
-// the full flow.
+//   3. Else throws "no signer configured"
+//
+// Either backend posts the same content + channel. The route handler
+// in api/cron/zabal-daily-cast doesn't need to know which backend
+// is active - it just calls publishCast() and gets back a hash.
 
 import {
   makeCastAdd,
@@ -25,8 +26,6 @@ import {
 } from '@farcaster/hub-nodejs';
 
 const DEFAULT_HUB = 'https://haatz.quilibrium.com';
-// Canonical parentUrl for the /zao channel on Warpcast. Routes the
-// cast to the channel feed in addition to the author's followers.
 const ZAO_CHANNEL_PARENT_URL = 'https://warpcast.com/~/channel/zao';
 
 export interface PublishCastInput {
@@ -38,8 +37,9 @@ export interface PublishCastInput {
 
 export interface PublishCastResult {
   hash: string;
-  fid: number;
-  hubUrl: string;
+  backend: 'haatz' | 'neynar';
+  /** Where it landed - hub URL for haatz, n/a for neynar */
+  hub?: string;
 }
 
 function hexToBytes(hex: string): Uint8Array {
@@ -62,19 +62,16 @@ function bytesToHex(bytes: Uint8Array): string {
 
 function parentUrlForChannel(channelKey: string): string {
   if (channelKey === 'zao') return ZAO_CHANNEL_PARENT_URL;
-  // Generic Warpcast channel URL pattern. Channels on Farcaster are
-  // identified by parentUrl - the Warpcast URL is the de facto canonical.
   return `https://warpcast.com/~/channel/${channelKey}`;
 }
 
-export async function publishCast(input: PublishCastInput): Promise<PublishCastResult> {
+// ----- Backend 1: HAATZ direct -----
+
+async function publishViaHaatz(input: PublishCastInput): Promise<PublishCastResult> {
   const fidStr = process.env.ZABAL_FID;
-  const privHex = process.env.ZABAL_SIGNER_PRIVATE_KEY;
+  const privHex = process.env.ZABAL_SIGNER_PRIVATE_KEY!;
   const hubUrl = process.env.ZABAL_HUB_URL || DEFAULT_HUB;
 
-  if (!fidStr || !privHex) {
-    throw new Error('ZABAL_FID or ZABAL_SIGNER_PRIVATE_KEY env var missing');
-  }
   const fid = Number(fidStr);
   if (!Number.isInteger(fid) || fid <= 0) {
     throw new Error(`ZABAL_FID must be a positive integer (got ${fidStr})`);
@@ -88,10 +85,8 @@ export async function publishCast(input: PublishCastInput): Promise<PublishCastR
     embedsDeprecated: [],
     mentions: [],
     mentionsPositions: [],
-    type: 0, // CastType.CAST (top-level cast, not a long cast)
-    ...(input.channelKey
-      ? { parentUrl: parentUrlForChannel(input.channelKey) }
-      : {}),
+    type: 0,
+    ...(input.channelKey ? { parentUrl: parentUrlForChannel(input.channelKey) } : {}),
   };
 
   const built = await makeCastAdd(
@@ -99,7 +94,6 @@ export async function publishCast(input: PublishCastInput): Promise<PublishCastR
     { fid, network: FarcasterNetwork.MAINNET },
     signer,
   );
-
   if (built.isErr()) {
     throw new Error(`Cast construction failed: ${built.error.message}`);
   }
@@ -111,13 +105,65 @@ export async function publishCast(input: PublishCastInput): Promise<PublishCastR
     headers: { 'Content-Type': 'application/octet-stream' },
     body: messageBytes,
   });
-
   if (!res.ok) {
     const errBody = await res.text().catch(() => '');
-    throw new Error(`Hub submit ${res.status}: ${errBody.slice(0, 200)}`);
+    throw new Error(`HAATZ submit ${res.status}: ${errBody.slice(0, 200)}`);
   }
 
-  // The hub returns the merged Message; the hash is on castMessage already
   const hash = castMessage.hash ? `0x${bytesToHex(castMessage.hash)}` : '(unknown)';
-  return { hash, fid, hubUrl };
+  return { hash, backend: 'haatz', hub: hubUrl };
+}
+
+// ----- Backend 2: Neynar managed signer -----
+
+interface NeynarCastResponse {
+  cast?: { hash: string };
+  success?: boolean;
+  message?: string;
+}
+
+async function publishViaNeynar(input: PublishCastInput): Promise<PublishCastResult> {
+  const apiKey = process.env.NEYNAR_API_KEY;
+  const signerUuid = process.env.NEYNAR_SIGNER_UUID!;
+  if (!apiKey) {
+    throw new Error('NEYNAR_API_KEY missing (required when using NEYNAR_SIGNER_UUID)');
+  }
+
+  const body: Record<string, unknown> = {
+    signer_uuid: signerUuid,
+    text: input.text,
+    embeds: (input.embeds ?? []).map((url) => ({ url })),
+  };
+  if (input.channelKey) {
+    body.channel_id = input.channelKey;
+  }
+
+  const res = await fetch('https://api.neynar.com/v2/farcaster/cast', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'x-api-key': apiKey },
+    body: JSON.stringify(body),
+  });
+  const data = (await res.json().catch(() => ({}))) as NeynarCastResponse;
+  if (!res.ok) {
+    throw new Error(
+      `Neynar publish_cast ${res.status}: ${data.message ?? JSON.stringify(data)}`,
+    );
+  }
+  return { hash: data.cast?.hash ?? '(unknown)', backend: 'neynar' };
+}
+
+// ----- Router -----
+
+export async function publishCast(input: PublishCastInput): Promise<PublishCastResult> {
+  if (process.env.ZABAL_SIGNER_PRIVATE_KEY && process.env.ZABAL_FID) {
+    return publishViaHaatz(input);
+  }
+  if (process.env.NEYNAR_SIGNER_UUID) {
+    return publishViaNeynar(input);
+  }
+  throw new Error(
+    'No signer configured. Set either ZABAL_FID + ZABAL_SIGNER_PRIVATE_KEY ' +
+      '(HAATZ direct, pure path) OR NEYNAR_SIGNER_UUID (Neynar managed, ' +
+      'easy path). Run `npx tsx scripts/generate-zabal-signer.ts` to set up.',
+  );
 }
