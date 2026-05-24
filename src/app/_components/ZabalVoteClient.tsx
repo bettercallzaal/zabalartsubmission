@@ -163,7 +163,10 @@ export function ZabalVoteClient({ initialTotals }: { initialTotals: ModeTotal[] 
     try {
       await sdk.actions.composeCast({
         text: `Voted ${mode.label} this week on @zabal. Pick yours:`,
-        embeds: ['https://zabal.art'],
+        // mode-aware deep link - landing page reads ?mode= and uses
+        // a mode-highlighted OG variant so the cast preview shows the
+        // user's faction (Research Doc 733, ranked action #3).
+        embeds: [`https://zabal.art?mode=${mode.id}`],
         // Route every share-cast into the /zao channel so subscribers
         // see it in addition to the user's followers. Free 2x distribution
         // (Research Doc 733, Sub-Agent C - largest under-used SDK lever).

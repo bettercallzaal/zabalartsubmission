@@ -2,6 +2,7 @@ import { Metadata } from 'next';
 import { Suspense } from 'react';
 import { ZabalVoteClient } from './_components/ZabalVoteClient';
 import { ZabalNav, ZabalTokenPanel, ZabalEcosystem, ZabalAbout } from './_components/ZabalHub';
+import { SongJamCard } from './_components/SongJamCard';
 import {
   VoteCardsSkeleton,
   LeaderboardSkeleton,
@@ -9,37 +10,51 @@ import {
 } from './_components/Skeletons';
 import { supabaseAdmin } from '@/lib/db/supabase';
 
-// Per-route Mini App embed so a shared zabal.art link launches the
-// ZABAL hub - not elsewhere. (Research Doc 707 P0.)
-const zabalEmbed = JSON.stringify({
-  version: '1',
-  imageUrl: 'https://zabal.art/og',
-  button: {
-    title: 'Vote on ZAO',
-    action: {
-      type: 'launch_miniapp',
-      url: 'https://zabal.art',
-      name: 'ZABAL',
-      splashImageUrl: 'https://zabal.art/splash.png',
-      splashBackgroundColor: '#0a0a0a',
-    },
-  },
-});
 
-export const metadata: Metadata = {
-  title: 'ZABAL - Vote on ZAO Direction',
-  description:
-    'The ZABAL hub - vote weekly on ZAO focus (Music, Governance, Events, Build), hold $ZABAL, and explore the ecosystem.',
-  openGraph: {
+// Mode-aware metadata. When a share-cast embeds `https://zabal.art?mode=music`,
+// Farcaster fetches this page, reads fc:miniapp, and renders the preview
+// card with the mode-highlighted OG variant. Each share now carries the
+// user's faction. (Research Doc 733, ranked action #3.)
+export async function generateMetadata({
+  searchParams,
+}: {
+  searchParams: Promise<{ mode?: string }>;
+}): Promise<Metadata> {
+  const { mode } = await searchParams;
+  const validModes = ['music', 'governance', 'events', 'build'] as const;
+  const modeQuery = validModes.includes(mode as (typeof validModes)[number])
+    ? `?mode=${mode}`
+    : '';
+  const embed = JSON.stringify({
+    version: '1',
+    imageUrl: `https://zabal.art/og${modeQuery}`,
+    button: {
+      title: 'Vote on ZAO',
+      action: {
+        type: 'launch_miniapp',
+        url: 'https://zabal.art',
+        name: 'ZABAL',
+        splashImageUrl: 'https://zabal.art/splash.png',
+        splashBackgroundColor: '#0a0a0a',
+      },
+    },
+  });
+  return {
     title: 'ZABAL - Vote on ZAO Direction',
-    description: 'Weekly community vote, $ZABAL token, and the whole ZABAL ecosystem.',
-    url: 'https://zabal.art',
-  },
-  other: {
-    'fc:miniapp': zabalEmbed,
-    'fc:frame': zabalEmbed,
-  },
-};
+    description:
+      'The ZABAL hub - vote weekly on ZAO focus (Music, Governance, Events, Build), hold $ZABAL, and explore the ecosystem.',
+    openGraph: {
+      title: 'ZABAL - Vote on ZAO Direction',
+      description: 'Weekly community vote, $ZABAL token, and the whole ZABAL ecosystem.',
+      url: 'https://zabal.art',
+      images: [`https://zabal.art/og${modeQuery}`],
+    },
+    other: {
+      'fc:miniapp': embed,
+      'fc:frame': embed,
+    },
+  };
+}
 
 // Per-request render - the hub pulls live vote/leaderboard data from
 // Supabase, so it must not be statically prerendered at build time
@@ -218,6 +233,7 @@ export default function ZabalPage() {
 
       {/* Static sections render immediately */}
       <ZabalTokenPanel />
+      <SongJamCard />
       <ZabalEcosystem />
 
       {/* Streams as get_zabal_spotlight_leaderboard resolves */}
