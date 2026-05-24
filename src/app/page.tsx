@@ -4,6 +4,8 @@ import { ZabalVoteClient } from './_components/ZabalVoteClient';
 import { ZabalNav, ZabalTokenPanel, ZabalEcosystem, ZabalAbout } from './_components/ZabalHub';
 import { SongJamCard } from './_components/SongJamCard';
 import { LastWeekBanner } from './_components/LastWeekBanner';
+import { ZaoStockHero } from './_components/ZaoStockHero';
+import { LtaePodcastStrip } from './_components/LtaePodcastStrip';
 import {
   VoteCardsSkeleton,
   LeaderboardSkeleton,
@@ -242,7 +244,14 @@ export default function ZabalPage() {
       {/* Static sections render immediately */}
       <ZabalTokenPanel />
       <SongJamCard />
+      <ZaoStockHero />
       <ZabalEcosystem />
+
+      {/* LTAE live-status strip between ecosystem + spotlight - thin
+          bridge between 'all the projects' and 'community moments' */}
+      <section style={{ padding: '0 2rem 1.5rem', maxWidth: 960, margin: '0 auto' }}>
+        <LtaePodcastStrip />
+      </section>
 
       {/* Streams as get_zabal_spotlight_leaderboard resolves */}
       <Suspense fallback={<SpotlightCardSkeleton />}>

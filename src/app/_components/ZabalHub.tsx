@@ -86,6 +86,14 @@ export function ZabalTokenPanel() {
           >
             $ZABAL Empire leaderboard
           </a>
+          <a
+            href="https://zaoos.com/respect"
+            target="_blank"
+            rel="noopener noreferrer"
+            style={secondaryCta()}
+          >
+            Respect leaderboard
+          </a>
         </div>
       </div>
     </section>
@@ -114,6 +122,7 @@ const PORTALS: Portal[] = [
   { name: 'ZAO Nexus', url: 'https://www.thezao.com/nexus', blurb: 'The full ecosystem link directory.', badge: 'Directory' },
   { name: 'Empire Builder', url: 'https://empirebuilder.world', blurb: 'Where $ZABAL lives onchain.', badge: 'Token' },
   { name: 'BetterCallZaal', url: 'https://bettercallzaal.com', blurb: 'Zaal\'s personal brand + studio.', badge: 'Brand' },
+  { name: 'Magnetiq', url: 'https://magnetiq.xyz', blurb: 'IRL Proof-of-Meet badges for ZAO connections.', badge: 'IRL' },
 ];
 
 export function ZabalEcosystem() {
@@ -209,9 +218,40 @@ export function ZabalAbout() {
         studio), The ZAO (the artist org), and incubated projects like WaveWarZ and ZAO Festivals -
         all tied together by the $ZABAL token.
       </p>
-      <p style={{ color: DIM, fontSize: '0.9rem', marginBottom: '1.5rem' }}>
+      <p style={{ color: DIM, fontSize: '0.9rem', marginBottom: '1.25rem' }}>
         This page is the front door. Vote weekly on where it goes.
       </p>
+      <a
+        href="https://paragraph.xyz/@thezao"
+        target="_blank"
+        rel="noopener noreferrer"
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          gap: '0.75rem',
+          flexWrap: 'wrap',
+          background: PANEL,
+          border: `1px solid ${BORDER}`,
+          borderRadius: 12,
+          padding: '0.85rem 1.25rem',
+          marginBottom: '1.5rem',
+          textDecoration: 'none',
+          color: '#fff',
+        }}
+      >
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.15rem' }}>
+          <strong style={{ color: GOLD, fontSize: '0.95rem' }}>
+            Year-of-the-ZABAL newsletter
+          </strong>
+          <span style={{ color: DIM, fontSize: '0.85rem' }}>
+            Monthly drops on ZAO + ZABAL ecosystem - delivered via Paragraph.
+          </span>
+        </div>
+        <span style={{ color: GOLD, fontWeight: 700, fontSize: '0.9rem' }}>
+          Subscribe -&gt;
+        </span>
+      </a>
       <div style={{ display: 'flex', gap: '0.6rem', flexWrap: 'wrap' }}>
         {SOCIALS.map((s) => (
           <a
