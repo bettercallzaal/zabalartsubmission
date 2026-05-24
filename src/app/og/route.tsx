@@ -13,7 +13,11 @@ import { supabaseAdmin } from '@/lib/db/supabase';
 // if a viral cast generates thousands of preview hits.
 
 export const runtime = 'nodejs'; // supabaseAdmin uses Node APIs
-export const revalidate = 60;
+// Per-request render - the OG card pulls live vote totals from
+// Supabase, so it must not be prerendered at build time (build env
+// lacks DB credentials). CDN caching is done via Cache-Control
+// headers on the ImageResponse below instead of ISR.
+export const dynamic = 'force-dynamic';
 export const contentType = 'image/png';
 export const size = { width: 1200, height: 800 };
 
@@ -64,12 +68,14 @@ export async function GET() {
           color: '#ffffff',
           fontFamily: 'system-ui, -apple-system, "Segoe UI", sans-serif',
           padding: '60px 80px',
+          boxSizing: 'border-box',
         }}
       >
         {/* Header - identity */}
-        <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between' }}>
+        <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', width: '100%' }}>
           <div
             style={{
+              display: 'flex',
               fontSize: 110,
               fontWeight: 900,
               letterSpacing: 10,
@@ -81,10 +87,10 @@ export async function GET() {
           >
             ZABAL
           </div>
-          <div style={{ fontSize: 24, color: '#a0a0a0', letterSpacing: 2 }}>zabal.art</div>
+          <div style={{ display: 'flex', fontSize: 24, color: '#a0a0a0', letterSpacing: 2 }}>zabal.art</div>
         </div>
 
-        <div style={{ fontSize: 30, color: '#e0ddaa', marginTop: 8, fontWeight: 700 }}>
+        <div style={{ display: 'flex', fontSize: 30, color: '#e0ddaa', marginTop: 8, fontWeight: 700 }}>
           {hasVotes ? 'This week on ZAO' : 'Vote weekly on ZAO direction'}
         </div>
 
@@ -143,7 +149,7 @@ export async function GET() {
                   fontVariantNumeric: 'tabular-nums',
                 }}
               >
-                {r.pct}%
+                {`${r.pct}%`}
               </div>
             </div>
           ))}
@@ -160,11 +166,12 @@ export async function GET() {
             borderTop: '1px solid rgba(224, 221, 170, 0.18)',
           }}
         >
-          <div style={{ fontSize: 22, color: '#a0a0a0' }}>
+          <div style={{ display: 'flex', fontSize: 22, color: '#a0a0a0' }}>
             {hasVotes ? `${totalPower} power cast this week` : 'Be the first to vote this week'}
           </div>
           <div
             style={{
+              display: 'flex',
               fontSize: 24,
               fontWeight: 700,
               color: '#0a0a0a',
@@ -178,6 +185,15 @@ export async function GET() {
         </div>
       </div>
     ),
-    size,
+    {
+      ...size,
+      headers: {
+        // CDN cache the rendered PNG for 60s (with 5min SWR) so a viral
+        // cast generating thousands of preview hits only hits Supabase
+        // once a minute. Browsers cache for 30s.
+        'Cache-Control':
+          'public, max-age=30, s-maxage=60, stale-while-revalidate=300',
+      },
+    },
   );
 }
