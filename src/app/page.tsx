@@ -83,12 +83,18 @@ interface LeaderRow {
   username: string | null;
   score: number;
   streak: number;
+  prev_rank?: number | null;
+  rank_change?: number | null;
 }
 
+// Try the delta-aware RPC first; fall back to the original
+// get_zabal_leaderboard if the new RPC isn't installed yet (pre-migration).
 async function getLeaderboard(): Promise<LeaderRow[]> {
-  const { data, error } = await supabaseAdmin.rpc('get_zabal_leaderboard', { p_limit: 25 });
-  if (error || !data) return [];
-  return data as LeaderRow[];
+  const delta = await supabaseAdmin.rpc('get_zabal_leaderboard_with_delta', { p_limit: 25 });
+  if (!delta.error && delta.data) return delta.data as LeaderRow[];
+  const base = await supabaseAdmin.rpc('get_zabal_leaderboard', { p_limit: 25 });
+  if (base.error || !base.data) return [];
+  return base.data as LeaderRow[];
 }
 
 interface WinnerRow {
@@ -161,12 +167,13 @@ async function LeaderboardSection() {
               <th style={th()}>Voter</th>
               <th style={th({ textAlign: 'right' })}>Score</th>
               <th style={th({ textAlign: 'right' })}>Streak</th>
+              <th style={th({ textAlign: 'right' })}>Wk</th>
             </tr>
           </thead>
           <tbody>
             {leaders.length === 0 && (
               <tr>
-                <td colSpan={4} style={{ padding: '1.5rem', textAlign: 'center', color: '#a0a0a0' }}>
+                <td colSpan={5} style={{ padding: '1.5rem', textAlign: 'center', color: '#a0a0a0' }}>
                   No votes yet this week. Be first.
                 </td>
               </tr>
@@ -177,6 +184,7 @@ async function LeaderboardSection() {
                 <td style={td()}>{row.username ?? `fid ${row.fid}`}</td>
                 <td style={td({ textAlign: 'right' })}>{row.score}</td>
                 <td style={td({ textAlign: 'right' })}>{streakBadge(row.streak)}</td>
+                <td style={td({ textAlign: 'right' })}>{rankDeltaBadge(row.prev_rank, row.rank_change)}</td>
               </tr>
             ))}
           </tbody>
@@ -273,6 +281,61 @@ export default function ZabalPage() {
 
       <ZabalAbout />
     </main>
+  );
+}
+
+// Week-over-week rank delta badge. Text labels only (brand rule, no
+// arrow emoji). [NEW] for voters who weren't in last week's
+// computed ranking; [UP N] / [DOWN N] for movement; [--] for steady.
+// Renders '-' when delta data isn't present (pre-migration leaderboard).
+// (Research Doc 733, ranked action #15.)
+function rankDeltaBadge(
+  prevRank: number | null | undefined,
+  change: number | null | undefined,
+): React.ReactNode {
+  if (change === undefined && prevRank === undefined) {
+    // RPC returned the no-delta shape (pre-migration). Hide column content.
+    return <span style={{ color: '#444' }}>-</span>;
+  }
+  if (prevRank == null || change == null) {
+    return (
+      <span
+        style={{
+          display: 'inline-block',
+          background: 'rgba(224, 221, 170, 0.15)',
+          border: '1px solid rgba(224, 221, 170, 0.5)',
+          color: '#e0ddaa',
+          borderRadius: 999,
+          padding: '2px 8px',
+          fontSize: '0.72rem',
+          fontWeight: 700,
+          letterSpacing: '0.04em',
+        }}
+        title="New to the top 25 this week."
+      >
+        NEW
+      </span>
+    );
+  }
+  if (change === 0) {
+    return <span style={{ color: '#666' }}>--</span>;
+  }
+  const climbed = change > 0;
+  const color = climbed ? '#22c55e' : '#ef4444';
+  return (
+    <span
+      style={{
+        display: 'inline-block',
+        color,
+        fontVariantNumeric: 'tabular-nums',
+        fontSize: '0.82rem',
+        fontWeight: 700,
+        letterSpacing: '0.02em',
+      }}
+      title={`${climbed ? 'Climbed' : 'Fell'} ${Math.abs(change)} place${Math.abs(change) === 1 ? '' : 's'} from rank ${prevRank} last week.`}
+    >
+      {`${climbed ? '+' : ''}${change}`}
+    </span>
   );
 }
 
