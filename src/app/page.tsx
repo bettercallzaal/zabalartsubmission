@@ -1,6 +1,12 @@
 import { Metadata } from 'next';
+import { Suspense } from 'react';
 import { ZabalVoteClient } from './_components/ZabalVoteClient';
 import { ZabalNav, ZabalTokenPanel, ZabalEcosystem, ZabalAbout } from './_components/ZabalHub';
+import {
+  VoteCardsSkeleton,
+  LeaderboardSkeleton,
+  SpotlightCardSkeleton,
+} from './_components/Skeletons';
 import { supabaseAdmin } from '@/lib/db/supabase';
 
 // Per-route Mini App embed so a shared zabal.art link launches the
@@ -78,13 +84,99 @@ async function getTopWinner(): Promise<WinnerRow | null> {
   return (data as WinnerRow[])[0];
 }
 
-export default async function ZabalPage() {
-  const [totals, leaders, topWinner] = await Promise.all([
-    getWeekTotals(),
-    getLeaderboard(),
-    getTopWinner(),
-  ]);
+// ---------- streaming sections (each awaits its own RPC) ----------
 
+async function VoteSection() {
+  const totals = await getWeekTotals();
+  return (
+    <div id="vote">
+      <ZabalVoteClient initialTotals={totals} />
+    </div>
+  );
+}
+
+async function SpotlightCard() {
+  const topWinner = await getTopWinner();
+  return (
+    <section id="spotlight" style={{ padding: '2.5rem 2rem', maxWidth: 960, margin: '0 auto' }}>
+      <h2 style={{ fontSize: '1.5rem', fontWeight: 700, marginBottom: '1rem', color: '#e0ddaa' }}>
+        Member Spotlight
+      </h2>
+      <a
+        href="/spotlight"
+        style={{
+          display: 'block',
+          background: 'rgba(20, 30, 39, 0.6)',
+          border: '1px solid rgba(224, 221, 170, 0.2)',
+          borderRadius: 16,
+          padding: '1.5rem',
+          textDecoration: 'none',
+          color: '#fff',
+        }}
+      >
+        <p style={{ margin: 0, fontSize: '1rem' }}>
+          {topWinner
+            ? `Latest spotlight winner: ${topWinner.username ?? `fid ${topWinner.fid}`} (${topWinner.wins} win${topWinner.wins === 1 ? '' : 's'}).`
+            : 'Weekly recognition for ZAO members who ship.'}
+        </p>
+        <p style={{ margin: '0.5rem 0 0', color: '#e0ddaa', fontSize: '0.9rem' }}>
+          Nominate Mon-Wed, vote Thu-Sun -&gt;
+        </p>
+      </a>
+    </section>
+  );
+}
+
+async function LeaderboardSection() {
+  const leaders = await getLeaderboard();
+  return (
+    <section id="leaderboard" style={{ padding: '0 2rem 2rem', maxWidth: 960, margin: '0 auto' }}>
+      <h2 style={{ fontSize: '1.5rem', fontWeight: 700, marginBottom: '1rem', color: '#e0ddaa' }}>
+        Top voters
+      </h2>
+      <div style={{ border: '1px solid rgba(224, 221, 170, 0.2)', borderRadius: 12, overflow: 'hidden' }}>
+        <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+          <thead>
+            <tr style={{ background: 'rgba(20, 30, 39, 0.6)' }}>
+              <th style={th()}>#</th>
+              <th style={th()}>Voter</th>
+              <th style={th({ textAlign: 'right' })}>Score</th>
+              <th style={th({ textAlign: 'right' })}>Streak</th>
+            </tr>
+          </thead>
+          <tbody>
+            {leaders.length === 0 && (
+              <tr>
+                <td colSpan={4} style={{ padding: '1.5rem', textAlign: 'center', color: '#a0a0a0' }}>
+                  No votes yet this week. Be first.
+                </td>
+              </tr>
+            )}
+            {leaders.map((row) => (
+              <tr key={row.fid} style={{ borderTop: '1px solid rgba(224, 221, 170, 0.1)' }}>
+                <td style={td()}>{row.rank}</td>
+                <td style={td()}>{row.username ?? `fid ${row.fid}`}</td>
+                <td style={td({ textAlign: 'right' })}>{row.score}</td>
+                <td style={td({ textAlign: 'right' })}>{row.streak}w</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <p style={{ marginTop: '1rem', fontSize: '0.85rem', color: '#a0a0a0' }}>
+        Cumulative leaderboard powers the{' '}
+        <a href="https://songjam.space/zabal" style={{ color: '#e0ddaa' }}>
+          $ZABAL Empire
+        </a>{' '}
+        via Empire Builder.
+      </p>
+    </section>
+  );
+}
+
+// ---------- page shell (sync, streams the data sections) ----------
+
+export default function ZabalPage() {
   return (
     <main
       style={{
@@ -97,15 +189,8 @@ export default async function ZabalPage() {
     >
       <ZabalNav />
 
-      {/* Hero - identity above the fold */}
-      <header
-        style={{
-          padding: '3rem 2rem 1.5rem',
-          textAlign: 'center',
-          maxWidth: 960,
-          margin: '0 auto',
-        }}
-      >
+      {/* Hero - identity above the fold, no data dependency, streams immediately */}
+      <header style={{ padding: '3rem 2rem 1.5rem', textAlign: 'center', maxWidth: 960, margin: '0 auto' }}>
         <h1
           style={{
             fontSize: 'clamp(3rem, 10vw, 6rem)',
@@ -126,102 +211,25 @@ export default async function ZabalPage() {
         </p>
       </header>
 
-      {/* Section 2 - the live weekly vote */}
-      <div id="vote">
-        <ZabalVoteClient initialTotals={totals} />
-      </div>
+      {/* Vote cards - streams in as get_this_zabal_weeks_votes resolves */}
+      <Suspense fallback={<VoteCardsSkeleton />}>
+        <VoteSection />
+      </Suspense>
 
-      {/* Section 3 - $ZABAL token */}
+      {/* Static sections render immediately */}
       <ZabalTokenPanel />
-
-      {/* Section 4 - ecosystem portals */}
       <ZabalEcosystem />
 
-      {/* Section 5 - Member Spotlight summary */}
-      <section id="spotlight" style={{ padding: '2.5rem 2rem', maxWidth: 960, margin: '0 auto' }}>
-        <h2 style={{ fontSize: '1.5rem', fontWeight: 700, marginBottom: '1rem', color: '#e0ddaa' }}>
-          Member Spotlight
-        </h2>
-        <a
-          href="/spotlight"
-          style={{
-            display: 'block',
-            background: 'rgba(20, 30, 39, 0.6)',
-            border: '1px solid rgba(224, 221, 170, 0.2)',
-            borderRadius: 16,
-            padding: '1.5rem',
-            textDecoration: 'none',
-            color: '#fff',
-          }}
-        >
-          <p style={{ margin: 0, fontSize: '1rem' }}>
-            {topWinner
-              ? `Latest spotlight winner: ${topWinner.username ?? `fid ${topWinner.fid}`} (${topWinner.wins} win${topWinner.wins === 1 ? '' : 's'}).`
-              : 'Weekly recognition for ZAO members who ship.'}
-          </p>
-          <p style={{ margin: '0.5rem 0 0', color: '#e0ddaa', fontSize: '0.9rem' }}>
-            Nominate Mon-Wed, vote Thu-Sun -&gt;
-          </p>
-        </a>
-      </section>
+      {/* Streams as get_zabal_spotlight_leaderboard resolves */}
+      <Suspense fallback={<SpotlightCardSkeleton />}>
+        <SpotlightCard />
+      </Suspense>
 
-      {/* Section 6 - leaderboard */}
-      <section id="leaderboard" style={{ padding: '0 2rem 2rem', maxWidth: 960, margin: '0 auto' }}>
-        <h2
-          style={{
-            fontSize: '1.5rem',
-            fontWeight: 700,
-            marginBottom: '1rem',
-            color: '#e0ddaa',
-          }}
-        >
-          Top voters
-        </h2>
-        <div
-          style={{
-            border: '1px solid rgba(224, 221, 170, 0.2)',
-            borderRadius: 12,
-            overflow: 'hidden',
-          }}
-        >
-          <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-            <thead>
-              <tr style={{ background: 'rgba(20, 30, 39, 0.6)' }}>
-                <th style={th()}>#</th>
-                <th style={th()}>Voter</th>
-                <th style={th({ textAlign: 'right' })}>Score</th>
-                <th style={th({ textAlign: 'right' })}>Streak</th>
-              </tr>
-            </thead>
-            <tbody>
-              {leaders.length === 0 && (
-                <tr>
-                  <td colSpan={4} style={{ padding: '1.5rem', textAlign: 'center', color: '#a0a0a0' }}>
-                    No votes yet this week. Be first.
-                  </td>
-                </tr>
-              )}
-              {leaders.map((row) => (
-                <tr key={row.fid} style={{ borderTop: '1px solid rgba(224, 221, 170, 0.1)' }}>
-                  <td style={td()}>{row.rank}</td>
-                  <td style={td()}>{row.username ?? `fid ${row.fid}`}</td>
-                  <td style={td({ textAlign: 'right' })}>{row.score}</td>
-                  <td style={td({ textAlign: 'right' })}>{row.streak}w</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-        <p style={{ marginTop: '1rem', fontSize: '0.85rem', color: '#a0a0a0' }}>
-          Cumulative leaderboard powers the{' '}
-          <a href="https://songjam.space/zabal" style={{ color: '#e0ddaa' }}>
-            $ZABAL Empire
-          </a>{' '}
-          via Empire Builder.
-        </p>
-      </section>
+      {/* Streams last - leaderboard table is not above the fold */}
+      <Suspense fallback={<LeaderboardSkeleton />}>
+        <LeaderboardSection />
+      </Suspense>
 
-      {/* Section 7 - about + socials */}
       <ZabalAbout />
     </main>
   );

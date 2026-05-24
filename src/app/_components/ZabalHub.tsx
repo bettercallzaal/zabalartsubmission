@@ -105,7 +105,9 @@ interface Portal {
 
 const PORTALS: Portal[] = [
   { name: 'The ZAO', url: 'https://thezao.com', blurb: 'The artist org - ~190 members on Base.', badge: 'Org' },
-  { name: 'ZAO Festivals', url: 'https://zaofestivals.com', blurb: 'ZAOstock, ZAO-PALOOZA, ZAO CHELLA.', badge: 'Events' },
+  // zaofestivals.com currently unreachable - point at the X account
+  // until the site is restored. Update back when zaofestivals.com is live.
+  { name: 'ZAO Festivals', url: 'https://x.com/ZAOFestivals', blurb: 'ZAOstock, ZAO-PALOOZA, ZAO CHELLA (site WIP, follow on X).', badge: 'Events' },
   { name: 'WaveWarZ', url: 'https://www.wavewarz.com', blurb: 'Onchain music battles.', badge: 'Music' },
   { name: 'ZAO OS', url: 'https://zaoos.com', blurb: 'The community operating system.', badge: 'Platform' },
   { name: 'BCZ YapZ', url: 'https://bczyapz.com', blurb: 'The podcast - Web3, music, building.', badge: 'Media' },
