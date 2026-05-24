@@ -148,6 +148,22 @@ export function ZabalVoteClient({ initialTotals }: { initialTotals: ModeTotal[] 
         // No post-vote /api/week-totals fetch - the optimistic state IS the
         // truth until the next page-level revalidation. Skipping the second
         // round-trip is what makes voting feel instant.
+
+        // Vote succeeded - prompt to add ZABAL to the user's Mini Apps
+        // drawer, but only once per browser so we don't badger people.
+        // Silent on decline/already-added (both throw rejected_by_user
+        // or no-op). (Research Doc 733, ranked action #6.)
+        try {
+          if (
+            typeof window !== 'undefined' &&
+            !window.localStorage.getItem('zabal_add_prompted')
+          ) {
+            window.localStorage.setItem('zabal_add_prompted', String(Date.now()));
+            await sdk.actions.addMiniApp();
+          }
+        } catch {
+          // user declined or app already added - both fine, stay silent
+        }
       } catch (err) {
         setStatus(String(err).replace(/^Error: /, ''));
       } finally {
