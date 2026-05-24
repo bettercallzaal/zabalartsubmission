@@ -2,6 +2,8 @@
 
 import { useEffect, useState, useTransition, useOptimistic } from 'react';
 import { sdk } from '@farcaster/miniapp-sdk';
+import { Confetti } from './Confetti';
+import { Countdown } from './Countdown';
 
 const MODES = [
   { id: 'music', label: 'Music', blurb: 'Drops, jams, mixes. Music-week focus.', icon: '♫' },
@@ -38,6 +40,8 @@ export function ZabalVoteClient({ initialTotals }: { initialTotals: ModeTotal[] 
   const [currentMode, setCurrentMode] = useState<Mode | null>(null);
   const [pendingMode, setPendingMode] = useState<Mode | null>(null);
   const [status, setStatus] = useState<string>('');
+  const [confettiTrigger, setConfettiTrigger] = useState<number>(0);
+  const [hasVotedThisSession, setHasVotedThisSession] = useState<boolean>(false);
   const [, startTransition] = useTransition();
 
   // Optimistic totals - applies the user's vote instantly on click,
@@ -115,6 +119,7 @@ export function ZabalVoteClient({ initialTotals }: { initialTotals: ModeTotal[] 
       return;
     }
     setPendingMode(mode);
+    const isFirstVoteThisSession = !hasVotedThisSession;
     startTransition(async () => {
       // INSTANT - paint the new state in the same frame as the tap
       addOptimisticVote({ mode, prevMode: prev, power: votePower.power });
@@ -122,6 +127,10 @@ export function ZabalVoteClient({ initialTotals }: { initialTotals: ModeTotal[] 
       setStatus(
         prev ? `Switched to ${mode} (+${votePower.power}).` : `Locked in ${mode} (+${votePower.power}).`,
       );
+      if (isFirstVoteThisSession) {
+        setConfettiTrigger(Date.now()); // first-vote-of-session dopamine
+        setHasVotedThisSession(true);
+      }
       try {
         const res = await fetch('/api/vote', {
           method: 'POST',
@@ -146,8 +155,23 @@ export function ZabalVoteClient({ initialTotals }: { initialTotals: ModeTotal[] 
     });
   }
 
+  async function shareCast() {
+    if (!currentMode) return;
+    const mode = MODES.find((m) => m.id === currentMode);
+    if (!mode) return;
+    try {
+      await sdk.actions.composeCast({
+        text: `Voted ${mode.label} this week on @zabal. Pick yours:`,
+        embeds: ['https://zabal.art'],
+      });
+    } catch (err) {
+      setStatus(`Share failed: ${String(err).slice(0, 80)}`);
+    }
+  }
+
   return (
     <section style={{ padding: '0 2rem 2rem', maxWidth: 960, margin: '0 auto' }}>
+      <Confetti trigger={confettiTrigger} />
       <div
         style={{
           background: 'rgba(20, 30, 39, 0.6)',
@@ -167,7 +191,16 @@ export function ZabalVoteClient({ initialTotals }: { initialTotals: ModeTotal[] 
             <>
               You: <strong style={{ color: '#fff' }}>{votePower?.username ?? `fid ${fid}`}</strong>
               {' - '}vote power{' '}
-              <strong style={{ color: '#e0ddaa' }}>{votePower?.power ?? '…'}</strong>
+              <strong
+                style={{
+                  color: '#e0ddaa',
+                  cursor: 'help',
+                  borderBottom: '1px dotted rgba(224, 221, 170, 0.5)',
+                }}
+                title="Power = base 1 + /zao cast bonus (0-3) blended with Neynar score (0.5x-1.5x), capped at 6."
+              >
+                {votePower?.power ?? '…'}
+              </strong>
               {votePower?.zaoCasts != null && (
                 <>
                   {' '}
@@ -194,6 +227,9 @@ export function ZabalVoteClient({ initialTotals }: { initialTotals: ModeTotal[] 
             }}
           />
           Week power: <strong style={{ color: '#e0ddaa' }}>{totalPower}</strong>
+          <span style={{ color: '#666', marginLeft: '0.4rem' }}>
+            · closes in <Countdown />
+          </span>
         </div>
       </div>
 
@@ -266,6 +302,36 @@ export function ZabalVoteClient({ initialTotals }: { initialTotals: ModeTotal[] 
         <p style={{ marginTop: '1rem', fontSize: '0.9rem', color: '#e0ddaa', textAlign: 'center' }}>
           {status}
         </p>
+      )}
+
+      {currentMode && fid && (
+        <div style={{ textAlign: 'center', marginTop: '0.75rem' }}>
+          <button
+            onClick={shareCast}
+            style={{
+              background: '#e0ddaa',
+              color: '#0a0a0a',
+              border: 'none',
+              borderRadius: 999,
+              padding: '0.55rem 1.4rem',
+              fontWeight: 700,
+              fontSize: '0.9rem',
+              cursor: 'pointer',
+              transition: 'transform 0.15s ease, box-shadow 0.15s ease',
+              boxShadow: '0 2px 10px rgba(224, 221, 170, 0.15)',
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.transform = 'translateY(-1px)';
+              e.currentTarget.style.boxShadow = '0 4px 14px rgba(224, 221, 170, 0.3)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.transform = 'translateY(0)';
+              e.currentTarget.style.boxShadow = '0 2px 10px rgba(224, 221, 170, 0.15)';
+            }}
+          >
+            Share your vote -&gt;
+          </button>
+        </div>
       )}
     </section>
   );
