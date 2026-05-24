@@ -157,7 +157,7 @@ async function LeaderboardSection() {
                 <td style={td()}>{row.rank}</td>
                 <td style={td()}>{row.username ?? `fid ${row.fid}`}</td>
                 <td style={td({ textAlign: 'right' })}>{row.score}</td>
-                <td style={td({ textAlign: 'right' })}>{row.streak}w</td>
+                <td style={td({ textAlign: 'right' })}>{streakBadge(row.streak)}</td>
               </tr>
             ))}
           </tbody>
@@ -232,6 +232,34 @@ export default function ZabalPage() {
 
       <ZabalAbout />
     </main>
+  );
+}
+
+// Streak badge - >=4 weeks gets gold pill + [STREAK] tag (text-only,
+// no emoji per brand rule). Visible streaks are the #1 documented
+// retention lever on FC Mini Apps (Research Doc 733, Sub-Agent D).
+function streakBadge(weeks: number): React.ReactNode {
+  if (weeks <= 0) return <span style={{ color: '#666' }}>-</span>;
+  if (weeks < 4) {
+    return <span style={{ color: '#e0ddaa' }}>{`${weeks}w`}</span>;
+  }
+  return (
+    <span
+      style={{
+        display: 'inline-block',
+        background: 'rgba(224, 221, 170, 0.18)',
+        border: '1px solid rgba(224, 221, 170, 0.5)',
+        color: '#e0ddaa',
+        borderRadius: 999,
+        padding: '2px 10px',
+        fontSize: '0.8rem',
+        fontWeight: 700,
+        letterSpacing: '0.04em',
+      }}
+      title={`${weeks} week voting streak - showing up matters.`}
+    >
+      {`${weeks}w STREAK`}
+    </span>
   );
 }
 
