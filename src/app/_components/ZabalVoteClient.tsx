@@ -96,6 +96,7 @@ export function ZabalVoteClient({ initialTotals }: { initialTotals: ModeTotal[] 
   }, []);
 
   const totalPower = optimisticTotals.reduce((s, t) => s + Number(t.total_power || 0), 0);
+  const totalVotes = optimisticTotals.reduce((s, t) => s + Number(t.vote_count || 0), 0);
 
   function pct(mode: Mode): number {
     const t = optimisticTotals.find((x) => x.mode === mode);
@@ -162,10 +163,29 @@ export function ZabalVoteClient({ initialTotals }: { initialTotals: ModeTotal[] 
     try {
       await sdk.actions.composeCast({
         text: `Voted ${mode.label} this week on @zabal. Pick yours:`,
-        embeds: ['https://zabal.art'],
+        // mode-aware deep link - landing page reads ?mode= and uses
+        // a mode-highlighted OG variant so the cast preview shows the
+        // user's faction (Research Doc 733, ranked action #3).
+        embeds: [`https://zabal.art?mode=${mode.id}`],
+        // Route every share-cast into the /zao channel so subscribers
+        // see it in addition to the user's followers. Free 2x distribution
+        // (Research Doc 733, Sub-Agent C - largest under-used SDK lever).
+        channelKey: 'zao',
       });
     } catch (err) {
       setStatus(`Share failed: ${String(err).slice(0, 80)}`);
+    }
+  }
+
+  async function copyLink() {
+    try {
+      // Deep-link to the hub. fc:miniapp embed on / makes the URL
+      // open as a Mini App launch card if pasted into Farcaster, or
+      // a normal browser link anywhere else.
+      await navigator.clipboard.writeText('https://zabal.art');
+      setStatus('Link copied. Paste it anywhere.');
+    } catch {
+      setStatus('Copy failed - long-press to copy the URL bar.');
     }
   }
 
@@ -228,7 +248,7 @@ export function ZabalVoteClient({ initialTotals }: { initialTotals: ModeTotal[] 
           />
           Week power: <strong style={{ color: '#e0ddaa' }}>{totalPower}</strong>
           <span style={{ color: '#666', marginLeft: '0.4rem' }}>
-            · closes in <Countdown />
+            · {totalVotes} {totalVotes === 1 ? 'vote' : 'votes'} · closes in <Countdown />
           </span>
         </div>
       </div>
@@ -305,7 +325,15 @@ export function ZabalVoteClient({ initialTotals }: { initialTotals: ModeTotal[] 
       )}
 
       {currentMode && fid && (
-        <div style={{ textAlign: 'center', marginTop: '0.75rem' }}>
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'center',
+            gap: '0.5rem',
+            marginTop: '0.75rem',
+            flexWrap: 'wrap',
+          }}
+        >
           <button
             onClick={shareCast}
             style={{
@@ -329,7 +357,31 @@ export function ZabalVoteClient({ initialTotals }: { initialTotals: ModeTotal[] 
               e.currentTarget.style.boxShadow = '0 2px 10px rgba(224, 221, 170, 0.15)';
             }}
           >
-            Share your vote -&gt;
+            Share to /zao -&gt;
+          </button>
+          <button
+            onClick={copyLink}
+            style={{
+              background: 'transparent',
+              color: '#e0ddaa',
+              border: '1px solid rgba(224, 221, 170, 0.4)',
+              borderRadius: 999,
+              padding: '0.55rem 1.2rem',
+              fontWeight: 600,
+              fontSize: '0.9rem',
+              cursor: 'pointer',
+              transition: 'background 0.15s ease, border-color 0.15s ease',
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.background = 'rgba(224, 221, 170, 0.08)';
+              e.currentTarget.style.borderColor = '#e0ddaa';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.background = 'transparent';
+              e.currentTarget.style.borderColor = 'rgba(224, 221, 170, 0.4)';
+            }}
+          >
+            Copy link
           </button>
         </div>
       )}
