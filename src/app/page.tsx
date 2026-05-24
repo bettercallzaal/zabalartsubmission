@@ -3,6 +3,7 @@ import { Suspense } from 'react';
 import { ZabalVoteClient } from './_components/ZabalVoteClient';
 import { ZabalNav, ZabalTokenPanel, ZabalEcosystem, ZabalAbout } from './_components/ZabalHub';
 import { SongJamCard } from './_components/SongJamCard';
+import { LastWeekBanner } from './_components/LastWeekBanner';
 import {
   VoteCardsSkeleton,
   LeaderboardSkeleton,
@@ -225,6 +226,13 @@ export default function ZabalPage() {
           $ZABAL economy. Vote weekly on where it goes.
         </p>
       </header>
+
+      {/* Last week's winner - thin strip, no fallback (optional flair).
+          Renders nothing until database/last-week-winner-rpc.sql is
+          applied in Supabase. */}
+      <Suspense fallback={null}>
+        <LastWeekBanner />
+      </Suspense>
 
       {/* Vote cards - streams in as get_this_zabal_weeks_votes resolves */}
       <Suspense fallback={<VoteCardsSkeleton />}>
