@@ -39,3 +39,6 @@ coverage/
 *.tmp
 .cache/
 .superpowers/
+
+# TypeScript incremental build info
+*.tsbuildinfo
