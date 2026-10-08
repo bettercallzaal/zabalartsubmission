@@ -24,7 +24,6 @@ class Config {
         
         // App URLs
         this.MINIAPP_URL = 'https://zabal.art';
-        this.SONGJAM_URL = 'https://www.songjam.space/zabal';
         
         // Feature Flags
         this.ENABLE_ANALYTICS = true;

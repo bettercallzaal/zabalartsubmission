@@ -6216,7 +6216,6 @@ async function loadVotes() {
         let currentShareMode = null;
         window.currentVotedModes = []; // Store all voted modes for sharing (global)
         const MINIAPP_URL = window.appConfig?.MINIAPP_URL || 'https://zabal.art';
-        const SONGJAM_URL = window.appConfig?.SONGJAM_URL || 'https://www.songjam.space/zabal';
         
         // ============================================
         // SHARE PAYLOAD BUILDER - SINGLE SOURCE OF TRUTH
@@ -7110,7 +7109,7 @@ async function loadVotes() {
             };
             
             const timeRemaining = getTimeUntilZabalUpdate();
-            const inviteText = `Hey @${topFriend.username}! 👋\n\nI just voted ${modeEmojis[currentShareMode]} ${modeNames[currentShareMode]} on ZABAL Live Hub!\n\nWhat's your vote? Join me! 🎨\n\n⏰ ZABAL Update #4 in ${timeRemaining}\n📊 ${SONGJAM_URL}\n\n${MINIAPP_URL}?source=share&vote=daily`;
+            const inviteText = `Hey @${topFriend.username}! 👋\n\nI just voted ${modeEmojis[currentShareMode]} ${modeNames[currentShareMode]} on ZABAL Live Hub!\n\nWhat's your vote? Join me! 🎨\n\n⏰ ZABAL Update #4 in ${timeRemaining}\n\n${MINIAPP_URL}?source=share&vote=daily`;
             
             try {
                 await window.farcasterSDK.actions.composeCast({
@@ -7546,14 +7545,14 @@ async function loadVotes() {
             
             // Add ZABAL Update countdown
             const timeRemaining = getTimeUntilZabalUpdate();
-            const zabalUpdateInfo = `\n\n⏰ ZABAL Update #4 in ${timeRemaining}\n📊 ZABAL Empire Leaderboard\n🎵 ${SONGJAM_URL}`;
+            const zabalUpdateInfo = `\n\n⏰ ZABAL Update #4 in ${timeRemaining}\n📊 ZABAL Empire Leaderboard`;
             
             // Add call to action and links
             castText += callToAction + zaalMention + friendTags + zabalUpdateInfo + '\n\n' + MINIAPP_URL + '?source=share&vote=daily';
             
             // Log cast details before sending
             console.log('📝 Cast text length:', castText.length);
-            console.log('🔗 Embeds:', [SONGJAM_URL, MINIAPP_URL]);
+            console.log('🔗 Embeds:', [MINIAPP_URL]);
             console.log('📢 Channel:', 'zao');
             
             // Clear selected friends after sharing
@@ -7563,7 +7562,7 @@ async function loadVotes() {
             try {
                 const result = await window.farcasterSDK.actions.composeCast({
                     text: castText,
-                    embeds: [SONGJAM_URL, MINIAPP_URL + '?source=share&vote=daily'],
+                    embeds: [MINIAPP_URL + '?source=share&vote=daily'],
                     channelKey: 'zao'
                 });
                 
