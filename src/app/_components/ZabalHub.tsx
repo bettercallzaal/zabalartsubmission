@@ -79,14 +79,6 @@ export function ZabalTokenPanel() {
             Hold $ZABAL
           </a>
           <a
-            href="https://songjam.space/zabal"
-            target="_blank"
-            rel="noopener noreferrer"
-            style={secondaryCta()}
-          >
-            $ZABAL Empire leaderboard
-          </a>
-          <a
             href="https://zaoos.com/respect"
             target="_blank"
             rel="noopener noreferrer"
@@ -122,7 +114,6 @@ const PORTALS: Portal[] = [
   { name: 'ZAO Nexus', url: 'https://www.thezao.com/nexus', blurb: 'The full ecosystem link directory.', badge: 'Directory' },
   { name: 'Empire Builder', url: 'https://empirebuilder.world', blurb: 'Where $ZABAL lives onchain.', badge: 'Token' },
   { name: 'BetterCallZaal', url: 'https://bettercallzaal.com', blurb: 'Zaal\'s personal brand + studio.', badge: 'Brand' },
-  { name: 'Magnetiq', url: 'https://magnetiq.xyz', blurb: 'IRL Proof-of-Meet badges for ZAO connections.', badge: 'IRL' },
 ];
 
 export function ZabalEcosystem() {

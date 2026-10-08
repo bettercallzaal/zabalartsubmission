@@ -2,7 +2,6 @@ import { Metadata } from 'next';
 import { Suspense } from 'react';
 import { ZabalVoteClient } from './_components/ZabalVoteClient';
 import { ZabalNav, ZabalTokenPanel, ZabalEcosystem, ZabalAbout } from './_components/ZabalHub';
-import { SongJamCard } from './_components/SongJamCard';
 import { LastWeekBanner } from './_components/LastWeekBanner';
 import { ZaoStockHero } from './_components/ZaoStockHero';
 import { LtaePodcastStrip } from './_components/LtaePodcastStrip';
@@ -191,11 +190,7 @@ async function LeaderboardSection() {
         </table>
       </div>
       <p style={{ marginTop: '1rem', fontSize: '0.85rem', color: '#a0a0a0' }}>
-        Cumulative leaderboard powers the{' '}
-        <a href="https://songjam.space/zabal" style={{ color: '#e0ddaa' }}>
-          $ZABAL Empire
-        </a>{' '}
-        via Empire Builder.
+        Cumulative leaderboard powers the $ZABAL Empire via Empire Builder.
       </p>
     </section>
   );
@@ -252,7 +247,6 @@ export default function ZabalPage() {
 
       {/* Static sections render immediately */}
       <ZabalTokenPanel />
-      <SongJamCard />
       <ZaoStockHero />
       <ZabalEcosystem />
 
